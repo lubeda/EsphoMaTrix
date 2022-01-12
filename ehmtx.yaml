@@ -1,0 +1,154 @@
+substitutions:
+  devicename: ehmtx
+
+external_components:
+   - source:
+       type: local
+       path: components
+
+esphome:
+  name: $devicename
+  includes:
+    - components/EHMTX_component.h
+
+custom_component:
+- lambda: |-
+    auto EHMTX = new EHMTX_Component();
+    return {EHMTX};
+
+font:
+  - file: monobit.ttf
+    id: EHMTX_font
+    size: 16
+    glyphs:  |
+      !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@
+
+ehmtx:
+  icons: 
+    - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
+      id: boot 
+    - file: _icons/Temperature Stable_2925.png
+      id: temp 
+    - file: _icons/Garage Door open_30081.gif
+      id: garage
+    - file: _icons/Wind_22148.gif
+      id: wind
+    - file: _icons/Rain 1H_6427.gif
+      id: rain
+    - file: _icons/dog_2698.png
+      id: dog
+    - file: _icons/girl 1_9704.gif
+      id: girl
+    - file: _icons/shop_18567.gif
+      id: shop
+    - file: _icons/Phonering_1232.gif
+      id: phone
+    - file: _icons/Fire_9272.gif
+      id: fire
+    - file: _icons/Alexa Ani_31194.gif
+      id: alexa
+    - file: _icons/TV Start_9754.gif
+      id: tv
+    - file: _icons/Movie_626.gif
+      id: media
+    - file: _icons/ring doorbell_24087.gif
+      id: ring
+    - file: _icons/Cold Icy Ice Snow -bmt _17140.gif
+      id: frost
+    - file: _icons/Enterprise Orbit_10714.png
+      id: iss
+  
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+
+text_sensor:
+  - platform: template
+    name: "Icon list"
+    lambda: |-
+      return {EHMTX_iconlist};
+    update_interval: 600s
+  - platform: template
+    name: "activ screen"
+    lambda: |-
+      return {EHMTX_page};
+    update_interval: 60s
+
+
+# Enable Home Assistant API
+api:
+  services:
+    - service: alarm
+      variables:
+        icon: int
+        text: string
+      then:
+        lambda: |-
+          EHMTX_alarm->setAlarm(text,icon);
+    - service: screen
+      variables:
+        icon: int
+        text: string
+      then:
+        lambda: |-
+          uint8_t i = EHMTX_slotfree(icon);
+          EHMTX_slots[i]->setText(text,icon);
+    - service: del_screen
+      variables:
+        icon: int
+      then:
+        lambda: |-
+          EHMTX_delslot(icon);
+
+ota:
+  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "EsphoMaTriX"
+    password: "InM2TlqVfJe4"
+
+captive_portal:
+
+light:
+  - platform: fastled_clockless
+    chipset: WS2812B
+    pin: GPIO04
+    num_leds: 256
+    rgb_order: GRB
+    name: "$devicename Light"
+    id: led_matrix_light
+    default_transition_length: 1s
+    color_correct: [30%, 30%, 30%]
+    restore_mode: ALWAYS_ON
+
+time:
+  - platform: sntp
+    id: rtctime
+
+display:
+  - platform: addressable_light
+    id: EHMTX_display
+    addressable_light_id: led_matrix_light
+    width: 32
+    height: 8
+    pixel_mapper: |-
+      if (x % 2 == 0) {
+        return (x * 8) + y;
+      }
+      return (x * 8) + (7 - y);
+    rotation: 0°
+    update_interval: 50ms
+    auto_clear_enabled: true
+    lambda: |-
+      EHMTX_draw();
