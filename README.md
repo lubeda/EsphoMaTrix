@@ -28,8 +28,8 @@ Service **_alarm**
 Sets an alarm, the alarm is like a normal screen but is displayed twice as long and has a red marker in the upper right corner.
 
 parameters:
-'icon': The number of the predefined icons (see installation)
-'text': The text to be displayed
+```icon```: The number of the predefined icons (see installation)
+```text```: The text to be displayed
 
 Service **_screen**
 
@@ -37,35 +37,35 @@ Queues a screen with an icon and a text. Per icon there can only be one text. If
 If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
 
 parameters:
-'icon': The number of the predefined icons (see installation)
-'text': The text to be displayed
+```icon``` The number of the predefined icons (see installation)
+```text``` The text to be displayed
 
 Service **_del_screen**
 
 removes the screen with the specified icon from the queue
 
 parameters:
-'icon': The number of the icons/screen to remove
+```icon```: The number of the icons/screen to remove
 
 # Installation
 
 ## Font
 Download a "pixel" font, i use "monobit.ttf". For this font i need to define '''#define YFONTOFFSET -5''' in "EMaTcomponent.h" because of positioning on the matrix. The Font has to be named **EHMTX_font**
 
-'
+```
 font:
   - file: monobit.ttf
     id: EHMTX_font
     size: 16
     glyphs:  |
       !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@
-'
+```
 
 ## icons/animations
 Download and install all needed icons under the "ehmtx"-key, after that define an array with all needed icons. The name has to be EMaTicons!!!
 
-'
-emat:
+```
+emhtx:
   icons: 
     - file: icons/rocket.gif
       id: boot 
@@ -73,27 +73,27 @@ emat:
       id: temp 
     - file: garage.gif
       id: garage
-'
+```
 
 The icon with the index **0** is used for the boot screen. You can use gifs as animation and pngs as static "animations". 
 All other solutions provide icon, especialy lametric has a big database of icons. Please check the copyright of the used icons. If needed scale to 8x8 pixel. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
 The index of the icons is the order of definition, in the sample "temp" is 1 and garage is to. To review the icon order you can add an text-sensor to your config.
 
-'
+```
 text_sensor:
   - platform: template
     name: "Icon list"
     lambda: |-
       return {EMaTiconlist};
     update_interval: 600s
-'
+```
 
 ## components and include
 
 at the moment you need an include and a component to get this running. customize the yaml to your folder structure.
 
-'
+```
 external_components:
    - source:
        type: local
@@ -103,7 +103,7 @@ esphome:
   name: $devicename
   includes:
     - components/EHMTX_component.h
-'
+```
 
 ## Hardware/Wifi
 
