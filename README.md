@@ -28,8 +28,8 @@ Service **_alarm**
 Sets an alarm, the alarm is like a normal screen but is displayed twice as long and has a red marker in the upper right corner.
 
 parameters:
-```icon```: The number of the predefined icons (see installation)
-```text```: The text to be displayed
+- ```icon```: The number of the predefined icons (see installation)
+- ```text```: The text to be displayed
 
 Service **_screen**
 
@@ -37,15 +37,15 @@ Queues a screen with an icon and a text. Per icon there can only be one text. If
 If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
 
 parameters:
-```icon``` The number of the predefined icons (see installation)
-```text``` The text to be displayed
+- ```icon``` The number of the predefined icons (see installation)
+- ```text``` The text to be displayed
 
 Service **_del_screen**
 
 removes the screen with the specified icon from the queue
 
 parameters:
-```icon```: The number of the icons/screen to remove
+- ```icon```: The number of the icons/screen to remove
 
 # Installation
 
@@ -110,5 +110,6 @@ esphome:
 Adapt all other data in the yaml to your needs, I use GPIO04 as port for the display.
 
 
-
+# Disclaimer
+THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
