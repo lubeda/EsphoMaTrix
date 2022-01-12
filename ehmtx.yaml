@@ -25,38 +25,13 @@ font:
 
 ehmtx:
   icons: 
-    - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
+    - file: sample.png
       id: boot 
-    - file: _icons/Temperature Stable_2925.png
+    - file: sample.png
       id: temp 
-    - file: _icons/Garage Door open_30081.gif
+    - file: sample.png
       id: garage
-    - file: _icons/Wind_22148.gif
-      id: wind
-    - file: _icons/Rain 1H_6427.gif
-      id: rain
-    - file: _icons/dog_2698.png
-      id: dog
-    - file: _icons/girl 1_9704.gif
-      id: girl
-    - file: _icons/shop_18567.gif
-      id: shop
-    - file: _icons/Phonering_1232.gif
-      id: phone
-    - file: _icons/Fire_9272.gif
-      id: fire
-    - file: _icons/Alexa Ani_31194.gif
-      id: alexa
-    - file: _icons/TV Start_9754.gif
-      id: tv
-    - file: _icons/Movie_626.gif
-      id: media
-    - file: _icons/ring doorbell_24087.gif
-      id: ring
-    - file: _icons/Cold Icy Ice Snow -bmt _17140.gif
-      id: frost
-    - file: _icons/Enterprise Orbit_10714.png
-      id: iss
+    
   
 esp8266:
   board: d1_mini

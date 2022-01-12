@@ -110,6 +110,10 @@ esphome:
 Adapt all other data in the yaml to your needs, I use GPIO04 as port for the display.
 
 
+# Usage
+
+The integration works with the homeassistant api so, after boot of the device, it take some seconds until the service calls work.
+
 # Disclaimer
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
