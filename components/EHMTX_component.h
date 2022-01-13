@@ -3,9 +3,9 @@ using namespace time;
 using namespace display;
 
 #define MAXQUEUE 12
-#define TICKINTERVAL 100 // each 100ms
-#define SCREENCYCLE 70   // max time per screen 7 seconds
-#define CLOCKCYCLE 30
+#define TICKINTERVAL 50 // each 100ms
+#define SCREENCYCLE 140   // max time per screen 7 seconds
+#define CLOCKCYCLE 80
 #define YFONTOFFSET -5
 
 const Color EHMTX_Ctext = Color(178, 178, 191);
@@ -19,6 +19,8 @@ const Color EHMTX_cday = Color(160, 160, 160);
 uint16_t EHMTX_ticker = 0;
 uint8_t EHMTX_icon = 0;
 uint8_t EHMTX_pointer = 0;
+
+bool EHMTX_start = false;
 
 void EHMTX_dayofweek()
 {
@@ -130,7 +132,7 @@ void EHMTX_draw()
   switch (EHMTX_pointer)
   {
   case 0:
-    EHMTX_display->print(1, YFONTOFFSET, EHMTX_font, EHMTX_Cwarn, "EHMTX");
+    EHMTX_display->print(2, YFONTOFFSET, EHMTX_font, EHMTX_Cwarn, "EHMTX");
     EHMTX_display->draw_pixel_at(30, 7, EHMTX_Cwarn);
     EHMTX_display->draw_pixel_at(31, 6, EHMTX_Cwarn);
     EHMTX_display->draw_pixel_at(31, 7, EHMTX_Cwarn);
@@ -212,32 +214,12 @@ void EHMTX_draw()
   }
 }
 
-class EHMTX_Component : public PollingComponent
+
+void EHMTX_tick()
 {
-
-public:
-  EHMTX_Component() : PollingComponent(TICKINTERVAL) {}
-
-  float get_setup_priority() const override { return esphome::setup_priority::AFTER_WIFI; }
-
-  void setup() override
+  if (EHMTX_start)
   {
-    for (uint8_t i = 0; i < MAXQUEUE; i++)
-    {
-      EHMTX_slots[i] = new EHMTX_screen();
-    }
-  }
 
-  // count EHMTX_ticker to SCREENCYCLE then EHMTX_pointer++ and restart
-  // if EHMTX_pointer >= MAXQUEUE+3 EHMTX_pointer=1
-  // EHMTX_pointer = 0 => bootscreen
-  // EHMTX_pointer = 1 => clock
-  // EHMTX_pointer = 2 => date
-  // EHMTX_pointer = 3 => alarm
-  // EHMTX_pointer > 3 <> MAXQUEUE+3 => queue[EHMTX_pointer]
-
-  void update() override
-  {
     EHMTX_ticker++;
 
     if ((EHMTX_pointer == 1) || (EHMTX_pointer == 2))
@@ -261,4 +243,38 @@ public:
       }
     }
   }
+}
+
+class EHMTX_Component : public PollingComponent
+{
+
+public:
+  EHMTX_Component() : PollingComponent(TICKINTERVAL) {}
+
+  float get_setup_priority() const override { return esphome::setup_priority::AFTER_WIFI; }
+
+  void setup() override
+  {
+    for (uint8_t i = 0; i < MAXQUEUE; i++)
+    {
+      EHMTX_slots[i] = new EHMTX_screen();
+      EHMTX_start = true;
+    }
+  }
+
+  // count EHMTX_ticker to SCREENCYCLE then EHMTX_pointer++ and restart
+  // if EHMTX_pointer >= MAXQUEUE+3 EHMTX_pointer=1
+  // EHMTX_pointer = 0 => bootscreen
+  // EHMTX_pointer = 1 => clock
+  // EHMTX_pointer = 2 => date
+  // EHMTX_pointer = 3 => alarm
+  // EHMTX_pointer > 3 <> MAXQUEUE+3 => queue[EHMTX_pointer]
+
+    void update() override
+  {
+  }
+
+  
 };
+
+

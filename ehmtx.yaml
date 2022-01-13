@@ -105,7 +105,7 @@ light:
     id: led_matrix_light
     default_transition_length: 1s
     color_correct: [30%, 30%, 30%]
-    restore_mode: ALWAYS_ON
+    restore_mode: ALWAYS_OFF
 
 time:
   - platform: sntp
@@ -126,4 +126,5 @@ display:
     update_interval: 50ms
     auto_clear_enabled: true
     lambda: |-
+      EHMTX_tick();
       EHMTX_draw();
