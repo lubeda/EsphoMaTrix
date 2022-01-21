@@ -8,53 +8,22 @@ external_components:
 
 esphome:
   name: $devicename
-  includes:
-    - components/EHMTX_component.h
-
-custom_component:
-- lambda: |-
-    auto EHMTX = new EHMTX_Component();
-    return {EHMTX};
+  on_boot:
+    lambda: |
+       App.register_component(rgb328);
 
 font:
   - file: monobit.ttf
-    id: EHMTX_font
+    id: ehmtxfont
     size: 16
     glyphs:  |
-      !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@
+      !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>
 
-ehmtx:
-  icons: 
-    - file: sample.png
-      id: boot 
-    - file: sample.png
-      id: temp 
-    - file: sample.png
-      id: garage
-    
-  
 esp8266:
   board: d1_mini
 
 # Enable logging
 logger:
-
-sensor:
-  - platform: uptime
-    name: Uptime Sensor
-
-text_sensor:
-  - platform: template
-    name: "Icon list"
-    lambda: |-
-      return {EHMTX_iconlist};
-    update_interval: 600s
-  - platform: template
-    name: "activ screen"
-    lambda: |-
-      return {EHMTX_page};
-    update_interval: 60s
-
 
 # Enable Home Assistant API
 api:
@@ -65,21 +34,26 @@ api:
         text: string
       then:
         lambda: |-
-          EHMTX_alarm->setAlarm(text,icon);
+          id(rgb328)->add_alarm(icon,text);
     - service: screen
       variables:
         icon: int
         text: string
       then:
         lambda: |-
-          uint8_t i = EHMTX_slotfree(icon);
-          EHMTX_slots[i]->setText(text,icon);
+          id(rgb328)->add_screen(icon,text);
+    - service: status
+      variables:
+        icon: int
+      then:
+        lambda: |-
+          id(rgb328)->get_status(icon);
     - service: del_screen
       variables:
         icon: int
       then:
         lambda: |-
-          EHMTX_delslot(icon);
+          id(rgb328)->del_screen(icon);
 
 ota:
   password: !secret ota_password
@@ -102,19 +76,19 @@ light:
     num_leds: 256
     rgb_order: GRB
     name: "$devicename Light"
-    id: led_matrix_light
+    id: ehmtx_light
     default_transition_length: 1s
     color_correct: [30%, 30%, 30%]
     restore_mode: ALWAYS_OFF
 
 time:
-  - platform: sntp
-    id: rtctime
+  - platform: homeassistant
+    id: ehmtx_clock
 
 display:
   - platform: addressable_light
-    id: EHMTX_display
-    addressable_light_id: led_matrix_light
+    id: ehmtxdisplay
+    addressable_light_id: ehmtx_light
     width: 32
     height: 8
     pixel_mapper: |-
@@ -123,8 +97,24 @@ display:
       }
       return (x * 8) + (7 - y);
     rotation: 0°
-    update_interval: 50ms
+    update_interval: 16ms
     auto_clear_enabled: true
     lambda: |-
-      EHMTX_tick();
-      EHMTX_draw();
+      id(rgb328)->tick();
+      id(rgb328)->draw();
+      
+ehmtx:
+  id: rgb328
+  showclock: 6
+  showscreen: 8
+  display8x32: ehmtxdisplay
+  time: 
+  duration: 7
+  font_id: ehmtxfont
+  icons: 
+    - file: sample.png
+      id: boot 
+    - file: sample.png
+      id: temp 
+    - file: sample.png
+      id: garage

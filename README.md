@@ -13,6 +13,7 @@ The DIY solutions have their pros and cons, i am still using an awtrix. But the 
 
 ## State
 
+**This is a very very buggy not usable version!!!!!**
 It is not as mature as awtrix and pixelt it but i does what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a chaos version.
 
 ## Features
@@ -89,9 +90,9 @@ text_sensor:
     update_interval: 600s
 ```
 
-## components and include
+## components
 
-at the moment you need an include and a component to get this running. customize the yaml to your folder structure.
+at the moment you need a local component to get this running. Customize the yaml to your folder structure.
 
 ```
 external_components:
@@ -99,11 +100,28 @@ external_components:
        type: local
        path: components
 
-esphome:
-  name: $devicename
-  includes:
-    - components/EHMTX_component.h
 ```
+## YAML confugration
+```
+ehmtx:
+  id: rgb328
+  showclock: 6
+  showscreen: 8
+  display8x32: ehmtxdisplay
+  time: ehmtxclock
+  duration: 7
+  font_id: ehmtxfont
+  icons: 
+    - file: sample.png
+      id: boot 
+    - file: sample.png
+      id: temp 
+    - file: sample.png
+      id: garage
+```
+
+
+
 
 ## Hardware/Wifi
 
