@@ -95,7 +95,7 @@ namespace esphome
     this->lifetime = this->config->lifetime;
     if (this->alarm)
     {
-      this->lifetime += this->config->lifetime;
+      this->lifetime += 4;
     }
     this->icon = icon;
   }

@@ -13,7 +13,7 @@ namespace esphome
   const Color EHMTX_Ctext = Color(178, 178, 191);
   const Color EHMTX_Cwarn = Color(214, 214, 12);
   const Color EHMTX_Calarm = Color(204, 51, 63);
-    const Color EHMTX_ctoday = Color(180, 180, 180);
+  const Color EHMTX_ctoday = Color(180, 180, 180);
   const Color EHMTX_cday = Color(60, 60, 60);
 
   class EHMTX_screen;
@@ -30,7 +30,7 @@ namespace esphome
     bool showclock;
     bool showscreen;
     EHMTX_screen *slots[MAXQUEUE];
-    const char *iconlist;
+    std::string iconlist;
     display::Animation *icons[MAXICONS];
     void add_icon(display::Animation *icon);
     display::DisplayBuffer *display;
@@ -73,7 +73,8 @@ namespace esphome
     void set_scrollintervall(uint16_t intervall);
     void set_icons(display::Animation *ia[]);
     void set_iconcount(uint8_t ic);
-    void set_iconlist(char *il);
+    void set_iconlist(std::string il);
+    void set_brightness (uint8_t bri);
     void drawclock();
     void setup();
     void update();

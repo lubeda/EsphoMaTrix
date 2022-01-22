@@ -35,12 +35,12 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_DISPLAY): cv.use_id(display),
     cv.Required(CONF_FONT_ID): cv.use_id(font),    
     cv.Optional(
-            CONF_SHOWCLOCK, default="4000"
+            CONF_SHOWCLOCK, default="4200"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
             CONF_FONTOFFSET, default="-5"
             ): cv.templatable( cv.int_range(min=-32,max=32)),
-    cv.Optional( CONF_SCROLLINTERVAL, default="32"
+    cv.Optional( CONF_SCROLLINTERVAL, default="64"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
             CONF_ANIMINTERVAL, default="160"
@@ -149,15 +149,8 @@ async def to_code(config):
         icons.append(str(conf[CONF_ID]))
         
         cg.add(var.add_icon(RawExpression(str(conf[CONF_ID])))) 
-        #cg.add(RawExpression("EHMTX::EHMTX_icons[EHMTX_iconcount]= "+ str(conf[CONF_ID])))
-        #cg.add(RawExpression("EHMTX::EHMTX_iconcount++"))
-   
-    # cg.add(RawExpression("display::Animation* EHMTX::EHMTX_icons[]{"+ ",".join(icons)+"}"))
-    cg.add_global(RawExpression("const char *EHMTX_iconlist =\""+ ",".join(icons)+"\""))
-    
-    #cg.add(RawExpression("display::Animation* EHMTX::icons["+ str(len(icons)) +"]{"+ ",".join(icons)+"}"))
-    # cg.add(var.set_icons(RawExpression("&EHMTX_icons")));
-    
+
+    cg.add(var.set_iconlist(RawExpression("\""+ ",".join(icons)+"\"")))
     cg.add(var.set_clocktime(config[CONF_SHOWCLOCK]))
     cg.add(var.set_screentime(config[CONF_SHOWSCREEN]))
     cg.add(var.set_lifetime(config[CONF_DURATION]))

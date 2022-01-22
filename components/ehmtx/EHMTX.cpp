@@ -21,7 +21,7 @@ namespace esphome
 
   void EHMTX::drawclock()
   {
-    if ((this->clock->now().timestamp - this->nextactiontime) < this->clocktime) // 
+    if ((this->clock->now().timestamp - this->nextactiontime) < this->clocktime) //
     {
       this->display->strftime(6, this->fontoffset, this->font, "%H:%M",
                               this->clock->now());
@@ -84,7 +84,7 @@ namespace esphome
   {
     uint8_t slot = 0;
     uint8_t count;
-        
+
     if (this->pointer > 0)
     {
       this->pointer--;
@@ -97,16 +97,17 @@ namespace esphome
     if ((this->clock->now().timestamp - this->nextactiontime) > this->screentime) // alarm each 30000 seconds
     {
       this->nextactiontime = this->clock->now().timestamp + this->screentime;
-      count = this->countscreens(); 
+      count = this->countscreens();
 
-      if (count < 4){
-        ESP_LOGD("EHMTX", "nextaction clock CS %d",count);
-      this->showclock = true;
-      this->showalarm = false;
-      this->showscreen = false;
+      if (count < 4)
+      {
+        ESP_LOGD("EHMTX", "nextaction clock CS %d", count);
+        this->showclock = true;
+        this->showalarm = false;
+        this->showscreen = false;
       }
-      
-      if ((this->findalarm()<MAXQUEUE) && (this->pointer % 2))
+
+      if ((this->findalarm() < MAXQUEUE) && (this->pointer % 3))
       {
         ESP_LOGD("EHMTX", "nextaction alarm");
         this->showclock = false;
@@ -116,7 +117,7 @@ namespace esphome
       else
       {
         slot = this->findnextscreen();
-        if (slot < MAXQUEUE && (this->pointer % 2) )
+        if (slot < MAXQUEUE && (this->pointer % 2))
         {
           ESP_LOGD("EHMTX", "nextaction newscreen");
           this->showclock = false;
@@ -130,9 +131,8 @@ namespace esphome
         this->slots[this->activeslot]->use();
       }
     }
-    // ESP_LOGD("EHMTX","n %d ts %d diff %d st %d",this->nextactiontime,this->clock->now().timestamp,(this->nextactiontime - this->clock->now().timestamp), this->screentime);
   }
-  
+
   void EHMTX::set_screentime(uint16_t t)
   {
     this->screentime = t;
@@ -140,12 +140,16 @@ namespace esphome
 
   void EHMTX::get_status()
   {
-    ESP_LOGD("EHMTX", "getstatus activeslot %d", this->activeslot);
+    ESP_LOGI("EHMTX", "getstatus screen count %d", this->countscreens());
+    ESP_LOGI("EHMTX", "getstatus activeslot %d", this->activeslot);
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
-        ESP_LOGD("EHMTX", "getstatus slot %d icon %d text %s lifetime %d", i, this->slots[i]->icon, this->slots[i]->text.c_str(), this->slots[i]->lifetime);
+      if (this->slots[i]->active())
+      {
+        ESP_LOGI("EHMTX", "getstatus slot %d icon %d text %s lifetime %d", i, this->slots[i]->icon, this->slots[i]->text.c_str(), this->slots[i]->lifetime);
+      }
     }
-    ESP_LOGD("EHMTX", "getstatus %s",EHMTX_iconlist);
+    ESP_LOGI("EHMTX", "getstatus icons %s", this->iconlist.c_str());
   }
 
   uint8_t EHMTX::findalarm()
@@ -166,6 +170,7 @@ namespace esphome
     {
       if (this->slots[i]->icon == icon)
       {
+        ESP_LOGI("EHMTX", "upd screen no. %d", i);
         return i;
       }
     }
@@ -205,6 +210,7 @@ namespace esphome
     {
       if (this->slots[i]->delslot(icon))
       {
+        ESP_LOGI("EHMTX", "del screen no. %d", i);
         break;
       }
     }
@@ -221,7 +227,7 @@ namespace esphome
     }
     this->slots[i]->alarm = true;
     this->slots[i]->setText(text, icon, w);
-    ESP_LOGI("EHMTX","new alarm no. %d t:%s",i,text.c_str());
+    ESP_LOGI("EHMTX", "new alarm no. %d t:%s", i, text.c_str());
   }
 
   void EHMTX::add_screen(uint8_t icon, std::string text)
@@ -234,7 +240,7 @@ namespace esphome
       icon = 0;
     }
     this->slots[i]->setText(text, icon, w);
-    ESP_LOGI("EHMTX","new screen no. %d t:%s",i,text.c_str());
+    ESP_LOGI("EHMTX", "new screen no. %d t:%s", i, text.c_str());
   }
 
   void EHMTX::set_clocktime(uint16_t t)
@@ -242,7 +248,7 @@ namespace esphome
     this->clocktime = t;
   }
 
-  void EHMTX::set_iconlist(char *il)
+  void EHMTX::set_iconlist(std::string il)
   {
     this->iconlist = il;
   }
@@ -281,27 +287,8 @@ namespace esphome
   void EHMTX::add_icon(display::Animation *icon)
   {
     this->icons[this->iconcount] = icon;
-    this->iconcount++;
+     this->iconcount++;
   }
-
-  // void EHMTX::tick()
-  // {
-  //   // check what to display from update
-  //   // display
-  //   // check if to scroll oder nextframe
-  //   if (this->showalarm)
-  //   {
-  //     this->slots[this->activeslot]->draw();
-  //   }
-  //   else if (this->showclock)
-  //   {
-  //     this->drawclock();
-  //   }
-  //   else if (this->showscreen)
-  //   {
-  //     this->slots[this->activeslot]->draw();
-  //   }
-  // }
 
   void EHMTX::draw()
   {
@@ -314,6 +301,4 @@ namespace esphome
       this->drawclock();
     }
   }
-
-  
 }
