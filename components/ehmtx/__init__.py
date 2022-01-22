@@ -35,21 +35,21 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_DISPLAY): cv.use_id(display),
     cv.Required(CONF_FONT_ID): cv.use_id(font),    
     cv.Optional(
-            CONF_SHOWCLOCK, default="5000"
+            CONF_SHOWCLOCK, default="4000"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
             CONF_FONTOFFSET, default="-5"
             ): cv.templatable( cv.int_range(min=-32,max=32)),
-    cv.Optional( CONF_SCROLLINTERVAL, default="100"
+    cv.Optional( CONF_SCROLLINTERVAL, default="32"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
-            CONF_ANIMINTERVAL, default="100"
+            CONF_ANIMINTERVAL, default="160"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
-                CONF_SHOWSCREEN, default="8000"
+                CONF_SHOWSCREEN, default="7"
             ): cv.templatable(cv.positive_int),
     cv.Optional(
-                CONF_DURATION, default="8"
+                CONF_DURATION, default="5"
             ): cv.templatable(cv.positive_int),
     cv.Required(CONF_ICONS): cv.All(
         cv.ensure_list(

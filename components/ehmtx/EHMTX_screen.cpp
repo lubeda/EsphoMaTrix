@@ -50,6 +50,8 @@ namespace esphome
     if (this->lifetime > 0)
     {
       this->lifetime--;
+    } else {
+      this->alarm = false;
     }
   }
 
@@ -57,7 +59,6 @@ namespace esphome
   {
     if (this->lifetime > 0)
     {
-    //  ESP_LOGD("screen", "active L %d I %d", this->lifetime, this->icon);
       return true;
     };
     return false;
@@ -65,22 +66,21 @@ namespace esphome
 
   void EHMTX_screen::_draw()
   {
-      this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, EHMTX_Cwarn,
-                                   this->text.c_str());
-
-      if (this->alarm)
-      {
-        //  EHMTX_page = ("Alarm: " + this->text).c_str();
-        this->config->display->draw_pixel_at(30, 0, EHMTX_Calarm);
-        this->config->display->draw_pixel_at(31, 1, EHMTX_Calarm);
-        this->config->display->draw_pixel_at(31, 0, EHMTX_Calarm);
-      }
-      this->config->display->image(0, 0, this->config->icons[this->icon]);
+    this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, EHMTX_Cwarn,
+                                 this->text.c_str());
+    this->config->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
+    if (this->alarm)
+    {
+      this->config->display->draw_pixel_at(30, 0, EHMTX_Calarm);
+      this->config->display->draw_pixel_at(31, 1, EHMTX_Calarm);
+      this->config->display->draw_pixel_at(31, 0, EHMTX_Calarm);
+    }
+    this->config->display->image(0, 0, this->config->icons[this->icon]);
   }
 
   void EHMTX_screen::draw()
   {
-    if (this->active() )
+    if (this->active())
     {
       this->_draw();
       this->update_screen();
@@ -93,6 +93,10 @@ namespace esphome
     this->pixels = pixel;
     this->shiftx = 0;
     this->lifetime = this->config->lifetime;
+    if (this->alarm)
+    {
+      this->lifetime += this->config->lifetime;
+    }
     this->icon = icon;
   }
 
