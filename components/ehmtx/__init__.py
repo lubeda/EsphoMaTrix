@@ -86,8 +86,12 @@ async def to_code(config):
             raise core.EsphomeError(f"Could not load image file {path}: {e}")
 
         width, height = image.size
-        frames = min (image.n_frames,MAXFRAMES)
         
+        if hasattr( image, 'n_frames'):
+            frames = min (image.n_frames,MAXFRAMES)
+        else: 
+            frames = 1
+
         if conf[CONF_TYPE] == "GRAYSCALE":
             data = [0 for _ in range(height * width * frames)]
             pos = 0
