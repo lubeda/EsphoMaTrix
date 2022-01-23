@@ -44,10 +44,9 @@ api:
           id(rgb328)->add_screen(icon,text);
     - service: status
       variables:
-        icon: int
       then:
         lambda: |-
-          id(rgb328)->get_status(icon);
+          id(rgb328)->get_status();
     - service: del_screen
       variables:
         icon: int

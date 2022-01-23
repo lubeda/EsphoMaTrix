@@ -74,7 +74,6 @@ namespace esphome
     void set_icons(display::Animation *ia[]);
     void set_iconcount(uint8_t ic);
     void set_iconlist(std::string il);
-    void set_brightness (uint8_t bri);
     void drawclock();
     void setup();
     void update();

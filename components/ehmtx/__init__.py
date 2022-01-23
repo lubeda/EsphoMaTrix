@@ -103,7 +103,7 @@ async def to_code(config):
                     data[pos] = pix
                     pos += 1
 
-        elif conf[CONF_TYPE] == "RGB24":
+        elif conf[CONF_TYPE] == "RGB24x":
             data = [0 for _ in range(height * width * 3 * frames)]
             pos = 0
             for frameIndex in range(frames):
@@ -120,6 +120,25 @@ async def to_code(config):
                     data[pos] = pix[1]
                     pos += 1
                     data[pos] = pix[2]
+                    pos += 1
+
+        elif conf[CONF_TYPE] == "RGB24":
+            data = [0 for _ in range(height * width * 3 * frames)]
+            pos = 0
+            for frameIndex in range(frames):
+                image.seek(frameIndex)
+                frame = image.convert("RGB")
+                pixels = list(frame.getdata())
+                if len(pixels) != height * width:
+                    raise core.EsphomeError(
+                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                    )
+                for pix in pixels:
+                    data[pos] = pix[0] & 248
+                    pos += 1
+                    data[pos] = pix[1] & 252
+                    pos += 1
+                    data[pos] = pix[2] & 248
                     pos += 1
 
         elif conf[CONF_TYPE] == "BINARY":

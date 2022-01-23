@@ -140,16 +140,20 @@ namespace esphome
 
   void EHMTX::get_status()
   {
-    ESP_LOGI("EHMTX", "getstatus screen count %d", this->countscreens());
-    ESP_LOGI("EHMTX", "getstatus activeslot %d", this->activeslot);
+    uint8_t status = 0;
+    status += this->showclock ? 1 :0;
+    status += this->showscreen ? 2 :0;
+    status += this->showalarm ? 4 :0;
+    ESP_LOGI("EHMTX", "getstatus status: %d  ls: % d as: %d p:%d",  status,this->lastslot,this->activeslot,this->pointer);
+    ESP_LOGI("EHMTX", "getstatus screen count: %d", this->countscreens());
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
       if (this->slots[i]->active())
       {
-        ESP_LOGI("EHMTX", "getstatus slot %d icon %d text %s lifetime %d", i, this->slots[i]->icon, this->slots[i]->text.c_str(), this->slots[i]->lifetime);
+        ESP_LOGI("EHMTX", "getstatus slot: %d icon: %d  lt: %d text: %s", i, this->slots[i]->icon, this->slots[i]->lifetime, this->slots[i]->text.c_str());
       }
     }
-    ESP_LOGI("EHMTX", "getstatus icons %s", this->iconlist.c_str());
+    ESP_LOGI("EHMTX", "getstatus %d iconnames: %s",this->iconcount, this->iconlist.c_str());
   }
 
   uint8_t EHMTX::findalarm()
@@ -227,7 +231,7 @@ namespace esphome
     }
     this->slots[i]->alarm = true;
     this->slots[i]->setText(text, icon, w);
-    ESP_LOGI("EHMTX", "new alarm no. %d t:%s", i, text.c_str());
+    ESP_LOGI("EHMTX", "new alarm no. %d ic: %d t:%s", i,icon, text.c_str());
   }
 
   void EHMTX::add_screen(uint8_t icon, std::string text)
@@ -240,7 +244,7 @@ namespace esphome
       icon = 0;
     }
     this->slots[i]->setText(text, icon, w);
-    ESP_LOGI("EHMTX", "new screen no. %d t:%s", i, text.c_str());
+    ESP_LOGI("EHMTX", "new screen no. %d ic: %d t:%s", i,icon, text.c_str());
   }
 
   void EHMTX::set_clocktime(uint16_t t)
