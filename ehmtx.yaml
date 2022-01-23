@@ -10,7 +10,7 @@ esphome:
   name: $devicename
   on_boot:
     lambda: |
-       App.register_component(rgb328);
+       App.register_component(rgb8x32);
 
 font:
   - file: monobit.ttf
@@ -24,6 +24,11 @@ esp8266:
 
 # Enable logging
 logger:
+  level: INFO
+
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
 
 # Enable Home Assistant API
 api:
@@ -34,25 +39,54 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb328)->add_alarm(icon,text);
+          id(rgb8x32)->add_alarm(icon,text);
     - service: screen
       variables:
         icon: int
         text: string
       then:
         lambda: |-
-          id(rgb328)->add_screen(icon,text);
+          id(rgb8x32)->add_screen(icon,text);
     - service: status
-      variables:
       then:
         lambda: |-
-          id(rgb328)->get_status();
+          id(rgb8x32)->get_status();
     - service: del_screen
       variables:
         icon: int
       then:
         lambda: |-
-          id(rgb328)->del_screen(icon);
+          id(rgb8x32)->del_screen(icon);
+    - service: indicatoron
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_indicatorcolor(r,g,b);
+          id(rgb8x32)->set_indicatoron();
+    - service: textcolor
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_textcolor(r,g,b);
+    - service: alarmcolor
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_alarmcolor(r,g,b);
+    
+    - service: indicatoroff
+      then:
+        lambda: |-
+          id(rgb8x32)->set_indicatoroff();
 
 ota:
   password: !secret ota_password
@@ -82,7 +116,7 @@ light:
 
 time:
   - platform: homeassistant
-    id: ehmtx_clock
+    id: ehmtx_time
 
 display:
   - platform: addressable_light
@@ -99,21 +133,35 @@ display:
     update_interval: 16ms
     auto_clear_enabled: true
     lambda: |-
-      id(rgb328)->tick();
-      id(rgb328)->draw();
+      id(rgb8x32)->tick();
+      id(rgb8x32)->draw();
       
 ehmtx:
-  id: rgb328
-  showclock: 6 # after 6 seconds displaying the clock, the date is shown
-  showscreen: 8 # each screen is display 8 seconds long
+  id: rgb8x32
+  showclock: 4
+  showscreen: 6
   display8x32: ehmtx_display
-  time: ehmtx_clock
-  duration: 7 # lifetime in the look any screen is displayed 7 times
+  time: ehmtx_time
+  duration: 7
   font_id: ehmtx_font
   icons: 
+    - file: _icons/test.jpg
+      id: jpeg
     - file: sample.png
+      id: sample 
+    - file: _icons/TAKE OFF.gif
       id: boot 
-    - file: sample.png
+    - file: _icons/Temperature.png
       id: temp 
-    - file: sample.png
+    - file: _icons/Garage Door.gif
       id: garage
+    - file: _icons/Wind.gif
+      id: wind
+    - file: _icons/Rain.gif
+      id: rain
+    - file: _icons/dog.png
+      id: dog
+    - file: _icons/girl.gif
+      id: girl
+    - file: _icons/shop.gif
+      id: shop

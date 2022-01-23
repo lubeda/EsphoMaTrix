@@ -10,10 +10,8 @@
 namespace esphome
 {
 
-  const Color EHMTX_Ctext = Color(178, 178, 191);
   const Color EHMTX_Cwarn = Color(214, 214, 12);
   const Color EHMTX_Calarm = Color(204, 51, 63);
-  const Color EHMTX_ctoday = Color(180, 180, 180);
   const Color EHMTX_cday = Color(60, 60, 60);
 
   class EHMTX_screen;
@@ -23,12 +21,15 @@ namespace esphome
   private:
     uint8_t findfreeslot(uint8_t icon);
     float get_setup_priority() const override { return esphome::setup_priority::LATE; }
+    Color indicatorColor;
 
   public:
     EHMTX();
+    Color textColor, alarmColor;
     bool showalarm;
     bool showclock;
     bool showscreen;
+    bool showindicator;
     EHMTX_screen *slots[MAXQUEUE];
     std::string iconlist;
     display::Animation *icons[MAXICONS];
@@ -48,9 +49,9 @@ namespace esphome
     uint8_t pointer;          // last displayed slot
     unsigned long lastscrolltime;
     unsigned long lastanimtime;
-    time_t 	 lastclocktime = 0; // starttime clock display
-    time_t 	 nextactiontime = 0; // when is the nextscreenchange
-    time_t 	 lastalarmtime = 0; // starttime last alarm display
+    time_t lastclocktime = 0;  // starttime clock display
+    time_t nextactiontime = 0; // when is the nextscreenchange
+    time_t lastalarmtime = 0;  // starttime last alarm display
     uint8_t findnextscreen();
     uint8_t countscreens();
     uint8_t findalarm();
@@ -72,6 +73,12 @@ namespace esphome
     void set_animintervall(uint16_t intervall);
     void set_scrollintervall(uint16_t intervall);
     void set_icons(display::Animation *ia[]);
+
+    void set_indicatoroff();
+    void set_indicatoron();
+    void set_indicatorcolor(int r, int g, int b);
+    void set_textcolor(int r, int g, int b);
+    void set_alarmcolor(int r, int g, int b);
     void set_iconcount(uint8_t ic);
     void set_iconlist(std::string il);
     void drawclock();

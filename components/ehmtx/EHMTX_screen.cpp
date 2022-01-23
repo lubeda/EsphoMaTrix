@@ -50,7 +50,9 @@ namespace esphome
     if (this->lifetime > 0)
     {
       this->lifetime--;
-    } else {
+    }
+    else
+    {
       this->alarm = false;
     }
   }
@@ -60,20 +62,30 @@ namespace esphome
     if (this->lifetime > 0)
     {
       return true;
-    };
+    }
     return false;
   }
 
   void EHMTX_screen::_draw()
   {
-    this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, EHMTX_Cwarn,
+    if (this->alarm)
+    {
+      this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, this->config->alarmColor,
+                                   this->text.c_str());
+    }
+    else
+    {
+      this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, this->config->textColor,
+                                   this->text.c_str());
+    }
+    this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, this->config->textColor,
                                  this->text.c_str());
     this->config->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
     if (this->alarm)
     {
-      this->config->display->draw_pixel_at(30, 0, EHMTX_Calarm);
-      this->config->display->draw_pixel_at(31, 1, EHMTX_Calarm);
-      this->config->display->draw_pixel_at(31, 0, EHMTX_Calarm);
+      this->config->display->draw_pixel_at(30, 0, this->config->alarmColor);
+      this->config->display->draw_pixel_at(31, 1, this->config->alarmColor);
+      this->config->display->draw_pixel_at(31, 0, this->config->alarmColor);
     }
     this->config->display->image(0, 0, this->config->icons[this->icon]);
   }

@@ -40,10 +40,10 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
             CONF_FONTOFFSET, default="-5"
             ): cv.templatable( cv.int_range(min=-32,max=32)),
-    cv.Optional( CONF_SCROLLINTERVAL, default="64"
+    cv.Optional( CONF_SCROLLINTERVAL, default="80"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
-            CONF_ANIMINTERVAL, default="160"
+            CONF_ANIMINTERVAL, default="192"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
                 CONF_SHOWSCREEN, default="7"
