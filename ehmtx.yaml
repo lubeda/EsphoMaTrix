@@ -14,7 +14,7 @@ esphome:
 
 font:
   - file: monobit.ttf
-    id: ehmtxfont
+    id: ehmtx_font
     size: 16
     glyphs:  |
       !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>
@@ -87,7 +87,7 @@ time:
 
 display:
   - platform: addressable_light
-    id: ehmtxdisplay
+    id: ehmtx_display
     addressable_light_id: ehmtx_light
     width: 32
     height: 8
@@ -105,12 +105,12 @@ display:
       
 ehmtx:
   id: rgb328
-  showclock: 6
-  showscreen: 8
-  display8x32: ehmtxdisplay
-  time: 
-  duration: 7
-  font_id: ehmtxfont
+  showclock: 6 # after 6 seconds displaying the clock, the date is shown
+  showscreen: 8 # each screen is display 8 seconds long
+  display8x32: ehmtx_display
+  time: ehmtx_clock
+  duration: 7 # lifetime in the look any screen is displayed 7 times
+  font_id: ehmtx_font
   icons: 
     - file: sample.png
       id: boot 
