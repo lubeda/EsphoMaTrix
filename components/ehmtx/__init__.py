@@ -86,6 +86,9 @@ async def to_code(config):
             raise core.EsphomeError(f"Could not load image file {path}: {e}")
 
         width, height = image.size
+        if (width != 8) or (height != 8):
+            image = image.resize([8, 8])
+            width, height = image.size
         
         if hasattr( image, 'n_frames'):
             frames = min (image.n_frames,MAXFRAMES)
@@ -93,13 +96,13 @@ async def to_code(config):
             frames = 1
 
         if conf[CONF_TYPE] == "GRAYSCALE":
-            data = [0 for _ in range(height * width * frames)]
+            data = [0 for _ in range(8 * 8 * frames)]
             pos = 0
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("L", dither=Image.NONE)
                 pixels = list(frame.getdata())
-                if len(pixels) != height * width:
+                if len(pixels) != 8 * 8:
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
@@ -107,33 +110,14 @@ async def to_code(config):
                     data[pos] = pix
                     pos += 1
 
-        elif conf[CONF_TYPE] == "RGB24x":
-            data = [0 for _ in range(height * width * 3 * frames)]
-            pos = 0
-            for frameIndex in range(frames):
-                image.seek(frameIndex)
-                frame = image.convert("RGB")
-                pixels = list(frame.getdata())
-                if len(pixels) != height * width:
-                    raise core.EsphomeError(
-                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                    )
-                for pix in pixels:
-                    data[pos] = pix[0]
-                    pos += 1
-                    data[pos] = pix[1]
-                    pos += 1
-                    data[pos] = pix[2]
-                    pos += 1
-
         elif conf[CONF_TYPE] == "RGB24":
-            data = [0 for _ in range(height * width * 3 * frames)]
+            data = [0 for _ in range(8 * 8 * 3 * frames)]
             pos = 0
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
                 pixels = list(frame.getdata())
-                if len(pixels) != height * width:
+                if len(pixels) != 8 * 8:
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
