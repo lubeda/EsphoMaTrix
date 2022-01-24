@@ -9,11 +9,12 @@ namespace esphome
     {
       this->slots[i] = new EHMTX_screen(this);
     }
-    this->slots[0]->setText("start", 0, 32);
+    this->slots[0]->setText("EHMTX", 0, 32);
+    this->slots[0]->alarm = false;
     this->showalarm = false;
     this->showscreen = false;
     this->showclock = true;
-    this->activeslot = 0;
+    this->activeslot = 1;
     this->pointer = 0;
     this->lastslot = MAXQUEUE;
     this->textColor = Color(200, 200, 200);
@@ -138,25 +139,28 @@ namespace esphome
         this->showscreen = false;
       }
 
-      if ((this->findalarm() < MAXQUEUE) && (this->pointer % 3))
+      if ((this->pointer % 5) != 0)
       {
-        ESP_LOGD("EHMTX", "nextaction alarm");
-        this->showclock = false;
-        this->showalarm = true;
-        this->activeslot = this->findalarm();
-      }
-      else
-      {
-        if ((this->pointer % 6) != 0)
+        if ((this->findalarm() < MAXQUEUE))
         {
-          slot = this->findnextscreen();
-          if (slot < MAXQUEUE)
+          ESP_LOGD("EHMTX", "nextaction alarm");
+          this->showclock = false;
+          this->showalarm = true;
+          this->activeslot = this->findalarm();
+        }
+        else
+        {
+          if ((this->pointer % 6) != 0)
           {
-            ESP_LOGD("EHMTX", "nextaction newscreen");
-            this->showclock = false;
-            this->activeslot = slot;
-            this->lastslot = slot;
-            this->showscreen = true;
+            slot = this->findnextscreen();
+            if (slot < MAXQUEUE)
+            {
+              ESP_LOGD("EHMTX", "nextaction newscreen");
+              this->showclock = false;
+              this->activeslot = slot;
+              this->lastslot = slot;
+              this->showscreen = true;
+            }
           }
         }
       }
@@ -188,7 +192,6 @@ namespace esphome
       }
     }
     ESP_LOGI("EHMTX", "getstatus %d iconnames: %s", this->iconcount, this->iconlist.c_str());
-
   }
 
   uint8_t EHMTX::findalarm()
