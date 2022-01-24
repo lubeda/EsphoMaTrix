@@ -103,15 +103,14 @@ wifi:
 captive_portal:
 
 light:
-  - platform: fastled_clockless
-    chipset: WS2812B
-    pin: GPIO04
-    num_leds: 256
-    rgb_order: GRB
-    name: "$devicename Light"
+  - platform: neopixelbus
     id: ehmtx_light
-    default_transition_length: 1s
+    type: GRB
+    variant: WS2812
+    pin: GPIO04
     color_correct: [30%, 30%, 30%]
+    num_leds: 256
+    name: "$devicename Light"
     restore_mode: ALWAYS_OFF
 
 time:
@@ -144,7 +143,7 @@ ehmtx:
   time: ehmtx_time
   duration: 7
   font_id: ehmtx_font
-  icons: 
+  icons:     
     - file: _icons/test.jpg
       id: jpeg
     - file: sample.png
@@ -165,3 +164,4 @@ ehmtx:
       id: girl
     - file: _icons/shop.gif
       id: shop
+    
