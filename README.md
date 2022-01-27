@@ -13,45 +13,18 @@ The DIY solutions have their pros and cons, i am still using an awtrix. But the 
 
 ## State
 
-**This is a very very buggy not usable version!!!!!**
-It is not as mature as awtrix and pixelt it but i does what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a chaos version.
+**This is a somehow usable version!**
+
+It is not as mature as awtrix and pixeltIt but it's doing what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a chaos version. There will be possibly breaking changes in the code.
 
 ## Features
 
-Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other values provided by home assistant. Each value/text can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue.
-
-## Integration in homeassistant
-
-Each device has to be integrated in homeassistant. It provides three services, all prefixed with the devicename e.g. "ehmtx".
-
-Service **_alarm**
-
-Sets an alarm, the alarm is like a normal screen but is displayed twice as long and has a red marker in the upper right corner.
-
-parameters:
-- ```icon```: The number of the predefined icons (see installation)
-- ```text```: The text to be displayed
-
-Service **_screen**
-
-Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons!
-If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
-
-parameters:
-- ```icon``` The number of the predefined icons (see installation)
-- ```text``` The text to be displayed
-
-Service **_del_screen**
-
-removes the screen with the specified icon from the queue
-
-parameters:
-- ```icon```: The number of the icons/screen to remove
+Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime.
 
 # Installation
 
 ## Font
-Download a "pixel" font, i use "monobit.ttf". For this font i need to define '''#define YFONTOFFSET -5''' in "EMaTcomponent.h" because of positioning on the matrix. The Font has to be named **EHMTX_font**
+Download a "pixel" font, i use "monobit.ttf".
 
 ```
 font:
@@ -63,7 +36,7 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons under the "ehmtx"-key, after that define an array with all needed icons. The name has to be EMaTicons!!!
+Download and install all needed icons under the "ehmtx"-key. All icons will are scaled to 8x8 on compiletime. 
 
 ```
 emhtx:
@@ -76,23 +49,15 @@ emhtx:
       id: garage
 ```
 
-The icon with the index **0** is used for the boot screen. You can use gifs as animation and pngs as static "animations". 
-All other solutions provide icon, especialy lametric has a big database of icons. Please check the copyright of the used icons. If needed scale to 8x8 pixel. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
+You can use gifs as animation and pngs as static "animations". 
 
-The index of the icons is the order of definition, in the sample "temp" is 1 and garage is to. To review the icon order you can add an text-sensor to your config.
+All other solutions provide icon, especialy lametric has a big database of icons. Please check the copyright of the used icons. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
-```
-text_sensor:
-  - platform: template
-    name: "Icon list"
-    lambda: |-
-      return {EMaTiconlist};
-    update_interval: 600s
-```
+The index of the icons is the order of definition, in the sample "temp" is 1 and garage is 2.
 
 ## components
 
-at the moment you need a local component to get this running. Customize the yaml to your folder structure.
+at the moment you need a local component to get this running. Copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
 
 ```
 external_components:
@@ -102,6 +67,8 @@ external_components:
 
 ```
 ## YAML confugration
+
+**Sample**
 ```
 ehmtx:
   id: rgb328
@@ -120,7 +87,82 @@ ehmtx:
       id: garage
 ```
 
+_Configuration variables:_
+**id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
+**showclock (Optional, seconds):** duration to display the clock
+
+**showdate (Optional, seconds):** duration to display the date after the clock
+
+**showscreen (Optional, seconds):** duration to display a screen or a clock/date sequence 
+
+**duration (Optional, minutes):** lifetime of a screen in minutes (default=5)
+
+**yoffset (Optional, pixel):** yoffset of the font, default -5 (see installation/font)
+
+**display8x32 (required, ID):** ID of the addressable display
+
+**time (required, ID):** ID of the time component
+
+## Integration in homeassistant
+
+Each device has to be integrated in homeassistant. It provides three services, all prefixed with the devicename e.g. "ehmtx".
+
+### Services
+All communication use the api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component.
+
+*Sample*
+```
+api:
+  services:
+    - service: alarm
+      variables:
+        icon: int
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_alarm(icon,text);
+```
+
+Service **_alarm**
+
+Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer as a normal screen and has a red marker in the upper right corner.
+
+parameters:
+- ```icon```: The number of the predefined icons (see installation)
+- ```text```: The text to be displayed
+
+Service **_screen**
+
+Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
+If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
+
+parameters:
+- ```icon``` The number of the predefined icons (see installation)
+- ```text``` The text to be displayed
+
+Service **_screen_t**
+
+Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
+If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
+
+parameters:
+- ```icon``` The number of the predefined icons (see installation)
+- ```text``` The text to be displayed
+- ```duration``` The lifetime in minutes
+
+Service **indicator_on**
+
+Display a colored corner on all screen and the clock. You can define the color by parameter.
+
+parameters:
+- ```r``` red in 0..255
+- ```g``` green in 0..255
+- ```b``` blue in 0..255
+
+Service **indicator_off**
+
+removes the indicator
 
 
 ## Hardware/Wifi

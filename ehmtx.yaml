@@ -61,7 +61,7 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->del_screen(icon);
-    - service: indicatoron
+    - service: indicator_on
       variables:
         r: int
         g: int
@@ -87,7 +87,7 @@ api:
         lambda: |-
           id(rgb8x32)->set_alarmcolor(r,g,b);
     
-    - service: indicatoroff
+    - service: indicator_off
       then:
         lambda: |-
           id(rgb8x32)->set_indicatoroff();
@@ -174,4 +174,3 @@ ehmtx:
       id: girl
     - file: _icons/shop.gif
       id: shop
-      

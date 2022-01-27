@@ -36,7 +36,7 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_DISPLAY): cv.use_id(display),
     cv.Required(CONF_FONT_ID): cv.use_id(font),    
     cv.Optional(
-            CONF_SHOWCLOCK, default="4200"
+            CONF_SHOWCLOCK, default="10"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
             CONF_FONTOFFSET, default="-5"
