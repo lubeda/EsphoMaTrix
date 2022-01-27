@@ -26,10 +26,6 @@ esp8266:
 logger:
   level: INFO
 
-sensor:
-  - platform: uptime
-    name: Uptime Sensor
-
 # Enable Home Assistant API
 api:
   services:
@@ -47,6 +43,14 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_screen(icon,text);
+    - service: screen_t
+      variables:
+        icon: int
+        duration: int
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen_t(icon,text,duration);
     - service: status
       then:
         lambda: |-
@@ -112,6 +116,12 @@ light:
     num_leds: 256
     name: "$devicename Light"
     restore_mode: ALWAYS_OFF
+    on_turn_on:
+      lambda: |-
+         id(ehmtx_display)->set_enabled(false);
+    on_turn_off:
+       lambda: |-
+         id(ehmtx_display)->set_enabled(true);
 
 time:
   - platform: homeassistant
@@ -134,7 +144,7 @@ display:
     lambda: |-
       id(rgb8x32)->tick();
       id(rgb8x32)->draw();
-      
+
 ehmtx:
   id: rgb8x32
   showclock: 4
@@ -143,7 +153,7 @@ ehmtx:
   time: ehmtx_time
   duration: 7
   font_id: ehmtx_font
-  icons:     
+  icons: 
     - file: _icons/test.jpg
       id: jpeg
     - file: sample.png
@@ -164,4 +174,4 @@ ehmtx:
       id: girl
     - file: _icons/shop.gif
       id: shop
-    
+      
