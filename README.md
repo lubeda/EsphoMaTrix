@@ -90,9 +90,7 @@ ehmtx:
 _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
-**showclock (Optional, seconds):** duration to display the clock
-
-**showdate (Optional, seconds):** duration to display the date after the clock
+**showclock (Optional, seconds):** duration to display the clock after this time the date is display until "showscreen"
 
 **showscreen (Optional, seconds):** duration to display a screen or a clock/date sequence 
 
