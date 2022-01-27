@@ -9,46 +9,37 @@ namespace esphome
     {
       this->slots[i] = new EHMTX_screen(this);
     }
-    this->slots[0]->setText("EHMTX", 0, 32);
-    this->slots[0]->alarm = false;
-    this->showalarm = false;
     this->showscreen = false;
-    this->showclock = true;
-    this->activeslot = 1;
+    this->activeslot = 0;
     this->pointer = 0;
-    this->lastslot = MAXQUEUE;
     this->textColor = Color(200, 200, 200);
     this->alarmColor = Color(200, 50, 50);
-    this->nextactiontime = millis();
+    this->lastclocktime = 0;
   }
 
   void EHMTX::set_indicatorcolor(int r, int g, int b)
   {
     this->indicatorColor = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGI("EHMTX", "Indicator color r: %d g: %d b: %d", r, g, b);
+    // ESP_LOGI("EHMTX", "Indicator color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_alarmcolor(int r, int g, int b)
   {
     this->alarmColor = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGI("EHMTX", "Alarm color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_textcolor(int r, int g, int b)
   {
     this->textColor = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGI("EHMTX", "Text color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_indicatoroff()
   {
     this->showindicator = false;
-    ESP_LOGI("EHMTX", "Indicator off");
   }
   void EHMTX::set_indicatoron()
   {
     this->showindicator = true;
-    ESP_LOGI("EHMTX", "Indicator on");
   }
 
   void EHMTX::drawclock()
@@ -87,6 +78,16 @@ namespace esphome
   {
     uint8_t screen = MAXQUEUE;
 
+    if (this->countscreens()== 1){
+      for (screen = 0; screen < MAXQUEUE; screen++)
+      {
+        if (this->slots[screen]->active())
+        {
+          return screen;
+        }
+      }  
+    }
+
     for (screen = (this->activeslot + 1); screen < MAXQUEUE; screen++)
     {
       if (this->slots[screen]->active())
@@ -106,67 +107,42 @@ namespace esphome
 
   void EHMTX::update()
   {
-    if ((this->nextactiontime + 15) < this->clock->now().timestamp)
+    time_t ts = this->clock->now().timestamp;
+    if ((this->nextactiontime + 15) < ts)
     {
-      this->nextactiontime = this->clock->now().timestamp + 3;
+      this->nextactiontime = ts + 3;
+      this->lastclocktime = ts;
     }
   }
-
+  
   void EHMTX::tick()
   {
-    uint8_t slot = 0;
-    uint8_t count;
-
-    if (this->pointer > 0)
+    
+    time_t ts = this->clock->now().timestamp;
+    
+    if ((ts - this->nextactiontime) > this->screentime) // alarm each 30000 seconds
     {
-      this->pointer--;
-    }
-    else
-    {
-      this->pointer = MAXQUEUE - 1;
-    }
+      
+      this->nextactiontime = ts + this->screentime;
 
-    if ((this->clock->now().timestamp - this->nextactiontime) > this->screentime) // alarm each 30000 seconds
-    {
-      this->nextactiontime = this->clock->now().timestamp + this->screentime;
-      count = this->countscreens();
+      this->showscreen = false;
 
-      if (count < 4)
+      if (!(ts - this->lastclocktime > 60))
       {
-        ESP_LOGD("EHMTX", "nextaction clock CS %d", count);
-        this->showclock = true;
-        this->showalarm = false;
-        this->showscreen = false;
-      }
-
-      if ((this->pointer % 5) != 0)
-      {
-        if ((this->findalarm() < MAXQUEUE))
+        if (this->countscreens() > 0)
         {
-          ESP_LOGD("EHMTX", "nextaction alarm");
-          this->showclock = false;
-          this->showalarm = true;
-          this->activeslot = this->findalarm();
-        }
-        else
-        {
-          if ((this->pointer % 6) != 0)
+          
+          uint8_t fns = this->findnextscreen();
+          if (fns < MAXQUEUE)
           {
-            slot = this->findnextscreen();
-            if (slot < MAXQUEUE)
-            {
-              ESP_LOGD("EHMTX", "nextaction newscreen");
-              this->showclock = false;
-              this->activeslot = slot;
-              this->lastslot = slot;
-              this->showscreen = true;
-            }
+            this->activeslot = fns;
+            this->showscreen = true;
           }
         }
       }
-      if (this->showalarm || this->showscreen)
+      if (this->showscreen == false)
       {
-        this->slots[this->activeslot]->use();
+        this->lastclocktime = this->clock->now().timestamp;
       }
     }
   }
@@ -176,34 +152,29 @@ namespace esphome
     this->screentime = t;
   }
 
+  void EHMTX::set_duration(uint8_t t)
+  {
+    this->duration = t;
+  }
+
   void EHMTX::get_status()
   {
     uint8_t status = 0;
-    status += this->showclock ? 1 : 0;
-    status += this->showscreen ? 2 : 0;
-    status += this->showalarm ? 4 : 0;
-    ESP_LOGI("EHMTX", "getstatus status: %d  ls: % d as: %d p:%d", status, this->lastslot, this->activeslot, this->pointer);
-    ESP_LOGI("EHMTX", "getstatus screen count: %d", this->countscreens());
+    time_t ts = this->clock->now().timestamp;
+    status = this->showscreen ? 1 : 0;
+    ESP_LOGI("EHMTX", "status status: %d  as: %d", status, this->activeslot);
+    ESP_LOGI("EHMTX", "status screen count: %d", this->countscreens());
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
       if (this->slots[i]->active())
       {
-        ESP_LOGI("EHMTX", "getstatus slot: %d icon: %d  lt: %d text: %s", i, this->slots[i]->icon, this->slots[i]->lifetime, this->slots[i]->text.c_str());
+        ESP_LOGI("EHMTX", "status slot: %d icon: %d  text: %s end: %d", i, this->slots[i]->icon, this->slots[i]->text.c_str(), this->slots[i]->endtime - ts);
       }
     }
-    ESP_LOGI("EHMTX", "getstatus %d iconnames: %s", this->iconcount, this->iconlist.c_str());
-  }
-
-  uint8_t EHMTX::findalarm()
-  {
-    for (uint8_t i = 0; i < MAXQUEUE; i++)
+    for (uint8_t i = 0; i < this->iconcount; i++)
     {
-      if (this->slots[i]->isalarm())
-      {
-        return i;
-      }
+      ESP_LOGI("EHMTX", "status icon: %d name: %s", i, this->iconnames[i]);
     }
-    return MAXQUEUE;
   }
 
   uint8_t EHMTX::findfreeslot(uint8_t icon)
@@ -212,13 +183,13 @@ namespace esphome
     {
       if (this->slots[i]->icon == icon)
       {
-        ESP_LOGI("EHMTX", "upd screen no. %d", i);
         return i;
       }
     }
+    time_t ts = this->clock->now().timestamp;
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
-      if (this->slots[i]->lifetime == 0)
+      if (this->slots[i]->endtime <= ts)
       {
         return i;
       }
@@ -241,19 +212,13 @@ namespace esphome
     this->scrollintervall = si;
   }
 
-  void EHMTX::set_lifetime(uint8_t lt)
-  {
-    this->lifetime = lt;
-  }
-
   void EHMTX::del_screen(uint8_t icon)
   {
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
       if (this->slots[i]->delslot(icon))
       {
-        ESP_LOGI("EHMTX", "del screen no. %d", i);
-        break;
+        ESP_LOGI("EHMTX", "del screen no. %d icon:  %d", i,icon);
       }
     }
   }
@@ -268,8 +233,7 @@ namespace esphome
       icon = 0;
     }
     this->slots[i]->alarm = true;
-    this->slots[i]->setText(text, icon, w);
-    ESP_LOGI("EHMTX", "new alarm no. %d ic: %d t:%s", i, icon, text.c_str());
+    this->slots[i]->setText(text, icon, w, this->duration);
   }
 
   void EHMTX::add_screen(uint8_t icon, std::string text)
@@ -281,18 +245,24 @@ namespace esphome
     {
       icon = 0;
     }
-    this->slots[i]->setText(text, icon, w);
-    ESP_LOGI("EHMTX", "new screen no. %d ic: %d t:%s", i, icon, text.c_str());
+    this->slots[i]->setText(text, icon, w, this->duration);
+  }
+
+  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint8_t t)
+  {
+    int x, y, w, h;
+    uint8_t i = this->findfreeslot(icon);
+    this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
+    if (icon >= this->iconcount)
+    {
+      icon = 0;
+    }
+    this->slots[i]->setText(text, icon, w, t);
   }
 
   void EHMTX::set_clocktime(uint16_t t)
   {
     this->clocktime = t;
-  }
-
-  void EHMTX::set_iconlist(std::string il)
-  {
-    this->iconlist = il;
   }
 
   void EHMTX::set_display(display::DisplayBuffer *disp)
@@ -326,19 +296,20 @@ namespace esphome
     this->fontoffset = t;
   }
 
-  void EHMTX::add_icon(display::Animation *icon)
+  void EHMTX::add_icon(display::Animation *icon, const char *name)
   {
     this->icons[this->iconcount] = icon;
+    this->iconnames[this->iconcount] = name;
     this->iconcount++;
   }
 
   void EHMTX::draw()
   {
-    if (this->showalarm | this->showscreen)
+    if (this->showscreen)
     {
       this->slots[this->activeslot]->draw();
     }
-    else if (this->showclock)
+    else
     {
       this->drawclock();
     }

@@ -3,7 +3,12 @@
 namespace esphome
 {
 
-  EHMTX_screen::EHMTX_screen(EHMTX *config) { this->config = config; }
+  EHMTX_screen::EHMTX_screen(EHMTX *config)
+  {
+    this->config = config;
+    this->endtime = 0;
+    this->alarm = false;
+  }
 
   bool EHMTX_screen::isalarm() { return this->alarm; }
 
@@ -11,7 +16,7 @@ namespace esphome
   {
     if (this->icon == _icon)
     {
-      this->lifetime = 0;
+      this->endtime = 0;
       this->icon = 0;
       return true;
     }
@@ -45,23 +50,16 @@ namespace esphome
     }
   }
 
-  void EHMTX_screen::use()
-  {
-    if (this->lifetime > 0)
-    {
-      this->lifetime--;
-    }
-    else
-    {
-      this->alarm = false;
-    }
-  }
-
   bool EHMTX_screen::active()
   {
-    if (this->lifetime > 0)
+
+    if (this->endtime > 0)
     {
-      return true;
+      time_t ts = this->config->clock->now().timestamp;
+      if (ts < this->endtime)
+      {
+        return true;
+      }
     }
     return false;
   }
@@ -92,22 +90,19 @@ namespace esphome
 
   void EHMTX_screen::draw()
   {
-    if (this->active())
-    {
-      this->_draw();
-      this->update_screen();
-    }
+    this->_draw();
+    this->update_screen();
   }
 
-  void EHMTX_screen::setText(std::string text, uint8_t icon, uint8_t pixel)
+  void EHMTX_screen::setText(std::string text, uint8_t icon, uint8_t pixel, uint8_t et)
   {
     this->text = text;
     this->pixels = pixel;
     this->shiftx = 0;
-    this->lifetime = this->config->lifetime;
+    this->endtime = this->config->clock->now().timestamp + et * 60;
     if (this->alarm)
     {
-      this->lifetime += 4;
+      this->endtime += 2 * 60;
     }
     this->icon = icon;
   }

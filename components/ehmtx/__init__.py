@@ -2,7 +2,7 @@ from argparse import Namespace
 import logging
 
 from esphome import core
-from esphome.components import display, font, time
+from esphome.components import display, font, time, text_sensor
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
@@ -28,6 +28,7 @@ CONF_SCROLLINTERVAL = "scrollintervall"
 CONF_ANIMINTERVAL = "animintervall"
 CONF_FONT_ID = "font_id"
 CONF_FONTOFFSET = "yoffset"
+
 
 EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(EHMTX_),
@@ -72,9 +73,7 @@ CODEOWNERS = ["@lubeda"]
 async def to_code(config):
 
     from PIL import Image
-    
-    icons = []
-    
+      
     var = cg.new_Pvariable(config[CONF_ID])
     
     for conf in config[CONF_ICONS]:
@@ -153,14 +152,12 @@ async def to_code(config):
             frames,
             espImage.IMAGE_TYPE[conf[CONF_TYPE]],
         )
-        icons.append(str(conf[CONF_ID]))
         
-        cg.add(var.add_icon(RawExpression(str(conf[CONF_ID])))) 
+        cg.add(var.add_icon(RawExpression(str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\"" ))) 
 
-    cg.add(var.set_iconlist(RawExpression("\""+ ",".join(icons)+"\"")))
     cg.add(var.set_clocktime(config[CONF_SHOWCLOCK]))
     cg.add(var.set_screentime(config[CONF_SHOWSCREEN]))
-    cg.add(var.set_lifetime(config[CONF_DURATION]))
+    cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scrollintervall(config[CONF_SCROLLINTERVAL]))
     cg.add(var.set_animintervall(config[CONF_ANIMINTERVAL]))
     cg.add(var.set_fontoffset(config[CONF_FONTOFFSET]))
