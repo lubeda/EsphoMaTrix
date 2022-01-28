@@ -11,7 +11,6 @@ namespace esphome
     }
     this->showscreen = false;
     this->activeslot = 0;
-    this->pointer = 0;
     this->textColor = Color(200, 200, 200);
     this->alarmColor = Color(200, 50, 50);
     this->lastclocktime = 0;
@@ -22,6 +21,18 @@ namespace esphome
     this->indicatorColor = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
     // ESP_LOGI("EHMTX", "Indicator color r: %d g: %d b: %d", r, g, b);
   }
+
+  uint8_t EHMTX::find_icon(char *name)
+  {
+    for (uint8_t i = 0; i < this->iconcount; i++)
+    {
+      if (std::strcmp(this->iconnames[i],name)){
+        return i;
+      }
+    }
+    return MAXICONS;
+  }
+
 
   void EHMTX::set_alarmcolor(int r, int g, int b)
   {

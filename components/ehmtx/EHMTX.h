@@ -3,8 +3,8 @@
 #define EHMTX_H
 #include "esphome.h"
 
-#define MAXQUEUE 12
-#define MAXICONS 32
+#define MAXQUEUE 16
+#define MAXICONS 48
 #define TICKINTERVAL 1000 // each 100ms
 
 namespace esphome
@@ -36,6 +36,7 @@ namespace esphome
     time::RealTimeClock *clock;
     display::Font *font;
     int8_t fontoffset;
+    uint8_t find_icon(char *name);
     int8_t duration;          // in minutes how long is a screen valid
     uint16_t scrollintervall; // ms to between scrollsteps
     uint16_t animintervall;   // ms to next_frame()
@@ -43,19 +44,15 @@ namespace esphome
     uint16_t screentime;      // ms display of screen
     uint8_t iconcount;        // max iconnumber -1
     uint8_t activeslot;       // slot to display
-    uint8_t pointer;          // last displayed slot
     unsigned long lastscrolltime;
     unsigned long lastanimtime;
     time_t lastclocktime = 0;  // starttime clock display
     time_t nextactiontime = 0; // when is the nextscreenchange
-    time_t lastalarmtime = 0;  // starttime last alarm display
     uint8_t findnextscreen();
     uint8_t countscreens();
-    uint8_t choose();
     void drawdayofweek();
     void tick();
     void draw();
-    void draw1();
     void get_status();
     void set_display(display::DisplayBuffer *disp);
     void set_screentime(uint16_t t);
