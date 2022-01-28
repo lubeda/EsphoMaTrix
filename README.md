@@ -1,7 +1,7 @@
 # EspHoMaTriX (ehmtx)
 A simple DIY status display with an 8x32 RGB LED panel implemented with esphome.io
 
-# Introdution
+# Introduction
 
 There are some status displays out there, the commercial one from lamtric and some DIY alternatives. 
 
@@ -16,6 +16,8 @@ The DIY solutions have their pros and cons, i am still using an awtrix. But the 
 **This is a somehow usable version!**
 
 It is not as mature as awtrix and pixeltIt but it's doing what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a chaos version. There will be possibly breaking changes in the code.
+
+See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY)
 
 ## Features
 
