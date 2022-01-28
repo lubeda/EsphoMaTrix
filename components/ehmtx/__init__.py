@@ -36,7 +36,7 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_DISPLAY): cv.use_id(display),
     cv.Required(CONF_FONT_ID): cv.use_id(font),    
     cv.Optional(
-            CONF_SHOWCLOCK, default="10"
+            CONF_SHOWCLOCK, default="5"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
             CONF_FONTOFFSET, default="-5"
@@ -47,7 +47,7 @@ EHMTX_SCHEMA = cv.Schema({
             CONF_ANIMINTERVAL, default="192"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
-                CONF_SHOWSCREEN, default="7"
+                CONF_SHOWSCREEN, default="8"
             ): cv.templatable(cv.positive_int),
     cv.Optional(
                 CONF_DURATION, default="5"
