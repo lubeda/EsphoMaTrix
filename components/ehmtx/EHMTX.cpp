@@ -19,7 +19,6 @@ namespace esphome
   void EHMTX::set_indicatorcolor(int r, int g, int b)
   {
     this->indicatorColor = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    // ESP_LOGI("EHMTX", "Indicator color r: %d g: %d b: %d", r, g, b);
   }
 
   uint8_t EHMTX::find_icon(std::string name)
@@ -223,14 +222,17 @@ namespace esphome
     this->scrollintervall = si;
   }
 
+  void EHMTX::del_screen_n(std::string iname)
+  {
+    uint8_t icon = this->find_icon(iname.c_str());
+    this->del_screen(icon);
+  }
+
   void EHMTX::del_screen(uint8_t icon)
   {
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
-      if (this->slots[i]->delslot(icon))
-      {
-        ESP_LOGI("EHMTX", "del screen no. %d icon:  %d", i,icon);
-      }
+      this->slots[i]->delslot(icon);
     }
   }
 

@@ -57,13 +57,14 @@ namespace esphome
     void get_status();
     void set_display(display::DisplayBuffer *disp);
     void set_screentime(uint16_t t);
-    void set_fontoffset(int8_t x,int8_t y);
+    void set_fontoffset(int8_t x,int8_t y );
     void set_clocktime(uint16_t t);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
     void add_screen_n(std::string icon, std::string text);
     void add_screen_t(uint8_t icon, std::string text,uint8_t t);
     void del_screen(uint8_t icon);
+    void del_screen_n(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
     void set_animintervall(uint16_t intervall);
