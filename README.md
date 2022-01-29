@@ -38,7 +38,7 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons under the "ehmtx"-key. All icons will are scaled to 8x8 on compiletime. 
+Download and install all needed icons under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
 
 ```
 emhtx:
@@ -51,9 +51,9 @@ emhtx:
       id: garage
 ```
 
-You can use gifs as animation and pngs as static "animations". 
+You can use gifs as animation and pngs as static "animations". Gif are limited to 8 frames to limit the flash space.
 
-All other solutions provide icon, especialy lametric has a big database of icons. Please check the copyright of the used icons. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
+All other solutions provide icons, especialy lametric has a big database of icons. Please check the copyright of the used icons. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
 The index of the icons is the order of definition, in the sample "temp" is 1 and garage is 2.
 
@@ -108,8 +108,27 @@ _Configuration variables:_
 
 Each device has to be integrated in homeassistant. It provides three services, all prefixed with the devicename e.g. "ehmtx".
 
+### use the light component
+
+To use the light component add the lambdas```on_turn_on``` and ```on_turn_off``` to the light
+
+Sample:
+
+```
+light:
+  - platform: neopixelbus
+    id: ehmtx_light
+    ....
+    on_turn_on:
+      lambda: |-
+         id(rgb8x32)->set_enabled(false);
+    on_turn_off:
+       lambda: |-
+         id(rgb8x32)->set_enabled(true);
+```
+
 ### Services
-All communication use the api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component.
+All communication uses the api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
 
 *Sample*
 ```
@@ -140,6 +159,22 @@ If the screen is still displayed and you change the text for the icon it will st
 parameters:
 - ```icon``` The number of the predefined icons (see installation)
 - ```text``` The text to be displayed
+
+Service **_screen_n**
+
+Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
+If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
+
+parameters:
+- ```icon_name``` The name of the icons as in the yaml (see installation)
+- ```text``` The text to be displayed
+
+Service **del_screen_n**
+
+Removes a screen from the display.
+
+parameters:
+- ```icon_name``` The name of the icons as in the yaml (see installation)
 
 Service **_screen_t**
 
