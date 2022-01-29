@@ -57,12 +57,12 @@ namespace esphome
   {
     if ((this->clock->now().timestamp - this->nextactiontime) < this->clocktime) //
     {
-      this->display->strftime(6, this->fontoffset, this->font, this->textColor, "%H:%M",
+      this->display->strftime(6+this->xoffset, this->yoffset, this->font, this->textColor, "%H:%M",
                               this->clock->now());
     }
     else
     {
-      this->display->strftime(5, this->fontoffset, this->font, this->textColor, "%d.%m.",
+      this->display->strftime(5+this->xoffset, this->yoffset, this->font, this->textColor, "%d.%m.",
                               this->clock->now());
     }
     this->drawdayofweek();
@@ -315,9 +315,10 @@ namespace esphome
     }
   };
 
-  void EHMTX::set_fontoffset(int8_t t)
+  void EHMTX::set_fontoffset(int8_t x,int8_t y)
   {
-    this->fontoffset = t;
+    this->xoffset = x;
+    this->yoffset = y;
   }
 
   void EHMTX::add_icon(display::Animation *icon, const char *name)
