@@ -25,7 +25,6 @@ namespace esphome
 
   void EHMTX_screen::update_screen()
   {
-    bool screendirty = false;
     if (millis() - this->config->lastscrolltime >= this->config->scrollintervall && this->pixels > (32 - 9))
     {
       this->shiftx++;
@@ -33,7 +32,6 @@ namespace esphome
       {
         this->shiftx = 0;
       }
-      screendirty = true;
       this->config->lastscrolltime = millis();
     }
     if (millis() - this->config->lastanimtime >= this->config->animintervall &&
@@ -42,17 +40,11 @@ namespace esphome
     {
       this->config->icons[this->icon]->next_frame();
       this->config->lastanimtime = millis();
-      screendirty = true;
-    }
-    if (screendirty)
-    {
-      this->_draw();
     }
   }
 
   bool EHMTX_screen::active()
   {
-
     if (this->endtime > 0)
     {
       time_t ts = this->config->clock->now().timestamp;
@@ -68,15 +60,15 @@ namespace esphome
   {
     if (this->alarm)
     {
-      this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, this->config->alarmColor,
+      this->config->display->print(TEXTSCROLLSTART - this->shiftx + this->config->xoffset, this->config->yoffset, this->config->font, this->config->alarmColor,
                                    this->text.c_str());
     }
     else
     {
-      this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, this->config->textColor,
+      this->config->display->print(TEXTSCROLLSTART - this->shiftx + this->config->xoffset, this->config->yoffset, this->config->font, this->config->textColor,
                                    this->text.c_str());
     }
-    this->config->display->print(9 - this->shiftx, this->config->fontoffset, this->config->font, this->config->textColor,
+    this->config->display->print(TEXTSCROLLSTART - this->shiftx+ this->config->xoffset, this->config->yoffset, this->config->font, this->config->textColor,
                                  this->text.c_str());
     this->config->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
     if (this->alarm)

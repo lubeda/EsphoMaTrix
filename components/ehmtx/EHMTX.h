@@ -1,10 +1,11 @@
 #ifndef EHMTX_H
-#define EHMTX_H
 
+#define EHMTX_H
 #include "esphome.h"
 
 #define MAXQUEUE 16
 #define MAXICONS 48
+#define TEXTSCROLLSTART 9
 #define TICKINTERVAL 1000 // each 100ms
 
 namespace esphome
@@ -35,7 +36,7 @@ namespace esphome
     display::DisplayBuffer *display;
     time::RealTimeClock *clock;
     display::Font *font;
-    int8_t fontoffset;
+    int8_t yoffset,xoffset;
     uint8_t find_icon(std::string name);
     int8_t duration;          // in minutes how long is a screen valid
     uint16_t scrollintervall; // ms to between scrollsteps
@@ -56,7 +57,7 @@ namespace esphome
     void get_status();
     void set_display(display::DisplayBuffer *disp);
     void set_screentime(uint16_t t);
-    void set_fontoffset(int8_t t);
+    void set_fontoffset(int8_t x,int8_t y);
     void set_clocktime(uint16_t t);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
@@ -106,6 +107,7 @@ namespace esphome
     //void setText(std::string text, uint8_t icon, uint8_t pixel);
     void setText(std::string text, uint8_t icon, uint8_t pixel,uint8_t et);
   };
+
 }
 
 #endif

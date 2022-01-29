@@ -27,7 +27,8 @@ CONF_ICONID = "id"
 CONF_SCROLLINTERVAL = "scrollintervall"
 CONF_ANIMINTERVAL = "animintervall"
 CONF_FONT_ID = "font_id"
-CONF_FONTOFFSET = "yoffset"
+CONF_YOFFSET = "yoffset"
+CONF_XOFFSET = "xoffset"
 
 
 EHMTX_SCHEMA = cv.Schema({
@@ -39,7 +40,10 @@ EHMTX_SCHEMA = cv.Schema({
             CONF_SHOWCLOCK, default="5"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
-            CONF_FONTOFFSET, default="-5"
+            CONF_YOFFSET, default="-5"
+            ): cv.templatable( cv.int_range(min=-32,max=32)),
+    cv.Optional(
+            CONF_XOFFSET, default="0"
             ): cv.templatable( cv.int_range(min=-32,max=32)),
     cv.Optional( CONF_SCROLLINTERVAL, default="80"
             ): cv.templatable( cv.positive_int),
@@ -160,7 +164,7 @@ async def to_code(config):
     cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scrollintervall(config[CONF_SCROLLINTERVAL]))
     cg.add(var.set_animintervall(config[CONF_ANIMINTERVAL]))
-    cg.add(var.set_fontoffset(config[CONF_FONTOFFSET]))
+    cg.add(var.set_fontoffset(config[CONF_XOFFSET],config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])
     cg.add(var.set_display(disp))
