@@ -1,6 +1,6 @@
 #ifndef EHMTX_H
-
 #define EHMTX_H
+
 #include "esphome.h"
 
 #define MAXQUEUE 16
@@ -36,7 +36,7 @@ namespace esphome
     time::RealTimeClock *clock;
     display::Font *font;
     int8_t fontoffset;
-    uint8_t find_icon(char *name);
+    uint8_t find_icon(std::string name);
     int8_t duration;          // in minutes how long is a screen valid
     uint16_t scrollintervall; // ms to between scrollsteps
     uint16_t animintervall;   // ms to next_frame()
@@ -60,6 +60,7 @@ namespace esphome
     void set_clocktime(uint16_t t);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
+    void add_screen_n(std::string icon, std::string text);
     void add_screen_t(uint8_t icon, std::string text,uint8_t t);
     void del_screen(uint8_t icon);
     void set_clock(time::RealTimeClock *clock);
@@ -105,7 +106,6 @@ namespace esphome
     //void setText(std::string text, uint8_t icon, uint8_t pixel);
     void setText(std::string text, uint8_t icon, uint8_t pixel,uint8_t et);
   };
-
 }
 
 #endif

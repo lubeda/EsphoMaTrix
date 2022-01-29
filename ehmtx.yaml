@@ -36,6 +36,13 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_alarm(icon,text);
+    - service: screen_n
+      variables:
+        icon_name: string
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen_n(icon_name,text);
     - service: screen
       variables:
         icon: int

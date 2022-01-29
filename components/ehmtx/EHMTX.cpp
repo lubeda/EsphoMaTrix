@@ -22,11 +22,11 @@ namespace esphome
     // ESP_LOGI("EHMTX", "Indicator color r: %d g: %d b: %d", r, g, b);
   }
 
-  uint8_t EHMTX::find_icon(char *name)
+  uint8_t EHMTX::find_icon(std::string name)
   {
     for (uint8_t i = 0; i < this->iconcount; i++)
-    {
-      if (std::strcmp(this->iconnames[i],name)){
+    { 
+      if (strcmp (this->iconnames[i],name.c_str()) == 0){
         return i;
       }
     }
@@ -256,6 +256,19 @@ namespace esphome
     {
       icon = 0;
     }
+    this->slots[i]->setText(text, icon, w, this->duration);
+  }
+
+  void EHMTX::add_screen_n(std::string iname, std::string text)
+  {
+    int x, y, w, h;
+    uint8_t icon = this->find_icon(iname.c_str());
+    if (icon >= this->iconcount)
+    {
+      icon = 0;
+    }
+    uint8_t i = this->findfreeslot(icon);
+    this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     this->slots[i]->setText(text, icon, w, this->duration);
   }
 
