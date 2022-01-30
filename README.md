@@ -59,7 +59,8 @@ The index of the icons is the order of definition, in the sample "temp" is 1 and
 
 ## components
 
-at the moment you need a local component to get this running. Copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
+### More stable
+At the moment it is more stable to use a local component to get this running. Copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
 
 ```
 external_components:
@@ -68,6 +69,18 @@ external_components:
        path: components
 
 ```
+
+### More features but perhaps breaking changes
+
+Use the github repo as component.
+
+```
+external_components:
+  - source:
+      type: git
+      url: https://github.com/lubeda/EsphoMaTrix
+```
+
 ## YAML confugration
 
 **Sample**

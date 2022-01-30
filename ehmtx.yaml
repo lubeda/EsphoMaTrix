@@ -2,9 +2,9 @@ substitutions:
   devicename: ehmtx
 
 external_components:
-   - source:
-       type: local
-       path: components
+  - source:
+      type: git
+      url: https://github.com/lubeda/EsphoMaTrix
 
 esphome:
   name: $devicename
