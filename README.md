@@ -117,6 +117,25 @@ _Configuration variables:_
 
 **time (required, ID):** ID of the time component
 
+## Usage wothout homeassistant
+
+You can add screens locally and display data from any local sensor. See this sample
+
+```
+sensor:
+  - platform: bh1750
+    id: sensorlx
+    ...
+    on_value:
+      then:
+       lambda: |-
+          char text[30];
+          sprintf(text,"Light: %2.1f lx", id(sensorlx).state);
+          id(rgb8x32)->add_screen_n("sun",  text );
+```
+
+Take care that the ```char text[30];``` hat enough space to store the formated text. 
+
 ## Integration in homeassistant
 
 Each device has to be integrated in homeassistant. It provides three services, all prefixed with the devicename e.g. "ehmtx".
