@@ -178,7 +178,7 @@ namespace esphome
     {
       if (this->slots[i]->active())
       {
-        int td = (int) this->slots[i]->endtime - ts;
+        int td = this->slots[i]->endtime - ts;
         ESP_LOGI("EHMTX", "status slot: %d icon: %d  text: %s end: %d", i, this->slots[i]->icon, this->slots[i]->text.c_str(), td);
       }
     }

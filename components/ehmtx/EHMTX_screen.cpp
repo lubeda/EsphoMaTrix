@@ -105,4 +105,4 @@ namespace esphome
     this->icon = icon;
   }
 
-} // namespace esphome
+}
