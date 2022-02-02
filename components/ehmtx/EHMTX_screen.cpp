@@ -1,6 +1,5 @@
 #include "esphome.h"
 
-
 namespace esphome
 {
 

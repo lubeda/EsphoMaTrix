@@ -249,6 +249,34 @@ This service displays the running queue and a list of icons with index
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
 
+### use in automations
+
+The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have a icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named wind and so on.
+
+```
+alias: EHMTX 8266 Test
+description: ''
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.wind_speed
+    id: wind
+  - platform: state
+    entity_id: sensor.actual_temperature
+    id: temp
+  - platform: state
+    entity_id: sensor.wg_cover_device
+    id: cover
+condition: []
+action:
+  - service: esphome.ehmtx8266_screen_n
+    data:
+      icon_name: '{{trigger.id}}'
+      text: >-
+        {{trigger.to_state.state}}{{trigger.to_state.attributes.unit_of_measurement}}
+mode: queued
+max: 10
+```
+
 ## Hardware/Wifi
 
 Adapt all other data in the yaml to your needs, I use GPIO04 as port for the display.
