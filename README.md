@@ -117,7 +117,7 @@ _Configuration variables:_
 
 **time (required, ID):** ID of the time component
 
-## Usage wothout homeassistant
+## Usage without homeassistant
 
 You can add screens locally and display data from any local sensor. See this sample
 
@@ -240,7 +240,7 @@ This service displays the running queue and a list of icons with index
 [13:10:10][I][EHMTX:175]: status status: 1  as: 1
 [13:10:10][I][EHMTX:176]: status screen count: 3
 [13:10:10][I][EHMTX:181]: status slot: 0 icon: 36  text: 47.9°C end: 400
-[13:10:10][I][EHMTX:181]: status slot: 1 icon: 23  text: Supa langa Text end: 310
+[13:10:10][I][EHMTX:181]: status slot: 1 icon: 23  text: Supa langer Text end: 310
 [13:10:10][I][EHMTX:181]: status slot: 2 icon: 1  text: 10.3°C end: 363
 [13:10:10][I][EHMTX:186]: status icon: 0 name: boot
 [13:10:10][I][EHMTX:186]: status icon: 1 name: temp
