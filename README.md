@@ -232,6 +232,23 @@ Service **indicator_off**
 removes the indicator
 
 
+Service **status**
+
+This service displays the running queue and a list of icons with index
+
+```
+[13:10:10][I][EHMTX:175]: status status: 1  as: 1
+[13:10:10][I][EHMTX:176]: status screen count: 3
+[13:10:10][I][EHMTX:181]: status slot: 0 icon: 36  text: 47.9°C end: 400
+[13:10:10][I][EHMTX:181]: status slot: 1 icon: 23  text: Supa langa Text end: 310
+[13:10:10][I][EHMTX:181]: status slot: 2 icon: 1  text: 10.3°C end: 363
+[13:10:10][I][EHMTX:186]: status icon: 0 name: boot
+[13:10:10][I][EHMTX:186]: status icon: 1 name: temp
+[13:10:10][I][EHMTX:186]: status icon: 2 name: garage
+[13:10:10][I][EHMTX:186]: status icon: 3 name: wind
+[13:10:10][I][EHMTX:186]: status icon: 4 name: rain
+```
+
 ## Hardware/Wifi
 
 Adapt all other data in the yaml to your needs, I use GPIO04 as port for the display.
