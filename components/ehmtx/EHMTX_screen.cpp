@@ -28,9 +28,9 @@ namespace esphome
     if (millis() - this->config->lastscrolltime >= this->config->scrollintervall && this->pixels > (32 - 9))
     {
       this->shiftx++;
-      if (this->shiftx > this->pixels + 2)
+      if (this->shiftx > this->pixels + (32-9))
       {
-        this->shiftx = 0;
+          this->shiftx = 0;
       }
       this->config->lastscrolltime = millis();
     }
@@ -58,18 +58,23 @@ namespace esphome
 
   void EHMTX_screen::_draw()
   {
+    int8_t extraoffset =0;
+
+      if (this->pixels > (32 - 9))
+      {
+        extraoffset =32-9;
+      }
+
     if (this->alarm)
     {
-      this->config->display->print(TEXTSCROLLSTART - this->shiftx + this->config->xoffset, this->config->yoffset, this->config->font, this->config->alarmColor,
+      this->config->display->print(TEXTSCROLLSTART - this->shiftx + extraoffset + this->config->xoffset, this->config->yoffset, this->config->font, this->config->alarmColor,
                                    this->text.c_str());
     }
     else
     {
-      this->config->display->print(TEXTSCROLLSTART - this->shiftx + this->config->xoffset, this->config->yoffset, this->config->font, this->config->textColor,
+      this->config->display->print(TEXTSCROLLSTART - this->shiftx + extraoffset + this->config->xoffset, this->config->yoffset, this->config->font, this->config->textColor,
                                    this->text.c_str());
     }
-    this->config->display->print(TEXTSCROLLSTART - this->shiftx+ this->config->xoffset, this->config->yoffset, this->config->font, this->config->textColor,
-                                 this->text.c_str());
     this->config->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
     if (this->alarm)
     {
@@ -91,6 +96,7 @@ namespace esphome
     this->text = text;
     this->pixels = pixel;
     this->shiftx = 0;
+    
     this->endtime = this->config->clock->now().timestamp + et * 60;
     if (this->alarm)
     {
