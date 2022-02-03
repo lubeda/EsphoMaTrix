@@ -26,7 +26,7 @@ Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other sc
 # Installation
 
 ## Font
-Download a "pixel" font, i use "monobit.ttf".
+Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). I modified this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E**. Due to copyright i can't provide my modified version :-(.
 
 ```
 font:
