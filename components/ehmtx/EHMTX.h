@@ -7,6 +7,7 @@
 #define MAXICONS 48
 #define TEXTSCROLLSTART 9
 #define TICKINTERVAL 1000 // each 100ms
+#define VERSION "Version: 3.2.2022"
 
 namespace esphome
 {
