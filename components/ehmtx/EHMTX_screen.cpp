@@ -18,6 +18,7 @@ namespace esphome
     {
       this->endtime = 0;
       this->icon = 0;
+      ESP_LOGD("EHMTX_screen","delete screen icon: %d",_icon);
       return true;
     }
     return false;
