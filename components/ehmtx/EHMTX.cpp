@@ -184,7 +184,7 @@ namespace esphome
       if (this->slots[i]->active())
       {
         int td = this->slots[i]->endtime - ts;
-        ESP_LOGI("EHMTX", "status slot: %d icon: %d  text: %s end: %d", i, this->slots[i]->icon, this->slots[i]->text.c_str(), td);
+        ESP_LOGI("EHMTX", "status slot: %d icon: %d  text: %s end: %d sec", i, this->slots[i]->icon, this->slots[i]->text.c_str(), td);
       }
     }
     for (uint8_t i = 0; i < this->iconcount; i++)
@@ -284,7 +284,7 @@ namespace esphome
     ESP_LOGD("EHMTX","add_screen_n icon: %d iname: %s slot: %d text: %s",icon,iname.c_str(),i,text.c_str());
   }
 
-  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint8_t t)
+  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t t)
   {
     int x, y, w, h;
     uint8_t i = this->findfreeslot(icon);

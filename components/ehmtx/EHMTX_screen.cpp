@@ -92,7 +92,7 @@ namespace esphome
     this->update_screen();
   }
 
-  void EHMTX_screen::setText(std::string text, uint8_t icon, uint8_t pixel, uint8_t et)
+  void EHMTX_screen::setText(std::string text, uint8_t icon, uint8_t pixel, uint16_t et)
   {
     this->text = text;
     this->pixels = pixel;

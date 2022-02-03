@@ -63,7 +63,7 @@ namespace esphome
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
     void add_screen_n(std::string icon, std::string text);
-    void add_screen_t(uint8_t icon, std::string text,uint8_t t);
+    void add_screen_t(uint8_t icon, std::string text,uint16_t t);
     void del_screen(uint8_t icon);
     void del_screen_n(std::string iname);
     void set_clock(time::RealTimeClock *clock);
@@ -107,7 +107,7 @@ namespace esphome
     void update_screen();
     bool delslot(uint8_t _icon);
     //void setText(std::string text, uint8_t icon, uint8_t pixel);
-    void setText(std::string text, uint8_t icon, uint8_t pixel,uint8_t et);
+    void setText(std::string text, uint8_t icon, uint8_t pixel,uint16_t et);
   };
 
 }
