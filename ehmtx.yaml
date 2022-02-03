@@ -17,7 +17,7 @@ font:
     id: ehmtx_font
     size: 16
     glyphs:  |
-      !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>
+      !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>
 
 esp8266:
   board: d1_mini
@@ -31,43 +31,37 @@ api:
   services:
     - service: alarm
       variables:
-        icon: int
+        icon_name: string
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_alarm(icon,text);
-    - service: screen_n
+          // void add_screen_u(std::string icon, std::string text,uint16_t duration, bool alarm,);
+          id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+    - service: screen
       variables:
         icon_name: string
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_n(icon_name,text);
-    - service: screen
-      variables:
-        icon: int
-        text: string
-      then:
-        lambda: |-
-          id(rgb8x32)->add_screen(icon,text);
+          id(rgb8x32)->add_screen_u(icon_name,text,5,false);
     - service: screen_t
       variables:
-        icon: int
-        duration: int
+        icon_name: string
         text: string
+        duration: int
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_t(icon,text,duration);
+          id(rgb8x32)->add_screen_u(icon_name,text,(int16_t) duration,false);
     - service: status
       then:
         lambda: |-
           id(rgb8x32)->get_status();
     - service: del_screen
       variables:
-        icon: int
+        icon_name: string
       then:
         lambda: |-
-          id(rgb8x32)->del_screen(icon);
+          id(rgb8x32)->del_screen_n(icon);
     - service: indicator_on
       variables:
         r: int
@@ -93,7 +87,6 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->set_alarmcolor(r,g,b);
-    
     - service: indicator_off
       then:
         lambda: |-

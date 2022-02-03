@@ -63,6 +63,7 @@ namespace esphome
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
     void add_screen_n(std::string icon, std::string text);
+    void add_screen_u(std::string icon, std::string text,uint16_t duration, bool alarm);
     void add_screen_t(uint8_t icon, std::string text,uint16_t t);
     void del_screen(uint8_t icon);
     void del_screen_n(std::string iname);

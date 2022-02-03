@@ -270,6 +270,21 @@ namespace esphome
     ESP_LOGD("EHMTX","add_screen icon: %d slot: %d text: %s",icon,i,text.c_str());
   }
 
+  void EHMTX::add_screen_u(std::string iname, std::string text,uint16_t duration, bool alarm)
+  {
+    int x, y, w, h;
+    uint8_t icon = this->find_icon(iname.c_str());
+    if (icon >= this->iconcount)
+    {
+      icon = 0;
+    }
+    uint8_t i = this->findfreeslot(icon);
+    this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
+    this->slots[i]->setText(text, icon, w, this->duration);   
+    this->slots[i]->alarm = alarm;
+    ESP_LOGD("EHMTX","add_screen_u icon: %d iname: %s slot: %d text: %s alarm: %d",icon,iname.c_str(),i,text.c_str(),alarm);
+  }
+
   void EHMTX::add_screen_n(std::string iname, std::string text)
   {
     int x, y, w, h;
