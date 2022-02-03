@@ -1,9 +1,9 @@
 # EspHoMaTriX (ehmtx)
-A simple DIY status display with an 8x32 RGB LED panel implemented with esphome.io
+A simple DIY status display with an 8x32 RGB LED panel implemented sole with [esphome.io](https://esphome.io)
 
 # Introduction
 
-There are some status displays out there, the commercial one from lamtric and some DIY alternatives. 
+There are some "RGB-matrix" status displays out there, the commercial one from lamtric and some DIY alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/)
@@ -15,13 +15,13 @@ The DIY solutions have their pros and cons, i am still using an awtrix. But the 
 
 **This is a somehow usable version!**
 
-It is not as mature as awtrix and pixeltIt but it's doing what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a chaos version. There will be possibly breaking changes in the code.
+It is not as mature as awtrix and pixeltIt but it's doing what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a _chaos_ ;-) version. There will be possibly breaking changes in the upcomming code.
 
-See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY)
+See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (no sound but subtitles)
 
 ## Features
 
-Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime.
+Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed it will disapear.
 
 # Installation
 
@@ -38,7 +38,7 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
+Download and install all needed icons (.jpg/.png)/animations (.gif)under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
 
 ```
 emhtx:
@@ -53,11 +53,11 @@ emhtx:
 
 You can use gifs as animation and pngs as static "animations". Gif are limited to 8 frames to limit the flash space.
 
-All other solutions provide icons, especialy lametric has a big database of icons. Please check the copyright of the used icons. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
+All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the used icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
-The index of the icons is the order of definition, in the sample "temp" is 1 and garage is 2.
+The index of the icons is the order of definition, in the above sample "temp" is 1 and garage is 2.
 
-## components
+## esphome component
 
 ### More stable
 At the moment it is more stable to use a local component to get this running. Copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
@@ -66,7 +66,7 @@ At the moment it is more stable to use a local component to get this running. Co
 external_components:
    - source:
        type: local
-       path: components
+       path: components # e.g. /config/esphome/components
 
 ```
 
@@ -86,7 +86,7 @@ external_components:
 **Sample**
 ```
 ehmtx:
-  id: rgb328
+  id: rgb328 # needed to reference the components in services etc.
   showclock: 6
   showscreen: 8
   display8x32: ehmtxdisplay
@@ -94,7 +94,7 @@ ehmtx:
   duration: 7
   font_id: ehmtxfont
   icons: 
-    - file: sample.png
+    - file: sample.png  # use your icons/animations here
       id: boot 
     - file: sample.png
       id: temp 
@@ -105,7 +105,7 @@ ehmtx:
 _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
-**showclock (Optional, seconds):** duration to display the clock after this time the date is display until "showscreen"
+**showclock (Optional, seconds):** duration to display the clock after this time the date is display until next "showscreen"
 
 **showscreen (Optional, seconds):** duration to display a screen or a clock/date sequence 
 
@@ -134,11 +134,11 @@ sensor:
           id(rgb8x32)->add_screen_n("sun",  text );
 ```
 
-Take care that the ```char text[30];``` hat enough space to store the formated text. 
+Take care that the ```char text[30];``` has enough space to store the formated text. 
 
 ## Integration in homeassistant
 
-Each device has to be integrated in homeassistant. It provides three services, all prefixed with the devicename e.g. "ehmtx".
+Each device has to be integrated in homeassistant. It provides at least three services, all prefixed with the devicename e.g. "ehmtx".
 
 ### use the light component
 
@@ -177,7 +177,7 @@ api:
 
 Service **_alarm**
 
-Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer as a normal screen and has a red marker in the upper right corner.
+Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red marker in the upper right corner.
 
 parameters:
 - ```icon```: The number of the predefined icons (see installation)
@@ -185,8 +185,8 @@ parameters:
 
 Service **_screen**
 
-Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
-If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
+Queues a screen with an icon/animation and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
+You can update the text on the fly. If the screen is displayed and you change the text for the icon it will start a new lifetime (see ```duration```) with the new text. 
 
 parameters:
 - ```icon``` The number of the predefined icons (see installation)
@@ -194,8 +194,7 @@ parameters:
 
 Service **_screen_n**
 
-Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
-If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
+Queues a screen with an icon and a text. As above but you can use the icon named instead the icon id. If the name is wrong the icon with the id 0 is choosen.
 
 parameters:
 - ```icon_name``` The name of the icons as in the yaml (see installation)
@@ -203,15 +202,14 @@ parameters:
 
 Service **del_screen_n**
 
-Removes a screen from the display.
+Removes a screen from the display by icon name.
 
 parameters:
 - ```icon_name``` The name of the icons as in the yaml (see installation)
 
 Service **_screen_t**
 
-Queues a screen with an icon and a text. Per icon there can only be one text. If you need to show e.g. an indoor and an outdoor temperature you have to use different icons (ids)!
-If the screen is still displayed and you change the text for the icon it will start a new lifetime with the new text.
+like above with a special duration. E.G. to indicate someones birthday you can use 24*60= 1440 minutes
 
 parameters:
 - ```icon``` The number of the predefined icons (see installation)
