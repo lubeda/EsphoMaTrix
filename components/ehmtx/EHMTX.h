@@ -15,21 +15,22 @@ namespace esphome
   const Color EHMTX_cday = Color(90, 90, 90);
 
   class EHMTX_screen;
+  class EHMTX_store;
 
   class EHMTX : public PollingComponent 
   {
   protected:
-    EHMTX_screen* find_free_slot(uint8_t icon);
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
     Color indicator_color;
+    EHMTX_store* store;
+
   public:
     EHMTX();
     Color text_color, alarm_color;
     void dump_config();
     bool show_screen;
     bool showindicator;
-    EHMTX_screen *slots[MAXQUEUE];
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
     void add_icon(display::Animation *icon,const char *name);
@@ -44,13 +45,10 @@ namespace esphome
     uint16_t clock_time;       // ms display of clock/date 0.5 clock then 0.5 date
     uint16_t screen_time;      // ms display of screen
     uint8_t icon_count;        // max iconnumber -1
-    uint8_t active_slot;       // slot to display
     unsigned long last_scroll_time;
     unsigned long last_anim_time;
     time_t last_clock_time = 0;  // starttime clock display
     time_t next_action_time = 0; // when is the nextscreenchange
-    uint8_t find_next_screen();
-    uint8_t count_screens();
     void draw_day_of_week();
     void tick();
     void draw();
@@ -82,6 +80,22 @@ namespace esphome
     void draw_clock();
     void setup();
     void update();
+  };
+
+  class EHMTX_store
+  {
+    protected:
+      EHMTX_screen *slots[MAXQUEUE];
+      uint8_t active_slot;
+      uint8_t count_active_screens();
+    public:
+      EHMTX_store(EHMTX *config);
+      time::RealTimeClock *clock;
+      EHMTX_screen* find_free_screen(uint8_t icon);
+      void delete_screen(uint8_t icon);
+      bool move_next();
+      EHMTX_screen* current();
+      void log_status();
   };
 
   class EHMTX_screen
