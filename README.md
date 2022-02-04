@@ -175,6 +175,13 @@ api:
           id(rgb8x32)->add_alarm(icon,text);
 ```
 
+Service **_brightness**
+
+Sets the overall brightness of the display (0..255)
+
+parameters:
+- ```brightness```: from dark to bright (0..255)
+
 Service **_alarm**
 
 Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red marker in the upper right corner.

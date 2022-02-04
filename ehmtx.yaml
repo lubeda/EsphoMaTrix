@@ -52,6 +52,12 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_screen_u(icon_name,text,(int16_t) duration,false);
+    - service: brightness
+      variables:
+        brightness: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_brightness(grightness);
     - service: status
       then:
         lambda: |-

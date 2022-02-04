@@ -34,7 +34,7 @@ namespace esphome
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
     void add_icon(display::Animation *icon,const char *name);
-    display::DisplayBuffer *display;
+    addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
     int8_t yoffset,xoffset;
@@ -56,10 +56,11 @@ namespace esphome
     void tick();
     void draw();
     void get_status();
-    void set_display(display::DisplayBuffer *disp);
+    void set_display(addressable_light::AddressableLightDisplay *disp); 
     void set_screentime(uint16_t t);
     void set_fontoffset(int8_t x,int8_t y );
     void set_clocktime(uint16_t t);
+    void set_brightness(uint8_t b);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
     void add_screen_n(std::string icon, std::string text);
@@ -107,7 +108,6 @@ namespace esphome
     bool updateslot(uint8_t _icon);
     void update_screen();
     bool delslot(uint8_t _icon);
-    //void setText(std::string text, uint8_t icon, uint8_t pixel);
     void setText(std::string text, uint8_t icon, uint8_t pixel,uint16_t et);
   };
 

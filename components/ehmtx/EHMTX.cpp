@@ -59,7 +59,7 @@ namespace esphome
 
   void EHMTX::drawclock()
   {
-    if ((this->clock->now().timestamp - this->nextactiontime) < this->clocktime) //
+    if ((this->clock->now().timestamp - this->nextactiontime) < this->clocktime) 
     {
       this->display->strftime(6+this->xoffset, this->yoffset, this->font, this->textColor, "%H:%M",
                               this->clock->now());
@@ -135,7 +135,7 @@ namespace esphome
     
     time_t ts = this->clock->now().timestamp;
     
-    if ((ts - this->nextactiontime) > this->screentime) // alarm each 30000 seconds
+    if ((ts - this->nextactiontime) > this->screentime) 
     {
       
       this->nextactiontime = ts + this->screentime;
@@ -270,6 +270,13 @@ namespace esphome
     ESP_LOGD("EHMTX","add_screen icon: %d slot: %d text: %s",icon,i,text.c_str());
   }
 
+  void EHMTX::set_brightness(uint8_t b)
+  {
+    float br = (float) b/ (float)255;
+    ESP_LOGI("EHMTX","set_brightness %d => %f %%",b,br);
+    this->display->get_light()->set_correction(br,br,br,br)  ; 
+  }
+
   void EHMTX::add_screen_u(std::string iname, std::string text,uint16_t duration, bool alarm)
   {
     int x, y, w, h;
@@ -318,7 +325,7 @@ namespace esphome
     this->clocktime = t;
   }
 
-  void EHMTX::set_display(display::DisplayBuffer *disp)
+  void EHMTX::set_display(addressable_light::AddressableLightDisplay *disp)
   {
     this->display = disp;
   }
