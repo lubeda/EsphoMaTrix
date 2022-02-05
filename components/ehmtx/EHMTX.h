@@ -23,7 +23,7 @@ namespace esphome
   {
   protected:
     uint8_t find_free_slot(uint8_t icon);
-    float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
+    float get_setup_priority() const override { return esphome::setup_priority::LATE; }
     float brightness_;
     Color indicator_color;
 

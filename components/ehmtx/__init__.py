@@ -13,6 +13,7 @@ from esphome.cpp_generator import RawExpression
 _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ["display"]
+AUTO_LOAD = ["ehmtx"]
 MAXFRAMES=8
 
 Icons_ = display.display_ns.class_("Animation")

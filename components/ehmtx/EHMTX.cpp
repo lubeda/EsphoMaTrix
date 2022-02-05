@@ -270,7 +270,7 @@ namespace esphome
   void EHMTX::set_brightness(uint8_t b)
   {
     this->brightness_ = (float) b/ (float)255;
-    ESP_LOGI(TAG,"set_brightness %d => %f %%",b,this->brightness_);
+    ESP_LOGI(TAG,"set_brightness %d => %3.0f %%",b, 100*this->brightness_);
     this->display->get_light()->set_correction(this->brightness_,this->brightness_,this->brightness_,this->brightness_); 
   }
 
