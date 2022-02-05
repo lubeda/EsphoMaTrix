@@ -21,7 +21,7 @@ font:
     id: ehmtx_font
     size: 16
     glyphs:  |
-      !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>
+      !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>/
 
 logger:
 

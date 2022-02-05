@@ -97,7 +97,9 @@ namespace esphome
     this->text = text;
     this->pixels_ = pixel;
     this->shiftx_ = 0;
-    
+    float dd = (2*(32-9+pixel)*this->config_->scroll_intervall) / 1000;
+    this->display_duration = (dd > this->config_->screen_time) ? dd : this->config_->screen_time;
+    ESP_LOGD(TAG,"display length text: %s t: %4f default: %d",text.c_str(),this->display_duration,this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     if (this->alarm)
     {

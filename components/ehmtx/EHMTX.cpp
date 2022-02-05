@@ -57,7 +57,7 @@ namespace esphome
 
   void EHMTX::draw_clock()
   {
-    if ((this->clock->now().timestamp - this->next_action_time) < this->clocktime)
+    if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
     {
       this->display->strftime(6 + this->xoffset, this->yoffset, this->font, this->text_color, "%H:%M",
                               this->clock->now());
@@ -134,10 +134,10 @@ namespace esphome
 
     time_t ts = this->clock->now().timestamp;
 
-    if ((ts - this->next_action_time) > this->screentime)
+    if ((ts - this->next_action_time) > this->screen_time)
     {
 
-      this->next_action_time = ts + this->screentime;
+      this->next_action_time = ts + this->screen_time;
 
       this->show_screen = false;
 
@@ -157,13 +157,16 @@ namespace esphome
       if (this->show_screen == false)
       {
         this->last_clock_time = this->clock->now().timestamp;
+        this->next_action_time = ts + this->screen_time;
+      } else {  
+          this->next_action_time = ts + (int) this->slots[this->active_slot]->display_duration;
       }
     }
   }
 
   void EHMTX::set_screen_time(uint16_t t)
   {
-    this->screentime = t;
+    this->screen_time = t;
   }
 
   void EHMTX::set_duration(uint8_t t)
@@ -326,7 +329,7 @@ namespace esphome
 
   void EHMTX::set_clock_time(uint16_t t)
   {
-    this->clocktime = t;
+    this->clock_time = t;
   }
 
   void EHMTX::set_display(addressable_light::AddressableLightDisplay *disp)
@@ -367,7 +370,7 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Icons: %d of %d", this->icon_count, MAXICONS);
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
-    ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clocktime, this->screentime);
+    ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
   }
 
   void EHMTX::add_icon(display::Animation *icon, const char *name)

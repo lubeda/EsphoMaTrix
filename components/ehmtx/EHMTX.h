@@ -42,8 +42,8 @@ namespace esphome
     int8_t duration;          // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
-    uint16_t clocktime;       // ms display of clock/date 0.5 clock then 0.5 date
-    uint16_t screentime;      // ms display of screen
+    uint16_t clock_time;       // ms display of clock/date 0.5 clock then 0.5 date
+    uint16_t screen_time;      // ms display of screen
     uint8_t icon_count;        // max iconnumber -1
     uint8_t active_slot;       // slot to display
     unsigned long last_scroll_time;
@@ -94,6 +94,7 @@ namespace esphome
     EHMTX *config_;
 
   public:
+    float display_duration;
     bool alarm;
     time_t endtime;
     uint8_t icon;
