@@ -3,12 +3,12 @@
 #define EHMTX_H
 #include "esphome.h"
 
-#define MAXQUEUE 16
-#define MAXICONS 48
-#define TEXTSCROLLSTART 9
-#define TICKINTERVAL 1000 // each 100ms
-#define VERSION "Version: 2022.2.5"
-#define TAG "EHMTX"
+const uint8_t MAXQUEUE=16;
+const uint8_t MAXICONS=48;
+const uint8_t TEXTSCROLLSTART=9;
+const uint16_t TICKINTERVAL=1000; // each 1000ms
+const char* EHMTX_VERSION="Version: 2022.2.5";
+const char* TAG="EHMTX";
 
 namespace esphome
 {
