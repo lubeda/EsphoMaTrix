@@ -54,7 +54,7 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
                 CONF_SHOWSCREEN, default="8"
             ): cv.templatable(cv.positive_int),
-    cv.Optional(CONF_BRIGHTNESS, default=0.5): cv.percentage,
+    cv.Optional(CONF_BRIGHTNESS, default=80): cv.templatable( cv.int_range(min=0,max=255)),
     cv.Optional(
                 CONF_DURATION, default="5"
             ): cv.templatable(cv.positive_int),

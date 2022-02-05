@@ -9,19 +9,23 @@ There are some "RGB-matrix" status displays out there, the commercial one from l
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/)
 - [PixelIt](https://docs.bastelbunker.de/pixelit/)
 
-The DIY solutions have their pros and cons, i am still using an awtrix. But the cons are so big (after my opinion) that i started an esphome.io variant with an optimized homeassistant integration. The main reason, for me is the homeassistant integration.
+The other DIY solutions have their pros and cons, i am still using an awtrix ;-). But the cons are so big (after my opinion) that i started an esphome.io variant with an optimized homeassistant integration. The main reason, for me is the homeassistant integration.
 
 ## State
 
-**This is a somehow usable version!**
+**This is a usable version!**
 
-It is not as mature as awtrix and pixeltIt but it's doing what **i** need. I am not shure about the copyright of the font and the icons i use so this repo has only a sample icons included and the font has to be included like all fonts in esphome (see installation). In professional terms it is a beta version. From the structure of the source code it is a _chaos_ ;-) version. There will be possibly breaking changes in the upcomming code.
+It is not as feature rich as awtrix and pixeltIt but it's doing what **i** need. In professional terms it is a beta version. From the structure of the source code it is not a _clean_ ;-) version. There will be possibly breaking changes in the upcomming code.
 
 See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (no sound but subtitles)
 
 ## Features
 
 Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed it will disapear.
+
+### working sample
+
+You can use the ehmtx32.yaml as sample for an ESP. As mentioned you have to edit to your needs, so check font, icons, board and the GPIO port for your display.
 
 # Installation
 
@@ -55,12 +59,12 @@ You can use gifs as animation and pngs as static "animations". Gif are limited t
 
 All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the used icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
-The index of the icons is the order of definition, in the above sample "temp" is 1 and garage is 2.
+The id of the icons is used later to configure the screens to display. So you should name them clever.
 
 ## esphome component
 
 ### More stable
-At the moment it is more stable to use a local component to get this running. Copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
+At the moment it is more stable to use a local component to get this running. Clone the repo and copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
 
 ```
 external_components:
@@ -72,7 +76,7 @@ external_components:
 
 ### More features but perhaps breaking changes
 
-Use the github repo as component.
+Use the github repo as component. Esphome refreshes the external components "only" once a day, perhaps you have to refresh it manually.
 
 ```
 external_components:
@@ -89,9 +93,9 @@ ehmtx:
   id: rgb328 # needed to reference the components in services etc.
   show_clock: 6
   show_screen: 8
+  duration: 7
   display8x32: ehmtxdisplay
   time: ehmtxclock
-  duration: 7
   font_id: ehmtxfont
   icons: 
     - file: sample.png  # use your icons/animations here
@@ -117,9 +121,15 @@ _Configuration variables:_
 
 **time (required, ID):** ID of the time component
 
+**font (required, ID):** ID of the font component
+
+**scroll_intervall (Optional, ms):** the intervall in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the dislplay (default: 16ms)
+
+**anim_intervall (Optional, ms):** the intervall in ms to display the next anim frame (default=192), should be a multiple of the ```update_interval``` from the dislplay (default: 16ms)
+
 ## Usage without homeassistant
 
-You can add screens locally and display data from any local sensor. See this sample
+You can add screens locally and display data directly from any local sensor. See this sample
 
 ```
 sensor:
@@ -131,14 +141,14 @@ sensor:
        lambda: |-
           char text[30];
           sprintf(text,"Light: %2.1f lx", id(sensorlx).state);
-          id(rgb8x32)->add_screen_n("sun",  text );
+          id(rgb8x32)->add_screen_u("sun",  text ,5,false); // 5 Minutes, no alarm
 ```
 
 Take care that the ```char text[30];``` has enough space to store the formated text. 
 
 ## Integration in homeassistant
 
-Each device has to be integrated in homeassistant. It provides at least three services, all prefixed with the devicename e.g. "ehmtx".
+To control your display it has to be integrated in homeassistant. Then it provides at least three services, all prefixed with the devicename e.g. "ehmtx". See the sample yaml fpr the default services, you can add your own.
 
 ### use the light component
 
@@ -160,7 +170,7 @@ light:
 ```
 
 ### Services
-All communication uses the api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
+All communication with homeassistant use the api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
 
 *Sample*
 ```
@@ -168,11 +178,11 @@ api:
   services:
     - service: alarm
       variables:
-        icon: int
+        icon_name: string
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_alarm(icon,text);
+          id(rgb8x32)->add_screen_u(icon_name,text,7,true); // 7 Minutes alarm=true
 ```
 
 Service **_brightness**
@@ -180,14 +190,14 @@ Service **_brightness**
 Sets the overall brightness of the display (0..255)
 
 parameters:
-- ```brightness```: from dark to bright (0..255)
+- ```brightness```: from dark to bright (0..255) (default=80) as set in the light component by ```color_correct: [30%, 30%, 30%]```
 
 Service **_alarm**
 
 Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red marker in the upper right corner.
 
 parameters:
-- ```icon```: The number of the predefined icons (see installation)
+- ```icon_name```: The name of the predefined icon-id (see installation)
 - ```text```: The text to be displayed
 
 Service **_screen**
@@ -196,23 +206,8 @@ Queues a screen with an icon/animation and a text. Per icon there can only be on
 You can update the text on the fly. If the screen is displayed and you change the text for the icon it will start a new lifetime (see ```duration```) with the new text. 
 
 parameters:
-- ```icon``` The number of the predefined icons (see installation)
+- ```icon_name``` The number of the predefined icons (see installation)
 - ```text``` The text to be displayed
-
-Service **_screen_n**
-
-Queues a screen with an icon and a text. As above but you can use the icon named instead the icon id. If the name is wrong the icon with the id 0 is choosen.
-
-parameters:
-- ```icon_name``` The name of the icons as in the yaml (see installation)
-- ```text``` The text to be displayed
-
-Service **del_screen_n**
-
-Removes a screen from the display by icon name.
-
-parameters:
-- ```icon_name``` The name of the icons as in the yaml (see installation)
 
 Service **_screen_t**
 
@@ -222,6 +217,13 @@ parameters:
 - ```icon``` The number of the predefined icons (see installation)
 - ```text``` The text to be displayed
 - ```duration``` The lifetime in minutes
+
+Service **del_screen**
+
+Removes a screen from the display by icon name.
+
+parameters:
+- ```icon_name``` The name of the icons as in the yaml (see installation)
 
 Service **indicator_on**
 
@@ -236,10 +238,9 @@ Service **indicator_off**
 
 removes the indicator
 
-
 Service **status**
 
-This service displays the running queue and a list of icons with index
+This service displays the running queue and a list of icons in the logs
 
 ```
 [13:10:10][I][EHMTX:175]: status status: 1  as: 1
@@ -254,9 +255,9 @@ This service displays the running queue and a list of icons with index
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
 
-### use in automations
+### use in automations from homeassistant
 
-The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have a icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named wind and so on.
+The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have a icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
 
 ```
 alias: EHMTX 8266 Test
@@ -273,7 +274,7 @@ trigger:
     id: cover
 condition: []
 action:
-  - service: esphome.ehmtx8266_screen_n
+  - service: esphome.ehmtx8266_screen
     data:
       icon_name: '{{trigger.id}}'
       text: >-
@@ -284,8 +285,28 @@ max: 10
 
 ## Hardware/Wifi
 
-Adapt all other data in the yaml to your needs, I use GPIO04 as port for the display.
+Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP32) as port for the display.
 
+## Buzzer, Sound, buttons and automatic brightness
+
+Awtrix and PixelIt have hardcoded functionality. EHMTX is also capable to build something like that by lambdas. But this is all your freedom.
+
+E.G: an automatic brightness controll by an bh1570 sensor
+
+```
+sensor:
+  - platform: bh1570
+    # ...
+    on_value:
+      then:
+         lambda: |-  
+            if (x > 200) then
+            {
+               id(rgb8x32)->set_brightness(50);
+            } else {
+               id(rgb8x32)->set_brightness(250);
+            }
+```
 
 # Usage
 

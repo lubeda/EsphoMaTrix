@@ -7,8 +7,8 @@ const uint8_t MAXQUEUE=16;
 const uint8_t MAXICONS=48;
 const uint8_t TEXTSCROLLSTART=9;
 const uint16_t TICKINTERVAL=1000; // each 1000ms
-const char* EHMTX_VERSION="Version: 2022.2.5";
-const char* TAG="EHMTX";
+#define EHMTX_VERSION "Version: 2022.2.5"
+#define TAG "EHMTX"
 
 namespace esphome
 {
@@ -21,7 +21,7 @@ namespace esphome
   protected:
     uint8_t find_free_slot(uint8_t icon);
     float get_setup_priority() const override { return esphome::setup_priority::LATE; }
-    float brightness_;
+    uint8_t brightness_;
     Color indicator_color;
 
   public:

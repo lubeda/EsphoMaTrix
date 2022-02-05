@@ -42,6 +42,14 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_screen_u(icon_name,text,5,false);
+    - service: screen_t
+      variables:
+        icon_name: string
+        duration: int
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen_u(icon_name,text,duration,false);
     - service: brightness
       variables:
         brightness: int
@@ -107,6 +115,7 @@ light:
     variant: WS2812
     pin: GPIO16
     num_leds: 256
+    color_correct: [30%, 30%, 30%]
     name: "$devicename Light"
     restore_mode: ALWAYS_OFF
     on_turn_on:
