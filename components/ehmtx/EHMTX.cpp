@@ -1,6 +1,5 @@
 #include "esphome.h"
 
-
 namespace esphome
 {
 
@@ -16,7 +15,6 @@ namespace esphome
     this->text_color = Color(200, 200, 200);
     this->alarm_color = Color(200, 50, 50);
     this->last_clock_time = 0;
-    ESP_LOGD(TAG,VERSION);
   }
 
   void EHMTX::set_indicator_color(int r, int g, int b)
@@ -174,10 +172,9 @@ namespace esphome
 
   void EHMTX::get_status()
   {
-    uint8_t status = 0;
     time_t ts = this->clock->now().timestamp;
-    status = this->show_screen ? 1 : 0;
-    ESP_LOGI(TAG, "status status: %d  as: %d", status, this->active_slot);
+    ESP_LOGI(TAG, "status active slot: %d", this->active_slot);
+    ESP_LOGI(TAG, "status brightness: %2.1f", this->brightness_);
     ESP_LOGI(TAG, "status screen count: %d", this->count_screens());
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
@@ -272,9 +269,9 @@ namespace esphome
 
   void EHMTX::set_brightness(uint8_t b)
   {
-    float br = (float) b/ (float)255;
-    ESP_LOGI(TAG,"set_brightness %d => %f %%",b,br);
-    this->display->get_light()->set_correction(br,br,br,br)  ; 
+    this->brightness_ = (float) b/ (float)255;
+    ESP_LOGI(TAG,"set_brightness %d => %f %%",b,this->brightness_);
+    this->display->get_light()->set_correction(this->brightness_,this->brightness_,this->brightness_,this->brightness_); 
   }
 
   void EHMTX::add_screen_u(std::string iname, std::string text,uint16_t duration, bool alarm)

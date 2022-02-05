@@ -6,7 +6,7 @@ from esphome.components import display, font, time, text_sensor
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.const import CONF_FILE, CONF_ID, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION
+from esphome.const import CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
 
@@ -53,6 +53,7 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
                 CONF_SHOWSCREEN, default="8"
             ): cv.templatable(cv.positive_int),
+    cv.Optional(CONF_BRIGHTNESS, default=0.5): cv.percentage,
     cv.Optional(
                 CONF_DURATION, default="5"
             ): cv.templatable(cv.positive_int),
@@ -160,6 +161,7 @@ async def to_code(config):
         cg.add(var.add_icon(RawExpression(str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\"" ))) 
 
     cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
+    cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
     cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVAL]))
