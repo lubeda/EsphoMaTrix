@@ -150,10 +150,10 @@ display:
 ehmtx:
   id: rgb8x32
   show_clock: 4
-  show_screen: 6
+  show_screen: 7
   display8x32: ehmtx_display
   time: ehmtx_time
-  duration: 7
+  duration: 5
   font_id: ehmtx_font
   icons: 
     - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
