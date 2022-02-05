@@ -29,6 +29,7 @@ namespace esphome
   public:
     EHMTX();
     Color textColor, alarmColor;
+    void dump_config()
     bool showscreen;
     bool showindicator;
     EHMTX_screen *slots[MAXQUEUE];
