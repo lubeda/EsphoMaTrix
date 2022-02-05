@@ -357,6 +357,14 @@ namespace esphome
     this->yoffset = y;
   }
 
+void EHMTX::dump_config() {
+  ESP_LOGCONFIG(TAG, "EspHoMatriX %s",VERSION);
+  ESP_LOGCONFIG(TAG, "Icons: %d",this->iconcount);
+  ESP_LOGCONFIG(TAG, "Max screens: %d",MAXQUEUE);
+  ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d",this->scrollintervall,this->animintervall);
+  ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d",this->clocktime,this->screentime);
+}
+
   void EHMTX::add_icon(display::Animation *icon, const char *name)
   {
     this->icons[this->iconcount] = icon;
