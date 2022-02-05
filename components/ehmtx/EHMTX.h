@@ -20,7 +20,7 @@ namespace esphome
   {
   protected:
     uint8_t find_free_slot(uint8_t icon);
-    float get_setup_priority() const override { return esphome::setup_priority::LATE; }
+    float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
     Color indicator_color;
 
@@ -60,6 +60,7 @@ namespace esphome
     void set_screen_time(uint16_t t);
     void set_font_offset(int8_t x,int8_t y );
     void set_clock_time(uint16_t t);
+    void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);

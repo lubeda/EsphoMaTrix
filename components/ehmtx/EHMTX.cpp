@@ -268,6 +268,11 @@ namespace esphome
     ESP_LOGD(TAG, "add_screen icon: %d slot: %d text: %s", icon, i, text.c_str());
   }
 
+  void EHMTX::set_default_brightness(uint8_t b)
+  {
+    this->brightness_ = b;
+  }
+
   void EHMTX::set_brightness(uint8_t b)
   {
     this->brightness_ = b;
