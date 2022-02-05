@@ -16,7 +16,7 @@ namespace esphome
     this->textColor = Color(200, 200, 200);
     this->alarmColor = Color(200, 50, 50);
     this->lastclocktime = 0;
-    ESP_LOGD("EHMTX",VERSION);
+    ESP_LOGD(TAG,VERSION);
   }
 
   void EHMTX::set_indicatorcolor(int r, int g, int b)
@@ -29,11 +29,11 @@ namespace esphome
     for (uint8_t i = 0; i < this->iconcount; i++)
     { 
       if (strcmp (this->iconnames[i],name.c_str()) == 0){
-        ESP_LOGD("EHMTX","icon: %s found id: %d",name.c_str(),i);
+        ESP_LOGD(TAG,"icon: %s found id: %d",name.c_str(),i);
         return i;
       }
     }
-    ESP_LOGD("EHMTX","icon: %s not found",name.c_str());
+    ESP_LOGD(TAG,"icon: %s not found",name.c_str());
     return MAXICONS;
   }
 
@@ -177,25 +177,25 @@ namespace esphome
     uint8_t status = 0;
     time_t ts = this->clock->now().timestamp;
     status = this->showscreen ? 1 : 0;
-    ESP_LOGI("EHMTX", "status status: %d  as: %d", status, this->activeslot);
-    ESP_LOGI("EHMTX", "status screen count: %d", this->countscreens());
+    ESP_LOGI(TAG, "status status: %d  as: %d", status, this->activeslot);
+    ESP_LOGI(TAG, "status screen count: %d", this->countscreens());
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
       if (this->slots[i]->active())
       {
         int td = this->slots[i]->endtime - ts;
-        ESP_LOGI("EHMTX", "status slot: %d icon: %d iconname: %s  text: %s end: %d sec", i, this->slots[i]->icon,this->iconnames[this->slots[i]->icon], this->slots[i]->text.c_str(), td);
+        ESP_LOGI(TAG, "status slot: %d icon: %d iconname: %s  text: %s end: %d sec", i, this->slots[i]->icon,this->iconnames[this->slots[i]->icon], this->slots[i]->text.c_str(), td);
       }
     }
     for (uint8_t i = 0; i < this->iconcount; i++)
     {
-      ESP_LOGI("EHMTX", "status icon: %d name: %s", i, this->iconnames[i]);
+      ESP_LOGI(TAG, "status icon: %d name: %s", i, this->iconnames[i]);
     }
   }
 
   uint8_t EHMTX::findfreeslot(uint8_t icon)
   {
-    ESP_LOGD("EHMTX","findfreeslot for icon: %d",icon);
+    ESP_LOGD(TAG,"findfreeslot for icon: %d",icon);
     for (uint8_t i = 0; i < MAXQUEUE; i++)
     {
       if (this->slots[i]->icon == icon)
@@ -254,7 +254,7 @@ namespace esphome
     }
     this->slots[i]->alarm = true;
     this->slots[i]->setText(text, icon, w, this->duration);
-    ESP_LOGD("EHMTX","add_alarm icon: %d slot: %d text: %s",icon,i,text.c_str());
+    ESP_LOGD(TAG,"add_alarm icon: %d slot: %d text: %s",icon,i,text.c_str());
   }
 
   void EHMTX::add_screen(uint8_t icon, std::string text)
@@ -267,13 +267,13 @@ namespace esphome
       icon = 0;
     }
     this->slots[i]->setText(text, icon, w, this->duration);
-    ESP_LOGD("EHMTX","add_screen icon: %d slot: %d text: %s",icon,i,text.c_str());
+    ESP_LOGD(TAG,"add_screen icon: %d slot: %d text: %s",icon,i,text.c_str());
   }
 
   void EHMTX::set_brightness(uint8_t b)
   {
     float br = (float) b/ (float)255;
-    ESP_LOGI("EHMTX","set_brightness %d => %f %%",b,br);
+    ESP_LOGI(TAG,"set_brightness %d => %f %%",b,br);
     this->display->get_light()->set_correction(br,br,br,br)  ; 
   }
 
@@ -289,7 +289,7 @@ namespace esphome
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     this->slots[i]->setText(text, icon, w, this->duration);   
     this->slots[i]->alarm = alarm;
-    ESP_LOGD("EHMTX","add_screen_u icon: %d iconname: %s slot: %d text: %s alarm: %d",icon,iname.c_str(),i,text.c_str(),alarm);
+    ESP_LOGD(TAG,"add_screen_u icon: %d iconname: %s slot: %d text: %s alarm: %d",icon,iname.c_str(),i,text.c_str(),alarm);
   }
 
   void EHMTX::add_screen_n(std::string iname, std::string text)
@@ -303,7 +303,7 @@ namespace esphome
     uint8_t i = this->findfreeslot(icon);
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     this->slots[i]->setText(text, icon, w, this->duration);
-    ESP_LOGD("EHMTX","add_screen_n icon: %d iconname: %s slot: %d text: %s",icon,iname.c_str(),i,text.c_str());
+    ESP_LOGD(TAG,"add_screen_n icon: %d iconname: %s slot: %d text: %s",icon,iname.c_str(),i,text.c_str());
   }
 
   void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t t)
@@ -314,10 +314,10 @@ namespace esphome
     if (icon >= this->iconcount)
     {
       icon = 0;
-      ESP_LOGD("EHMTX","icon no: %d not found",icon);
+      ESP_LOGD(TAG,"icon no: %d not found",icon);
     }
     this->slots[i]->setText(text, icon, w, t);
-    ESP_LOGD("EHMTX","add_screen_t icon: %d duration: %d slot: %d text: %s",icon,t,i,text.c_str());
+    ESP_LOGD(TAG,"add_screen_t icon: %d duration: %d slot: %d text: %s",icon,t,i,text.c_str());
   }
 
   void EHMTX::set_clocktime(uint16_t t)
@@ -362,7 +362,7 @@ namespace esphome
     this->icons[this->iconcount] = icon;
     this->iconnames[this->iconcount] = name;
     this->iconcount++;
-    ESP_LOGD("EHMTX","add_icon no.: %d name: %s",iconcount,name);
+    ESP_LOGD(TAG,"add_icon no.: %d name: %s",iconcount,name);
   }
 
   void EHMTX::draw()

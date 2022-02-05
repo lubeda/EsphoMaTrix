@@ -8,6 +8,7 @@
 #define TEXTSCROLLSTART 9
 #define TICKINTERVAL 1000 // each 100ms
 #define VERSION "Version: 4.2.2022"
+#define TAG "EHMTX"
 
 namespace esphome
 {
