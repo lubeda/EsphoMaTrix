@@ -12,7 +12,7 @@ from esphome.cpp_generator import RawExpression
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ["display"]
+DEPENDENCIES = ["display","light","api"]
 AUTO_LOAD = ["ehmtx"]
 MAXFRAMES=8
 
@@ -25,8 +25,8 @@ CONF_EHMTX = "ehmtx"
 CONF_ICONS="icons"
 CONF_DISPLAY="display8x32"
 CONF_ICONID = "id"
-CONF_SCROLLINTERVAL = "scroll_intervall"
-CONF_ANIMINTERVAL = "anim_intervall"
+CONF_SCROLLINTERVALL = "scroll_intervall"
+CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
@@ -46,10 +46,10 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
             CONF_XOFFSET, default="0"
             ): cv.templatable( cv.int_range(min=-32,max=32)),
-    cv.Optional( CONF_SCROLLINTERVAL, default="80"
+    cv.Optional( CONF_SCROLLINTERVALL, default="80"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
-            CONF_ANIMINTERVAL, default="192"
+            CONF_ANIMINTERVALL, default="192"
             ): cv.templatable( cv.positive_int),
     cv.Optional(
                 CONF_SHOWSCREEN, default="8"
@@ -165,8 +165,8 @@ async def to_code(config):
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
     cg.add(var.set_duration(config[CONF_DURATION]))
-    cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVAL]))
-    cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVAL]))
+    cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
+    cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET],config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])
