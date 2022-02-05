@@ -1,0 +1,227 @@
+substitutions:
+  devicename: ehmtx32
+
+#external_components:
+#  - source:
+#      type: git
+#      url: https://github.com/lubeda/EsphoMaTrix
+external_components:
+  - source:
+      type: local
+      path: components
+
+esphome:
+  name: $devicename
+
+esp32:
+  board: mhetesp32minikit
+
+font:
+  - file: _fonts/monobit.ttf
+    id: ehmtx_font
+    size: 16
+    glyphs:  |
+      !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>
+
+logger:
+
+# Enable Home Assistant API
+api:
+  services:
+    - service: alarm
+      variables:
+        icon_name: string
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+    - service: screen
+      variables:
+        icon_name: string
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen_u(icon_name,text,5,false);
+    - service: brightness
+      variables:
+        brightness: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_brightness(brightness);
+    - service: status
+      then:
+        lambda: |-
+          id(rgb8x32)->get_status();
+    - service: del_screen
+      variables:
+        icon_name: string
+      then:
+        lambda: |-
+          id(rgb8x32)->del_screen_n(icon_name);
+    - service: indicator_on
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_indicator_color(r,g,b);
+          id(rgb8x32)->set_indicator_on();
+    - service: text_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_text_color(r,g,b);
+    - service: alarm_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_alarm_color(r,g,b);
+    - service: indicator_off
+      then:
+        lambda: |-
+          id(rgb8x32)->set_indicator_off();
+
+ota:
+  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: $devicename
+    password: "InM2TlqVfJe4"
+
+light:
+  - platform: neopixelbus
+    id: ehmtx_light
+    type: GRB
+    variant: WS2812
+    pin: GPIO16
+    num_leds: 256
+    name: "$devicename Light"
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      lambda: |-
+         id(ehmtx_display)->set_enabled(false);
+    on_turn_off:
+       lambda: |-
+         id(ehmtx_display)->set_enabled(true);
+
+time:
+  - platform: homeassistant
+    id: ehmtx_time
+
+display:
+  - platform: addressable_light
+    id: ehmtx_display
+    addressable_light_id: ehmtx_light
+    width: 32
+    height: 8
+    pixel_mapper: |-
+      if (x % 2 == 0) {
+        return (x * 8) + y;
+      }
+      return (x * 8) + (7 - y);
+    rotation: 0°
+    update_interval: 16ms
+    auto_clear_enabled: true
+    lambda: |-
+      id(rgb8x32)->tick();
+      id(rgb8x32)->draw();
+
+ehmtx:
+  id: rgb8x32
+  show_clock: 4
+  show_screen: 6
+  display8x32: ehmtx_display
+  time: ehmtx_time
+  duration: 7
+  font_id: ehmtx_font
+  icons: 
+    - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
+      id: boot
+    - file: _icons/Garage Door open_30081.gif
+      id: garage
+    - file: _icons/Wind_22148.gif
+      id: wind
+    - file: _icons/Rain 1H_6427.gif
+      id: rain
+    - file: _icons/dog_2698.png
+      id: dog
+    - file: _icons/Pool_28103.gif
+      id: pool
+    - file: _icons/shop_18567.gif
+      id: shop
+    - file: _icons/Phonering_1232.gif
+      id: phone
+    - file: _icons/Fire_9272.gif
+      id: fire
+    - file: _icons/Alexa Ani_31194.gif
+      id: alexa
+    - file: _icons/TV Start_9754.gif
+      id: tv
+    - file: _icons/MovieReel_1944.gif
+      id: media
+    - file: _icons/ring doorbell_24087.gif
+      id: ring
+    - file: _icons/Cold Icy Ice Snow -bmt _17140.gif
+      id: frost
+    - file: _icons/Enterprise Orbit_10714.png
+      id: iss
+    - file: _icons/wheelie bin_11034.png
+      id: muell
+    - file: _icons/Gasoline_18757.png
+      id: sprit
+    - file: _icons/Wifi_3925.gif
+      id: wlan
+    - file: _icons/Rice Cooker_22604.gif
+      id: cookit
+    - file: _icons/Avengers _12091.gif
+      id: avengers    
+    - file: _icons/Beach_23726.gif
+      id: nature
+    - file: _icons/Work_25808.png
+      id: work
+    - file: _icons/nintendo switch_15121.gif
+      id: nintendo
+    - file: _icons/Bike strava3_22841.gif
+      id: bike
+    - file: _icons/School  I  Schule_42529.gif
+      id: school
+    - file: _icons/Amazon_656.png
+      id: amazon
+    - file: _icons/Abstract Post Logo_13998.png
+      id: post
+    - file: _icons/Money Gagi_35538.gif
+      id: money
+    - file: _icons/power2_32930.gif
+      id: power
+    - file: _icons/solar-power_27464.gif
+      id: solar
+    - file: _icons/3d printing_10527.gif
+      id: print3d
+    - file: _icons/yoga-bridge-R-gil_37276.gif
+      id: yoga
+    - file: _icons/Star Trek_43568.gif
+      id: startrek
+    - file: _icons/Princess Leia_6582.png
+      id: leia
+    - file: _icons/Cookie Monster_20492.gif
+      id: cookie
+    - file: _icons/energy_today_26034.png
+      id: energy
+    - file: _icons/SUN_5807.gif
+      id: sun
+    - file: _icons/Temperature - Warm_26358.gif
+      id: temp
+    - file: _icons/Rain_12018.gif
+      id: rainprecip

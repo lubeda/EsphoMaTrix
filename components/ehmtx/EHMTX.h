@@ -7,15 +7,12 @@
 #define MAXICONS 48
 #define TEXTSCROLLSTART 9
 #define TICKINTERVAL 1000 // each 100ms
-#define VERSION "Version: 4.2.2022"
+#define VERSION "Version: 2022.2.5"
 #define TAG "EHMTX"
 
 namespace esphome
 {
-
-  const Color EHMTX_Cwarn = Color(214, 214, 12);
-  const Color EHMTX_Calarm = Color(204, 51, 63);
-  const Color EHMTX_cday = Color(60, 60, 60);
+  const Color EHMTX_cday = Color(90, 90, 90);
 
   class EHMTX_screen;
 

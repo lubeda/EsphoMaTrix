@@ -87,7 +87,7 @@ external_components:
 ```
 ehmtx:
   id: rgb328 # needed to reference the components in services etc.
-  showclock: 6
+  show_clock: 6
   show_screen: 8
   display8x32: ehmtxdisplay
   time: ehmtxclock
@@ -105,7 +105,7 @@ ehmtx:
 _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
-**showclock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen"
+**show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen"
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence 
 

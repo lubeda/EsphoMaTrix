@@ -19,7 +19,7 @@ MAXFRAMES=8
 Icons_ = display.display_ns.class_("Animation")
 EHMTX_ = cg.esphome_ns.namespace("EHMTX")
 
-CONF_SHOWCLOCK = "showclock"
+CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_ICONS="icons"

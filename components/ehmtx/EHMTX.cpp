@@ -12,7 +12,7 @@ namespace esphome
     this->show_screen = false;
     this->active_slot = 0;
     this->icon_count = 0;
-    this->text_color = Color(200, 200, 200);
+    this->text_color = Color(240, 240, 240);
     this->alarm_color = Color(200, 50, 50);
     this->last_clock_time = 0;
   }
@@ -356,7 +356,7 @@ namespace esphome
 
 void EHMTX::dump_config() {
   ESP_LOGCONFIG(TAG, "EspHoMatriX %s",VERSION);
-  ESP_LOGCONFIG(TAG, "Icons: %d",this->icon_count);
+  ESP_LOGCONFIG(TAG, "Icons: %d of %d",this->icon_count,MAXICONS);
   ESP_LOGCONFIG(TAG, "Max screens: %d",MAXQUEUE);
   ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d",this->scroll_intervall,this->anim_intervall);
   ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d",this->clocktime,this->screentime);
