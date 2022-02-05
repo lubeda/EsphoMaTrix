@@ -75,28 +75,28 @@ api:
         b: int
       then:
         lambda: |-
-          id(rgb8x32)->set_indicatorcolor(r,g,b);
-          id(rgb8x32)->set_indicatoron();
-    - service: textcolor
+          id(rgb8x32)->set_indicator_color(r,g,b);
+          id(rgb8x32)->set_indicator_on();
+    - service: text_color
       variables:
         r: int
         g: int
         b: int
       then:
         lambda: |-
-          id(rgb8x32)->set_textcolor(r,g,b);
-    - service: alarmcolor
+          id(rgb8x32)->set_text_color(r,g,b);
+    - service: alarm_color
       variables:
         r: int
         g: int
         b: int
       then:
         lambda: |-
-          id(rgb8x32)->set_alarmcolor(r,g,b);
+          id(rgb8x32)->set_alarm_color(r,g,b);
     - service: indicator_off
       then:
         lambda: |-
-          id(rgb8x32)->set_indicatoroff();
+          id(rgb8x32)->set_indicator_off();
 
 ota:
   password: !secret ota_password
@@ -154,7 +154,7 @@ display:
 ehmtx:
   id: rgb8x32
   showclock: 4
-  showscreen: 6
+  show_screen: 6
   display8x32: ehmtx_display
   time: ehmtx_time
   duration: 7

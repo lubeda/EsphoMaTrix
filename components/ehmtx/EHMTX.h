@@ -21,16 +21,16 @@ namespace esphome
 
   class EHMTX : public PollingComponent 
   {
-  private:
-    uint8_t findfreeslot(uint8_t icon);
+  protected:
+    uint8_t find_free_slot(uint8_t icon);
     float get_setup_priority() const override { return esphome::setup_priority::LATE; }
-    Color indicatorColor;
+    Color indicator_color;
 
   public:
     EHMTX();
-    Color textColor, alarmColor;
-    void dump_config()
-    bool showscreen;
+    Color text_color, alarm_color;
+    void dump_config();
+    bool show_screen;
     bool showindicator;
     EHMTX_screen *slots[MAXQUEUE];
     display::Animation *icons[MAXICONS];
@@ -42,26 +42,26 @@ namespace esphome
     int8_t yoffset,xoffset;
     uint8_t find_icon(std::string name);
     int8_t duration;          // in minutes how long is a screen valid
-    uint16_t scrollintervall; // ms to between scrollsteps
-    uint16_t animintervall;   // ms to next_frame()
+    uint16_t scroll_intervall; // ms to between scrollsteps
+    uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clocktime;       // ms display of clock/date 0.5 clock then 0.5 date
     uint16_t screentime;      // ms display of screen
-    uint8_t iconcount;        // max iconnumber -1
-    uint8_t activeslot;       // slot to display
-    unsigned long lastscrolltime;
-    unsigned long lastanimtime;
-    time_t lastclocktime = 0;  // starttime clock display
-    time_t nextactiontime = 0; // when is the nextscreenchange
-    uint8_t findnextscreen();
-    uint8_t countscreens();
-    void drawdayofweek();
+    uint8_t icon_count;        // max iconnumber -1
+    uint8_t active_slot;       // slot to display
+    unsigned long last_scroll_time;
+    unsigned long last_anim_time;
+    time_t last_clock_time = 0;  // starttime clock display
+    time_t next_action_time = 0; // when is the nextscreenchange
+    uint8_t find_next_screen();
+    uint8_t count_screens();
+    void draw_day_of_week();
     void tick();
     void draw();
     void get_status();
     void set_display(addressable_light::AddressableLightDisplay *disp); 
-    void set_screentime(uint16_t t);
-    void set_fontoffset(int8_t x,int8_t y );
-    void set_clocktime(uint16_t t);
+    void set_screen_time(uint16_t t);
+    void set_font_offset(int8_t x,int8_t y );
+    void set_clock_time(uint16_t t);
     void set_brightness(uint8_t b);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
@@ -72,16 +72,16 @@ namespace esphome
     void del_screen_n(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
-    void set_animintervall(uint16_t intervall);
-    void set_scrollintervall(uint16_t intervall);
+    void set_anim_intervall(uint16_t intervall);
+    void set_scroll_intervall(uint16_t intervall);
     void set_duration(uint8_t d);
-    void set_indicatoroff();
-    void set_indicatoron();
-    void set_indicatorcolor(int r, int g, int b);
-    void set_textcolor(int r, int g, int b);
-    void set_alarmcolor(int r, int g, int b);
-    void set_iconcount(uint8_t ic);
-    void drawclock();
+    void set_indicator_off();
+    void set_indicator_on();
+    void set_indicator_color(int r, int g, int b);
+    void set_text_color(int r, int g, int b);
+    void set_alarm_color(int r, int g, int b);
+    void set_icon_count(uint8_t ic);
+    void draw_clock();
     void setup();
     void update();
   };
@@ -89,10 +89,10 @@ namespace esphome
   class EHMTX_screen
   {
 
-  private:
-    uint8_t shiftx;
-    uint8_t pixels;
-    EHMTX *config;
+  protected:
+    uint8_t shiftx_;
+    uint8_t pixels_;
+    EHMTX *config_;
 
   public:
     bool alarm;
@@ -103,14 +103,14 @@ namespace esphome
     EHMTX_screen(EHMTX *config);
 
     bool active();
-    bool isalarm();
+    bool is_alarm();
     void draw();
-    void _draw();
+    void draw_();
     bool isfree();
-    bool updateslot(uint8_t _icon);
+    bool update_slot(uint8_t _icon);
     void update_screen();
-    bool delslot(uint8_t _icon);
-    void setText(std::string text, uint8_t icon, uint8_t pixel,uint16_t et);
+    bool del_slot(uint8_t _icon);
+    void set_text(std::string text, uint8_t icon, uint8_t pixel,uint16_t et);
   };
 
 }

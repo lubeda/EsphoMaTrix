@@ -5,14 +5,14 @@ namespace esphome
 
   EHMTX_screen::EHMTX_screen(EHMTX *config)
   {
-    this->config = config;
+    this->config_ = config;
     this->endtime = 0;
     this->alarm = false;
   }
 
-  bool EHMTX_screen::isalarm() { return this->alarm; }
+  bool EHMTX_screen::is_alarm() { return this->alarm; }
 
-  bool EHMTX_screen::delslot(uint8_t _icon)
+  bool EHMTX_screen::del_slot(uint8_t _icon)
   {
     if (this->icon == _icon)
     {
@@ -26,21 +26,21 @@ namespace esphome
 
   void EHMTX_screen::update_screen()
   {
-    if (millis() - this->config->lastscrolltime >= this->config->scrollintervall && this->pixels > (32 - 9))
+    if (millis() - this->config_->last_scroll_time >= this->config_->scroll_intervall && this->pixels_ > (32 - 9))
     {
-      this->shiftx++;
-      if (this->shiftx > this->pixels + (32-9))
+      this->shiftx_++;
+      if (this->shiftx_ > this->pixels_ + (32-9))
       {
-          this->shiftx = 0;
+          this->shiftx_ = 0;
       }
-      this->config->lastscrolltime = millis();
+      this->config_->last_scroll_time = millis();
     }
-    if (millis() - this->config->lastanimtime >= this->config->animintervall &&
-        (this->config->icons[this->icon]->get_current_frame() <
-         this->config->icons[this->icon]->get_animation_frame_count()))
+    if (millis() - this->config_->last_anim_time >= this->config_->anim_intervall &&
+        (this->config_->icons[this->icon]->get_current_frame() <
+         this->config_->icons[this->icon]->get_animation_frame_count()))
     {
-      this->config->icons[this->icon]->next_frame();
-      this->config->lastanimtime = millis();
+      this->config_->icons[this->icon]->next_frame();
+      this->config_->last_anim_time = millis();
     }
   }
 
@@ -48,7 +48,7 @@ namespace esphome
   {
     if (this->endtime > 0)
     {
-      time_t ts = this->config->clock->now().timestamp;
+      time_t ts = this->config_->clock->now().timestamp;
       if (ts < this->endtime)
       {
         return true;
@@ -57,48 +57,48 @@ namespace esphome
     return false;
   }
 
-  void EHMTX_screen::_draw()
+  void EHMTX_screen::draw_()
   {
     int8_t extraoffset =0;
 
-      if (this->pixels > (32 - 9))
+      if (this->pixels_ > (32 - 9))
       {
         extraoffset =32-9;
       }
 
     if (this->alarm)
     {
-      this->config->display->print(TEXTSCROLLSTART - this->shiftx + extraoffset + this->config->xoffset, this->config->yoffset, this->config->font, this->config->alarmColor,
+      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color,
                                    this->text.c_str());
     }
     else
     {
-      this->config->display->print(TEXTSCROLLSTART - this->shiftx + extraoffset + this->config->xoffset, this->config->yoffset, this->config->font, this->config->textColor,
+      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color,
                                    this->text.c_str());
     }
-    this->config->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
+    this->config_->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
     if (this->alarm)
     {
-      this->config->display->draw_pixel_at(30, 0, this->config->alarmColor);
-      this->config->display->draw_pixel_at(31, 1, this->config->alarmColor);
-      this->config->display->draw_pixel_at(31, 0, this->config->alarmColor);
+      this->config_->display->draw_pixel_at(30, 0, this->config_->alarm_color);
+      this->config_->display->draw_pixel_at(31, 1, this->config_->alarm_color);
+      this->config_->display->draw_pixel_at(31, 0, this->config_->alarm_color);
     }
-    this->config->display->image(0, 0, this->config->icons[this->icon]);
+    this->config_->display->image(0, 0, this->config_->icons[this->icon]);
   }
 
   void EHMTX_screen::draw()
   {
-    this->_draw();
+    this->draw_();
     this->update_screen();
   }
 
-  void EHMTX_screen::setText(std::string text, uint8_t icon, uint8_t pixel, uint16_t et)
+  void EHMTX_screen::set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et)
   {
     this->text = text;
-    this->pixels = pixel;
-    this->shiftx = 0;
+    this->pixels_ = pixel;
+    this->shiftx_ = 0;
     
-    this->endtime = this->config->clock->now().timestamp + et * 60;
+    this->endtime = this->config_->clock->now().timestamp + et * 60;
     if (this->alarm)
     {
       this->endtime += 2 * 60;

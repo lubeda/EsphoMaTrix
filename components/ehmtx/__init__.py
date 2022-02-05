@@ -19,13 +19,13 @@ Icons_ = display.display_ns.class_("Animation")
 EHMTX_ = cg.esphome_ns.namespace("EHMTX")
 
 CONF_SHOWCLOCK = "showclock"
-CONF_SHOWSCREEN = "showscreen"
+CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_ICONS="icons"
 CONF_DISPLAY="display8x32"
 CONF_ICONID = "id"
-CONF_SCROLLINTERVAL = "scrollintervall"
-CONF_ANIMINTERVAL = "animintervall"
+CONF_SCROLLINTERVAL = "scroll_intervall"
+CONF_ANIMINTERVAL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
@@ -159,12 +159,12 @@ async def to_code(config):
         
         cg.add(var.add_icon(RawExpression(str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\"" ))) 
 
-    cg.add(var.set_clocktime(config[CONF_SHOWCLOCK]))
-    cg.add(var.set_screentime(config[CONF_SHOWSCREEN]))
+    cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
+    cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
     cg.add(var.set_duration(config[CONF_DURATION]))
-    cg.add(var.set_scrollintervall(config[CONF_SCROLLINTERVAL]))
-    cg.add(var.set_animintervall(config[CONF_ANIMINTERVAL]))
-    cg.add(var.set_fontoffset(config[CONF_XOFFSET],config[CONF_YOFFSET]))
+    cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVAL]))
+    cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVAL]))
+    cg.add(var.set_font_offset(config[CONF_XOFFSET],config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])
     cg.add(var.set_display(disp))
