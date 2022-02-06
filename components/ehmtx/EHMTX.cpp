@@ -158,8 +158,10 @@ namespace esphome
       {
         this->last_clock_time = this->clock->now().timestamp;
         this->next_action_time = ts + this->screen_time;
-      } else {  
-          this->next_action_time = ts + (int) this->slots[this->active_slot]->display_duration;
+      }
+      else
+      {
+        this->next_action_time = ts + (int)this->slots[this->active_slot]->display_duration;
       }
     }
   }
@@ -178,6 +180,9 @@ namespace esphome
   {
     time_t ts = this->clock->now().timestamp;
     ESP_LOGI(TAG, "status active slot: %d", this->active_slot);
+    ESP_LOGI(TAG, "status time: %d.%d.%d %02d:%02d", this->clock->now().day_of_month,
+             this->clock->now().month, this->clock->now().year,
+             this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
     ESP_LOGI(TAG, "status screen count: %d of %d", this->count_screens(), MAXQUEUE);
     for (uint8_t i = 0; i < MAXQUEUE; i++)

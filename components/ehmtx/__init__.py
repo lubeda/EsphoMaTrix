@@ -17,7 +17,8 @@ AUTO_LOAD = ["ehmtx"]
 MAXFRAMES=8
 
 Icons_ = display.display_ns.class_("Animation")
-EHMTX_ = cg.esphome_ns.namespace("EHMTX")
+ehmtx_ns  = cg.esphome_ns.namespace("esphome")
+EHMTX_ = ehmtx_ns.class_("EHMTX",cg.Component)
 
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
@@ -81,7 +82,7 @@ async def to_code(config):
     from PIL import Image
       
     var = cg.new_Pvariable(config[CONF_ID])
-    
+
     for conf in config[CONF_ICONS]:
         
         path = CORE.relative_config_path(conf[CONF_FILE])
@@ -177,7 +178,9 @@ async def to_code(config):
 
     ehmtxtime = await cg.get_variable(config[CONF_TIME])
     cg.add(var.set_clock(ehmtxtime))
-
+    
+    await cg.register_component(var, config)
+    
     # this should be part of the yaml configuration    
     
     
