@@ -19,11 +19,10 @@ namespace esphome
   class EHMTX : public PollingComponent 
   {
   protected:
-    uint8_t find_free_slot(uint8_t icon);
+    EHMTX_screen* find_free_slot(uint8_t icon);
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
     Color indicator_color;
-
   public:
     EHMTX();
     Color text_color, alarm_color;
