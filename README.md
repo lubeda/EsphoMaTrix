@@ -153,7 +153,9 @@ There is a trigger available to do some local magic. The trigger ```on_next_scre
 **x (Name of the icon, std::string):**
 **y (displayed text, std::string):**
 
-See the example:
+See the examples:
+
+#### write some information to the logs
 
 ```
 ehmtx:
@@ -163,6 +165,22 @@ ehmtx:
         ESP_LOGD("TriggerTest","Iconname: %s",x.c_str());
         ESP_LOGI("TriggerTest","Text: %s",y.c_str());
 ```
+
+#### send event to homeassistant
+
+To send data back to home assistant you can use events.
+
+```
+ehmtx:
+  on_next_screen:
+  ....
+    - homeassistant.event:
+      event: esphome.next_screen
+      data_template:
+          iconname: !lambda "return x.c_str();"
+          text: !lambda "return y.c_str();"
+```
+
 
 ## Integration in homeassistant
 

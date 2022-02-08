@@ -152,9 +152,11 @@ ehmtx:
   duration: 7
   font_id: ehmtx_font
   on_next_screen:
-    lambda: |-
-        ESP_LOGD("TriggerTest","Iconname: %s",x.c_str());
-        ESP_LOGI("TriggerTest","Text: %s",y.c_str());
+    - homeassistant.event:
+        event: esphome.next_screen
+        data_template:
+            iconname: !lambda "return x.c_str();"
+            text: !lambda "return y.c_str();"
   icons: 
     - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
       id: boot
