@@ -1,12 +1,12 @@
 from argparse import Namespace
 import logging
 
-from esphome import core
+from esphome import core,automation
 from esphome.components import display, font, time, text_sensor
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.const import CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION
+from esphome.const import CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
 
@@ -31,7 +31,12 @@ CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
+CONF_ON_NEXT_SCREEN = "next_screen"
 
+# Triggers
+NextScreenTrigger = ehmtx_ns.class_(
+    "NextScreenTrigger", automation.Trigger.template(cg.std_string)
+)
 
 EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(EHMTX_),
@@ -59,6 +64,11 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
                 CONF_DURATION, default="5"
             ): cv.templatable(cv.positive_int),
+    cv.Optional(CONF_ON_NEXT_SCREEN): automation.validate_automation(
+            {
+                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(NextScreenTrigger),
+            }
+        ),
     cv.Required(CONF_ICONS): cv.All(
         cv.ensure_list(
             {
@@ -179,6 +189,10 @@ async def to_code(config):
     ehmtxtime = await cg.get_variable(config[CONF_TIME])
     cg.add(var.set_clock(ehmtxtime))
     
+    for conf in config.get(CONF_ON_NEXT_SCREEN, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+        await automation.build_automation(trigger, [(cg.std_string, "x")], conf)
+
     await cg.register_component(var, config)
     
     # this should be part of the yaml configuration    

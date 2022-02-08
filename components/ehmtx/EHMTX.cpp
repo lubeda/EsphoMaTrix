@@ -246,7 +246,7 @@ namespace esphome
       ESP_LOGD(TAG, "icon no: %d not found", icon);
     }
     screen->set_text(text, icon, w, t);
-    ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d slot: %d text: %s", icon, t, text.c_str());
+    ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, t, text.c_str());
   }
 
   void EHMTX::set_clock_time(uint16_t t)
