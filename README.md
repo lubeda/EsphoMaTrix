@@ -146,6 +146,24 @@ sensor:
 
 Take care that the ```char text[30];``` has enough space to store the formated text. 
 
+## local trigger
+
+There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (so it is not trigger on the clock display!!). I lambda's you can use two local string variables:
+
+**x (Name of the icon, std::string):**
+**y (displayed text, std::string):**
+
+See the example:
+
+```
+ehmtx:
+  ....
+  on_next_screen:
+    lambda: |-
+        ESP_LOGD("TriggerTest","Iconname: %s",x.c_str());
+        ESP_LOGI("TriggerTest","Text: %s",y.c_str());
+```
+
 ## Integration in homeassistant
 
 To control your display it has to be integrated in homeassistant. Then it provides at least three services, all prefixed with the devicename e.g. "ehmtx". See the sample yaml fpr the default services, you can add your own.
