@@ -1,10 +1,7 @@
 substitutions:
-  devicename: ehmtx32
+  devicename: ehmtx8266
+  mypin: GPIO04 #  GPIO04
 
-#external_components:
-#  - source:
-#      type: git
-#      url: https://github.com/lubeda/EsphoMaTrix
 external_components:
   - source:
       type: local
@@ -13,8 +10,8 @@ external_components:
 esphome:
   name: $devicename
 
-esp32:
-  board: mhetesp32minikit
+esp8266:
+  board: d1_mini
 
 font:
   - file: _fonts/monobit.ttf
@@ -22,7 +19,6 @@ font:
     size: 16
     glyphs:  |
       !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>/
-
 logger:
 
 # Enable Home Assistant API
@@ -95,7 +91,6 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->set_indicator_off();
-
 ota:
   password: !secret ota_password
 
@@ -113,7 +108,7 @@ light:
     id: ehmtx_light
     type: GRB
     variant: WS2812
-    pin: GPIO16
+    pin: GPIO04
     num_leds: 256
     color_correct: [30%, 30%, 30%]
     name: "$devicename Light"
@@ -124,7 +119,6 @@ light:
     on_turn_off:
        lambda: |-
          id(ehmtx_display)->set_enabled(true);
-
 time:
   - platform: homeassistant
     id: ehmtx_time
@@ -147,20 +141,27 @@ display:
       id(rgb8x32)->tick();
       id(rgb8x32)->draw();
 
+
+
 ehmtx:
   id: rgb8x32
   show_clock: 4
-  show_screen: 7
+  show_screen: 6
   display8x32: ehmtx_display
   time: ehmtx_time
-  duration: 5
+  duration: 7
   font_id: ehmtx_font
   on_next_screen:
     lambda: |-
-        ESP_LOGD("Trigger","Ole it works");
+        ESP_LOGD("TriggerTest","Iconname: %s",x.c_str());
+        ESP_LOGI("TriggerTest","Text: %s",y.c_str());
   icons: 
     - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
       id: boot
+    - file: _icons/Network-Online_29041.png
+      id: internet
+    - file: _icons/Thermometer_20275.png
+      id: temp
     - file: _icons/Garage Door open_30081.gif
       id: garage
     - file: _icons/Wind_22148.gif
@@ -187,8 +188,6 @@ ehmtx:
       id: ring
     - file: _icons/Cold Icy Ice Snow -bmt _17140.gif
       id: frost
-    - file: _icons/Enterprise Orbit_10714.png
-      id: iss
     - file: _icons/wheelie bin_11034.png
       id: muell
     - file: _icons/Gasoline_18757.png
@@ -233,7 +232,11 @@ ehmtx:
       id: energy
     - file: _icons/SUN_5807.gif
       id: sun
-    - file: _icons/Temperature - Warm_26358.gif
-      id: temp
+    - file: _icons/Vacuum_30171.png
+      id: vacuum
     - file: _icons/Rain_12018.gif
       id: rainprecip
+    - file: _icons/Enterprise Orbit_10714.png
+      id: iss
+    - file: _icons/Thunder_37533.gif
+      id: thunder

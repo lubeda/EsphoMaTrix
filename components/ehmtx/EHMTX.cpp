@@ -108,6 +108,9 @@ namespace esphome
       else
       {
         this->next_action_time = ts + (int)this->store->current()->display_duration;
+        for (auto *t : on_next_screen_triggers_) {
+          t->process(this->iconnames[this->store->current()->icon],this->store->current()->text);
+        }
       }
     }
   }
@@ -322,4 +325,11 @@ namespace esphome
       this->display->draw_pixel_at(31, 7, this->indicator_color);
     }
   }
+
+/* Trigger */
+
+void EHMTXNextScreenTrigger::process(std::string iconname,std::string text) {
+  this->trigger(iconname,text);
+}
+
 }

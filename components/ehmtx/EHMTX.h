@@ -16,6 +16,7 @@ namespace esphome
 
   class EHMTX_screen;
   class EHMTX_store;
+  class EHMTXNextScreenTrigger;
 
   class EHMTX : public PollingComponent 
   {
@@ -24,6 +25,7 @@ namespace esphome
     uint8_t brightness_;
     Color indicator_color;
     EHMTX_store* store;
+    std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
 
   public:
     EHMTX();
@@ -78,6 +80,7 @@ namespace esphome
     void set_alarm_color(int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
+    void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
     void setup();
     void update();
   };
@@ -125,6 +128,15 @@ namespace esphome
     bool del_slot(uint8_t _icon);
     void set_text(std::string text, uint8_t icon, uint8_t pixel,uint16_t et);
   };
+
+
+  
+class EHMTXNextScreenTrigger : public Trigger<std::string,std::string> {
+ public:
+  explicit EHMTXNextScreenTrigger(EHMTX *parent) { parent->add_on_next_screen_trigger(this); }
+  void process(std::string,std::string);
+};
+
 
 }
 

@@ -31,11 +31,11 @@ CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
-CONF_ON_NEXT_SCREEN = "next_screen"
+CONF_ON_NEXT_SCREEN = "on_next_screen"
 
 # Triggers
 NextScreenTrigger = ehmtx_ns.class_(
-    "NextScreenTrigger", automation.Trigger.template(cg.std_string)
+    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
 
 EHMTX_SCHEMA = cv.Schema({
@@ -191,7 +191,7 @@ async def to_code(config):
     
     for conf in config.get(CONF_ON_NEXT_SCREEN, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
-        await automation.build_automation(trigger, [(cg.std_string, "x")], conf)
+        await automation.build_automation(trigger, [(cg.std_string, "x"),(cg.std_string, "y")], conf)
 
     await cg.register_component(var, config)
     
