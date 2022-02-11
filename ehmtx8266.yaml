@@ -36,8 +36,13 @@ api:
         icon_name: string
         text: string
       then:
-        lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,5,false);
+        - ehmtx.add.screen:
+            id: rgb8x32
+            text: !lambda return text;
+            icon_name: !lambda return icon_name;
+            alarm: false
+        #lambda: |-
+        #  id(rgb8x32)->add_screen_u(icon_name,text,5,false);
     - service: screen_t
       variables:
         icon_name: string
@@ -60,17 +65,20 @@ api:
       variables:
         icon_name: string
       then:
-        lambda: |-
-          id(rgb8x32)->del_screen_n(icon_name);
+        - ehmtx.delete.screen:
+            id: rgb8x32
+            icon_name: !lambda return icon_name;
     - service: indicator_on
       variables:
         r: int
         g: int
         b: int
       then:
-        lambda: |-
-          id(rgb8x32)->set_indicator_color(r,g,b);
-          id(rgb8x32)->set_indicator_on();
+        - ehmtx.indicator.on:
+            id: rgb8x32
+            red: !lambda return r;
+            green: !lambda return g;
+            blue: !lambda return b;
     - service: text_color
       variables:
         r: int
@@ -89,8 +97,9 @@ api:
           id(rgb8x32)->set_alarm_color(r,g,b);
     - service: indicator_off
       then:
-        lambda: |-
-          id(rgb8x32)->set_indicator_off();
+        - ehmtx.indicator.off:
+            id: rgb8x32
+
 ota:
   password: !secret ota_password
 
@@ -140,8 +149,6 @@ display:
     lambda: |-
       id(rgb8x32)->tick();
       id(rgb8x32)->draw();
-
-
 
 ehmtx:
   id: rgb8x32

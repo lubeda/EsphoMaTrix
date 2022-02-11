@@ -16,6 +16,7 @@ namespace esphome
   void EHMTX::set_indicator_color(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "Indicator r: %d g: %d b: %d", r, g, b);
   }
 
   uint8_t EHMTX::find_icon(std::string name)
@@ -44,11 +45,13 @@ namespace esphome
 
   void EHMTX::set_indicator_off()
   {
-    this->showindicator = false;
+    this->show_indicator = false;
+    ESP_LOGD("EHMTX", "Indicator off");
   }
   void EHMTX::set_indicator_on()
   {
-    this->showindicator = true;
+    this->show_indicator = true;
+    ESP_LOGD("EHMTX", "Indicator on");
   }
 
   void EHMTX::draw_clock()
@@ -97,7 +100,7 @@ namespace esphome
         bool has_next_screen = this->store->move_next();
         if (has_next_screen)
         {
-            this->show_screen = true;
+          this->show_screen = true;
         }
       }
       if (this->show_screen == false)
@@ -108,8 +111,9 @@ namespace esphome
       else
       {
         this->next_action_time = ts + (int)this->store->current()->display_duration;
-        for (auto *t : on_next_screen_triggers_) {
-          t->process(this->iconnames[this->store->current()->icon],this->store->current()->text);
+        for (auto *t : on_next_screen_triggers_)
+        {
+          t->process(this->iconnames[this->store->current()->icon], this->store->current()->text);
         }
       }
     }
@@ -132,6 +136,15 @@ namespace esphome
              this->clock->now().month, this->clock->now().year,
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
+    if (this->show_indicator)
+    {
+      ESP_LOGD("EHMTX", "Indicator on");
+    }
+    else
+    {
+      ESP_LOGD("EHMTX", "Indicator off");
+    }
+
     this->store->log_status();
 
     for (uint8_t i = 0; i < this->icon_count; i++)
@@ -169,7 +182,7 @@ namespace esphome
   void EHMTX::add_alarm(uint8_t icon, std::string text)
   {
     int x, y, w, h;
-    EHMTX_screen* screen = this->store->find_free_screen(icon);
+    EHMTX_screen *screen = this->store->find_free_screen(icon);
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     if (icon >= this->icon_count)
     {
@@ -184,7 +197,7 @@ namespace esphome
   void EHMTX::add_screen(uint8_t icon, std::string text)
   {
     int x, y, w, h;
-    EHMTX_screen* screen = this->store->find_free_screen(icon);
+    EHMTX_screen *screen = this->store->find_free_screen(icon);
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     if (icon >= this->icon_count)
     {
@@ -216,7 +229,7 @@ namespace esphome
       icon = 0;
     }
 
-    EHMTX_screen* screen = this->store->find_free_screen(icon);
+    EHMTX_screen *screen = this->store->find_free_screen(icon);
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->set_text(text, icon, w, this->duration);
     screen->alarm = alarm;
@@ -232,16 +245,16 @@ namespace esphome
       icon = 0;
     }
 
-    EHMTX_screen* screen = this->store->find_free_screen(icon);
+    EHMTX_screen *screen = this->store->find_free_screen(icon);
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->set_text(text, icon, w, this->duration);
-    ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(),text.c_str());
+    ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
   }
 
   void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t t)
   {
     int x, y, w, h;
-    EHMTX_screen* screen = this->store->find_free_screen(icon);
+    EHMTX_screen *screen = this->store->find_free_screen(icon);
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     if (icon >= this->icon_count)
     {
@@ -317,7 +330,7 @@ namespace esphome
     {
       this->draw_clock();
     }
-    if (this->showindicator)
+    if (this->show_indicator)
     {
       this->display->line(31, 5, 29, 7, this->indicator_color);
       this->display->draw_pixel_at(30, 7, this->indicator_color);
@@ -326,10 +339,11 @@ namespace esphome
     }
   }
 
-/* Trigger */
+  /* Trigger */
 
-void EHMTXNextScreenTrigger::process(std::string iconname,std::string text) {
-  this->trigger(iconname,text);
-}
+  void EHMTXNextScreenTrigger::process(std::string iconname, std::string text)
+  {
+    this->trigger(iconname, text);
+  }
 
 }

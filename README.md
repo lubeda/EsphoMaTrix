@@ -180,7 +180,48 @@ ehmtx:
           iconname: !lambda "return x.c_str();"
           text: !lambda "return y.c_str();"
 ```
+### Actions
 
+For local automations you can use actions. This is the normal way of automations. The ```id(rgb8x32)->``` style will also work.
+
+#### Indicator on
+
+You have to use use id of your ehmtx component
+
+```
+     - ehmtx.indicator.on:
+            id: rgb8x32
+            red: !lambda return r;
+            green: !lambda return g;
+            blue: !lambda return b;
+```
+
+- ```red, green, blue```: the color components (0..255) (default=80)
+
+#### Indicator off 
+
+```
+     - ehmtx.indicator.off:
+            id: rgb8x32
+```
+
+#### add screen to loop
+
+```
+        - ehmtx.add.screen:
+            id: rgb8x32
+            text: !lambda return text;
+            icon_name: !lambda return icon_name;
+            duration: 7
+            alarm: false
+```
+
+Parameters:
+**id (required, ID):** ID of the ehmtx component
+**text (required, string):** the text to display
+**icon_name (required, string):** the name of the icon to display
+**duration (optional, int):** the lifetime of the screen in minutes (default=5)
+**alarm (optional, bool):** if alarm set true (default=false)
 
 ## Integration in homeassistant
 

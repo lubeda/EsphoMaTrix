@@ -6,7 +6,7 @@ from esphome.components import display, font, time, text_sensor
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.const import CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
+from esphome.const import  CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
 
@@ -19,6 +19,10 @@ MAXFRAMES=8
 Icons_ = display.display_ns.class_("Animation")
 ehmtx_ns  = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX",cg.Component)
+# Triggers
+NextScreenTrigger = ehmtx_ns.class_(
+    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
+)
 
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
@@ -32,11 +36,9 @@ CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
-
-# Triggers
-NextScreenTrigger = ehmtx_ns.class_(
-    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
-)
+CONF_ICON = "icon_name"
+CONF_TEXT = "text"
+CONF_ALARM = "alarm"
 
 EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(EHMTX_),
@@ -84,6 +86,132 @@ EHMTX_SCHEMA = cv.Schema({
 )})
 
 CONFIG_SCHEMA = cv.All(font.validate_pillow_installed, EHMTX_SCHEMA)
+
+ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+        cv.Required(CONF_ICON): cv.templatable(cv.string),
+        cv.Required(CONF_TEXT): cv.templatable(cv.string),
+        cv.Optional(CONF_DURATION, default=5): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
+    }
+)
+
+
+AddScreenAction =  ehmtx_ns.class_("AddScreenAction", automation.Action)
+
+@automation.register_action(
+    "ehmtx.add.screen", AddScreenAction, ADD_SCREEN_ACTION_SCHEMA
+)
+async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_ICON], args, cg.std_string)
+    cg.add(var.set_icon(template_))
+
+    template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
+    cg.add(var.set_text(template_))
+    template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
+    cg.add(var.set_duration(template_))
+    template_ = await cg.templatable(config[CONF_ALARM], args, bool)
+    cg.add(var.set_alarm(template_))
+    return var
+
+
+
+
+SET_BRIGHTNESS_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+        cv.Optional(CONF_BRIGHTNESS, default=80): cv.templatable( cv.int_range(min=0,max=255)),
+    }
+)
+
+SetBrightnessAction =  ehmtx_ns.class_("SetBrightnessAction", automation.Action)
+
+@automation.register_action(
+    "ehmtx.set.brightness", SetBrightnessAction, SET_BRIGHTNESS_ACTION_SCHEMA
+)
+async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_BRIGHTNESS], args, cg.int32)
+    cg.add(var.set_brightness(template_))
+
+    return var
+
+
+SET_COLOR_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+        cv.Required(CONF_RED): cv.templatable(cv.uint8_t,),
+        cv.Required(CONF_BLUE): cv.templatable(cv.uint8_t,),
+        cv.Required(CONF_GREEN): cv.templatable(cv.uint8_t,),
+    }
+)
+
+SetIndicatorOnAction =  ehmtx_ns.class_("SetIndicatorOn", automation.Action)
+
+@automation.register_action(
+    "ehmtx.indicator.on", SetIndicatorOnAction, SET_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_indicator_on_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
+
+    return var
+
+
+DELETE_SCREEN_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+        cv.Required(CONF_ICON): cv.templatable(cv.string),
+    }
+)
+
+DeleteScreenAction =  ehmtx_ns.class_("DeleteScreen", automation.Action)
+
+@automation.register_action(
+    "ehmtx.delete.screen", DeleteScreenAction, DELETE_SCREEN_ACTION_SCHEMA
+)
+async def ehmtx_delete_screen_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_ICON], args, cg.std_string)
+    cg.add(var.set_icon(template_))
+    
+    return var
+
+
+
+
+SetIndicatorOffAction =  ehmtx_ns.class_("SetIndicatorOff", automation.Action)
+
+INDICATOR_OFF_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+    }
+)
+
+@automation.register_action(
+    "ehmtx.indicator.off", SetIndicatorOffAction, INDICATOR_OFF_ACTION_SCHEMA
+)
+async def ehmtx_set_indicator_off_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    
+    return var
+
+
+    
 
 CODEOWNERS = ["@lubeda"]
 
@@ -194,12 +322,4 @@ async def to_code(config):
         await automation.build_automation(trigger, [(cg.std_string, "x"),(cg.std_string, "y")], conf)
 
     await cg.register_component(var, config)
-    
-    # this should be part of the yaml configuration    
-    
-    
-
-
-
-    
     
