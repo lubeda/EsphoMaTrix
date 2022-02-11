@@ -26,6 +26,7 @@ namespace esphome
     Color indicator_color;
     EHMTX_store* store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
+    void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
 
   public:
     EHMTX();
