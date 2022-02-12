@@ -15,9 +15,10 @@ namespace esphome
   void EHMTX::force_screen(std::string name)
   {
     uint8_t icon_id = this->find_icon(name);
-    if (icon_id < MAXICONS){
-      this->store->force_next_screen(icon_id);  
-      ESP_LOGD("EHMTX","Force next screen: %s",name.c_str());
+    if (icon_id < MAXICONS)
+    {
+      this->store->force_next_screen(icon_id);
+      ESP_LOGD("EHMTX", "Force next screen: %s", name.c_str());
     }
   }
   void EHMTX::set_indicator_color(int r, int g, int b)
@@ -209,7 +210,7 @@ namespace esphome
   {
     uint8_t icon = this->find_icon(iname.c_str());
     this->internal_add_screen(icon, text, this->duration, false);
-    ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(),text.c_str());
+    ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
   }
 
   void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t t)

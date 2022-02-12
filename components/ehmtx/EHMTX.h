@@ -3,12 +3,12 @@
 #define EHMTX_H
 #include "esphome.h"
 
-const uint8_t MAXQUEUE=16;
-const uint8_t MAXICONS=48;
-const uint8_t TEXTSCROLLSTART=9;
-const uint16_t TICKINTERVAL=1000; // each 1000ms
-static const char *const EHMTX_VERSION="Version: 2022.2.7";
-static const char *const TAG="EHMTX";
+const uint8_t MAXQUEUE = 16;
+const uint8_t MAXICONS = 48;
+const uint8_t TEXTSCROLLSTART = 9;
+const uint16_t TICKINTERVAL = 1000; // each 1000ms
+static const char *const EHMTX_VERSION = "Version: 2022.2.7";
+static const char *const TAG = "EHMTX";
 
 namespace esphome
 {
@@ -18,13 +18,13 @@ namespace esphome
   class EHMTX_store;
   class EHMTXNextScreenTrigger;
 
-  class EHMTX : public PollingComponent 
+  class EHMTX : public PollingComponent
   {
   protected:
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
     Color indicator_color;
-    EHMTX_store* store;
+    EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
     void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
 
@@ -37,13 +37,13 @@ namespace esphome
     void force_screen(std::string name);
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
-    void add_icon(display::Animation *icon,const char *name);
+    void add_icon(display::Animation *icon, const char *name);
     addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
-    int8_t yoffset,xoffset;
+    int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
-    uint16_t duration;          // in minutes how long is a screen valid
+    uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clock_time;       // ms display of clock/date 0.5 clock then 0.5 date
@@ -57,17 +57,17 @@ namespace esphome
     void tick();
     void draw();
     void get_status();
-    void set_display(addressable_light::AddressableLightDisplay *disp); 
+    void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
-    void set_font_offset(int8_t x,int8_t y );
+    void set_font_offset(int8_t x, int8_t y);
     void set_clock_time(uint16_t t);
     void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
     void add_screen_n(std::string icon, std::string text);
-    void add_screen_u(std::string icon, std::string text,uint16_t duration, bool alarm);
-    void add_screen_t(uint8_t icon, std::string text,uint16_t t);
+    void add_screen_u(std::string icon, std::string text, uint16_t duration, bool alarm);
+    void add_screen_t(uint8_t icon, std::string text, uint16_t t);
     void del_screen(uint8_t icon);
     void del_screen_n(std::string iname);
     void set_clock(time::RealTimeClock *clock);
@@ -89,22 +89,22 @@ namespace esphome
 
   class EHMTX_store
   {
-    protected:
-      EHMTX_screen *slots[MAXQUEUE];
-      uint8_t active_slot;
-      uint8_t icon_count;
-      uint8_t force_screen;
-      uint8_t count_active_screens();
-    
-    public:
-      EHMTX_store(EHMTX *config);
-      void force_next_screen(uint8_t icon_id);
-      time::RealTimeClock *clock;
-      EHMTX_screen* find_free_screen(uint8_t icon);
-      void delete_screen(uint8_t icon);
-      bool move_next();
-      EHMTX_screen* current();
-      void log_status();
+  protected:
+    EHMTX_screen *slots[MAXQUEUE];
+    uint8_t active_slot;
+    uint8_t icon_count;
+    uint8_t force_screen;
+    uint8_t count_active_screens();
+
+  public:
+    EHMTX_store(EHMTX *config);
+    void force_next_screen(uint8_t icon_id);
+    time::RealTimeClock *clock;
+    EHMTX_screen *find_free_screen(uint8_t icon);
+    void delete_screen(uint8_t icon);
+    bool move_next();
+    EHMTX_screen *current();
+    void log_status();
   };
 
   class EHMTX_screen
@@ -132,90 +132,101 @@ namespace esphome
     bool update_slot(uint8_t _icon);
     void update_screen();
     bool del_slot(uint8_t _icon);
-    void set_text(std::string text, uint8_t icon, uint8_t pixel,uint16_t et);
+    void set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et);
   };
 
+  class EHMTXNextScreenTrigger : public Trigger<std::string, std::string>
+  {
+  public:
+    explicit EHMTXNextScreenTrigger(EHMTX *parent) { parent->add_on_next_screen_trigger(this); }
+    void process(std::string, std::string);
+  };
 
-  
-class EHMTXNextScreenTrigger : public Trigger<std::string,std::string> {
- public:
-  explicit EHMTXNextScreenTrigger(EHMTX *parent) { parent->add_on_next_screen_trigger(this); }
-  void process(std::string,std::string);
-};
+  template <typename... Ts>
+  class AddScreenAction : public Action<Ts...>
+  {
+  public:
+    AddScreenAction(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(std::string, icon)
+    TEMPLATABLE_VALUE(std::string, text)
+    TEMPLATABLE_VALUE(uint8_t, duration)
+    TEMPLATABLE_VALUE(bool, alarm)
 
+    void play(Ts... x) override
+    {
+      this->parent_->add_screen_u(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
+                                  this->alarm_.value(x...));
+    }
 
-template<typename... Ts> class AddScreenAction : public Action<Ts...> {
- public:
-  AddScreenAction(EHMTX *parent) : parent_(parent) {}
-  TEMPLATABLE_VALUE(std::string, icon)
-  TEMPLATABLE_VALUE(std::string, text)
-  TEMPLATABLE_VALUE(uint8_t, duration)
-  TEMPLATABLE_VALUE(bool, alarm)
+  protected:
+    EHMTX *parent_;
+  };
 
-  void play(Ts... x) override {
-    this->parent_->add_screen_u(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
-                           this->alarm_.value(x...));
-  }
+  template <typename... Ts>
+  class SetIndicatorOn : public Action<Ts...>
+  {
+  public:
+    SetIndicatorOn(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
 
- protected:
-  EHMTX *parent_;
-};
+    void play(Ts... x) override
+    {
+      this->parent_->set_indicator_on();
+      this->parent_->set_indicator_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
 
+  protected:
+    EHMTX *parent_;
+  };
 
-template<typename... Ts> class SetIndicatorOn : public Action<Ts...> {
- public:
-  SetIndicatorOn(EHMTX *parent) : parent_(parent) {}
-  TEMPLATABLE_VALUE(uint8_t, red)
-  TEMPLATABLE_VALUE(uint8_t, green)
-  TEMPLATABLE_VALUE(uint8_t, blue)
+  template <typename... Ts>
+  class SetIndicatorOff : public Action<Ts...>
+  {
+  public:
+    SetIndicatorOff(EHMTX *parent) : parent_(parent) {}
 
-  void play(Ts... x) override {
-    this->parent_->set_indicator_on();
-    this->parent_->set_indicator_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
-  }
+    void play(Ts... x) override
+    {
+      this->parent_->set_indicator_off();
+    }
 
- protected:
-  EHMTX *parent_;
-};
+  protected:
+    EHMTX *parent_;
+  };
 
-template<typename... Ts> class SetIndicatorOff : public Action<Ts...> {
- public:
-  SetIndicatorOff(EHMTX *parent) : parent_(parent) {}
-  
-  void play(Ts... x) override {
-    this->parent_->set_indicator_off();
-  }
+  template <typename... Ts>
+  class DeleteScreen : public Action<Ts...>
+  {
+  public:
+    DeleteScreen(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(std::string, icon)
 
- protected:
-  EHMTX *parent_;
-};
+    void play(Ts... x) override
+    {
+      this->parent_->del_screen(this->parent_->find_icon(this->icon_.value(x...)));
+    }
 
+  protected:
+    EHMTX *parent_;
+  };
 
-template<typename... Ts> class DeleteScreen : public Action<Ts...> {
- public:
-  DeleteScreen(EHMTX *parent) : parent_(parent) {}
-  TEMPLATABLE_VALUE(std::string, icon)
-  
-  void play(Ts... x) override {
-    this->parent_->del_screen(this->parent_->find_icon(this->icon_.value(x...)));
-  }
+  template <typename... Ts>
+  class ForceScreen : public Action<Ts...>
+  {
+  public:
+    ForceScreen(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(std::string, icon)
 
- protected:
-  EHMTX *parent_;
-};
+    void play(Ts... x) override
+    {
+      this->parent_->force_screen(this->icon_.value(x...));
+    }
 
-template<typename... Ts> class ForceScreen : public Action<Ts...> {
- public:
-  ForceScreen(EHMTX *parent) : parent_(parent) {}
-  TEMPLATABLE_VALUE(std::string, icon)
-  
-  void play(Ts... x) override {
-    this->parent_->force_screen(this->icon_.value(x...));
-  }
-
- protected:
-  EHMTX *parent_;
-};
+  protected:
+    EHMTX *parent_;
+  };
 
 }
 
