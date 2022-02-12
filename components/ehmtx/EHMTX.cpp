@@ -145,11 +145,11 @@ namespace esphome
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
     if (this->show_indicator)
     {
-      ESP_LOGD("EHMTX", "Indicator on");
+      ESP_LOGD("EHMTX", "status indicator on");
     }
     else
     {
-      ESP_LOGD("EHMTX", "Indicator off");
+      ESP_LOGD("EHMTX", "status indicator off");
     }
 
     this->store->log_status();
