@@ -150,8 +150,9 @@ Take care that the ```char text[30];``` has enough space to store the formated t
 
 There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (so it is not trigger on the clock display!!). I lambda's you can use two local string variables:
 
-**x (Name of the icon, std::string):**
-**y (displayed text, std::string):**
+**x (Name of the icon, std::string):** value to use in lamba
+
+**y (displayed text, std::string):** value to use in lamba
 
 See the examples:
 
@@ -184,16 +185,26 @@ ehmtx:
 
 For local automations you can use actions. This is the normal way of automations. The ```id(rgb8x32)->``` style will also work.
 
+#### Force screen
+
+force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the string
+
+```
+    - ehmtx.force.screen:
+        id: rgb8x32
+        icon_name: !lambda return icon_name;
+```
+
 #### Indicator on
 
 You have to use use id of your ehmtx component
 
 ```
      - ehmtx.indicator.on:
-            id: rgb8x32
-            red: !lambda return r;
-            green: !lambda return g;
-            blue: !lambda return b;
+        id: rgb8x32
+        red: !lambda return r;
+        green: !lambda return g;
+        blue: !lambda return b;
 ```
 
 - ```red, green, blue```: the color components (0..255) (default=80)

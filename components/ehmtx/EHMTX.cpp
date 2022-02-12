@@ -2,7 +2,6 @@
 
 namespace esphome
 {
-
   EHMTX::EHMTX() : PollingComponent(TICKINTERVAL)
   {
     this->store = new EHMTX_store(this);
@@ -13,6 +12,14 @@ namespace esphome
     this->last_clock_time = 0;
   }
 
+  void EHMTX::force_screen(std::string name)
+  {
+    uint8_t icon_id = this->find_icon(name);
+    if (icon_id < MAXICONS){
+      this->store->force_next_screen(icon_id);  
+      ESP_LOGD("EHMTX","Force next screen: %s",name.c_str());
+    }
+  }
   void EHMTX::set_indicator_color(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);

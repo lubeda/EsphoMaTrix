@@ -34,6 +34,7 @@ namespace esphome
     void dump_config();
     bool show_screen;
     bool show_indicator;
+    void force_screen(std::string name);
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
     void add_icon(display::Animation *icon,const char *name);
@@ -42,7 +43,7 @@ namespace esphome
     display::Font *font;
     int8_t yoffset,xoffset;
     uint8_t find_icon(std::string name);
-    uint8_t duration;          // in minutes how long is a screen valid
+    uint16_t duration;          // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clock_time;       // ms display of clock/date 0.5 clock then 0.5 date
@@ -91,9 +92,13 @@ namespace esphome
     protected:
       EHMTX_screen *slots[MAXQUEUE];
       uint8_t active_slot;
+      uint8_t icon_count;
+      uint8_t force_screen;
       uint8_t count_active_screens();
+    
     public:
       EHMTX_store(EHMTX *config);
+      void force_next_screen(uint8_t icon_id);
       time::RealTimeClock *clock;
       EHMTX_screen* find_free_screen(uint8_t icon);
       void delete_screen(uint8_t icon);
@@ -199,6 +204,18 @@ template<typename... Ts> class DeleteScreen : public Action<Ts...> {
   EHMTX *parent_;
 };
 
+template<typename... Ts> class ForceScreen : public Action<Ts...> {
+ public:
+  ForceScreen(EHMTX *parent) : parent_(parent) {}
+  TEMPLATABLE_VALUE(std::string, icon)
+  
+  void play(Ts... x) override {
+    this->parent_->force_screen(this->icon_.value(x...));
+  }
+
+ protected:
+  EHMTX *parent_;
+};
 
 }
 

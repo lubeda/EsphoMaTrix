@@ -31,6 +31,7 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+          id(rgb8x32)->force_screen(icon_name);
     - service: screen
       variables:
         icon_name: string
@@ -79,6 +80,13 @@ api:
             red: !lambda return r;
             green: !lambda return g;
             blue: !lambda return b;
+    - service: force_screen
+      variables:
+        icon_name: string
+      then:
+        - ehmtx.force.screen:
+            id: rgb8x32
+            icon_name: !lambda return icon_name;
     - service: text_color
       variables:
         r: int
