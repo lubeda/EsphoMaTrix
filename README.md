@@ -85,7 +85,7 @@ external_components:
       url: https://github.com/lubeda/EsphoMaTrix
 ```
 
-## YAML confugration
+## YAML configuration
 
 **Sample**
 ```
@@ -229,9 +229,13 @@ You have to use use id of your ehmtx component
 
 Parameters:
 **id (required, ID):** ID of the ehmtx component
+
 **text (required, string):** the text to display
+
 **icon_name (required, string):** the name of the icon to display
+
 **duration (optional, int):** the lifetime of the screen in minutes (default=5)
+
 **alarm (optional, bool):** if alarm set true (default=false)
 
 ## Integration in homeassistant
