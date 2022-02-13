@@ -1,6 +1,6 @@
 substitutions:
   devicename: ehmtx32
-  mypin: GPIO04
+  mypin: GPIO16
   board: mhetesp32minikit
 
 external_components:
