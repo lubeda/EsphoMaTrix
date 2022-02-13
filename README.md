@@ -86,7 +86,7 @@ external_components:
       url: https://github.com/lubeda/EsphoMaTrix
 ```
 
-## YAML confugration
+## YAML configuration
 
 **Sample**
 ```
