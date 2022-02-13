@@ -1,36 +1,36 @@
 # EspHoMaTriX (ehmtx)
-A simple DIY status display with an 8x32 RGB LED panel implemented sole with [esphome.io](https://esphome.io)
+A simple DIY status display build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 
 # Introduction
 
-There are some "RGB-matrix" status displays out there, the commercial one from lamtric and some DIY alternatives. 
+There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lamtric and some very good d.i.y.-alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/)
 - [PixelIt](https://docs.bastelbunker.de/pixelit/)
 
-The other DIY solutions have their pros and cons, i am still using an awtrix ;-). But the cons are so big (after my opinion) that i started an esphome.io variant with an optimized homeassistant integration. The main reason, for me is the homeassistant integration.
+The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration!
 
 ## State
 
-**This is a usable version!**
+**First release!**
 
-It is not as feature rich as awtrix and pixeltIt but it's doing what **i** need. In professional terms it is a beta version. From the structure of the source code it is not a _clean_ ;-) version. There will be possibly breaking changes in the upcomming code.
+It is a working solution with the core funtionality coded. Advanced features, like automatic brigtness control can be done with esphome actions and automations. 
 
-See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (no sound but subtitles)
+See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles)
 
 ## Features
 
-Based a on a 8x32 RGB matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed it will disapear.
+Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed in its lifetime it will disapear.
 
 ### working sample
 
-You can use the ehmtx32.yaml as sample for an ESP. As mentioned you have to edit to your needs, so check font, icons, board and the GPIO port for your display.
+You can use the ehmtx32.yaml as sample for an ESP32. As mentioned you have to edit to your needs. So check font, icons, board and the GPIO port for your display.
 
 # Installation
 
 ## Font
-Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). I modified this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E**. Due to copyright i can't provide my modified version :-(.
+Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright i can't provide my modified version :-(.
 
 ```
 font:
@@ -42,7 +42,7 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons (.jpg/.png)/animations (.gif)under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
+Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
 
 ```
 emhtx:
@@ -55,16 +55,17 @@ emhtx:
       id: garage
 ```
 
-You can use gifs as animation and pngs as static "animations". Gif are limited to 8 frames to limit the flash space.
+Gifs are limited to 8 frames to limit the flash space. Thr first icon in your list is the fallback in case of an error.
 
-All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the used icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
+All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
 The id of the icons is used later to configure the screens to display. So you should name them clever.
 
 ## esphome component
 
-### More stable
-At the moment it is more stable to use a local component to get this running. Clone the repo and copy the components subfolder to your esphome folder. If needed customize the yaml to your folder structure.
+### local use
+
+If you download the componets-folder from the repo an install it in your esphome you have more stable installation. But if there are new features you won't see them. If needed customize the yaml to your folder structure.
 
 ```
 external_components:
@@ -74,7 +75,7 @@ external_components:
 
 ```
 
-### More features but perhaps breaking changes
+### use from repo direct
 
 Use the github repo as component. Esphome refreshes the external components "only" once a day, perhaps you have to refresh it manually.
 
@@ -90,19 +91,19 @@ external_components:
 **Sample**
 ```
 ehmtx:
-  id: rgb328 # needed to reference the components in services etc.
-  show_clock: 6
+  id: rgb328 # needed to reference the components in services and actions etc.
+  show_clock: 6 
   show_screen: 8
   duration: 5
   display8x32: ehmtxdisplay
-  time: ehmtxclock
-  font_id: ehmtxfont
+  time: EHMTX_clock
+  font_id: EHMTX_font
   icons: 
     - file: sample.png  # use your icons/animations here
       id: boot 
-    - file: sample.png
+    - file: celsius.png
       id: temp 
-    - file: sample.png
+    - file: garage door.gif
       id: garage
 ```
 
@@ -113,7 +114,7 @@ _Configuration variables:_
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
-**duration (Optional, minutes):** lifetime of a screen in minutes (default=5)
+**duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
 **yoffset (Optional, pixel):** yoffset of the font, default -5 (see installation/font)
 
@@ -123,13 +124,13 @@ _Configuration variables:_
 
 **font (required, ID):** ID of the font component
 
-**scroll_intervall (Optional, ms):** the intervall in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the dislplay (default: 16ms)
+**scroll_intervall (Optional, ms):** the intervall in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
-**anim_intervall (Optional, ms):** the intervall in ms to display the next anim frame (default=192), should be a multiple of the ```update_interval``` from the dislplay (default: 16ms)
+**anim_intervall (Optional, ms):** the intervall in ms to display the next anim frame (default=192), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
 ## Usage without homeassistant
 
-You can add screens locally and display data directly from any local sensor. See this sample
+You can add screens locally and display data directly from any local sensor. See this sample:
 
 ```
 sensor:
@@ -138,7 +139,7 @@ sensor:
     ...
     on_value:
       then:
-       lambda: |-
+        lambda: |-
           char text[30];
           sprintf(text,"Light: %2.1f lx", id(sensorlx).state);
           id(rgb8x32)->add_screen_u("sun",  text ,5,false); // 5 Minutes, no alarm
@@ -148,7 +149,7 @@ Take care that the ```char text[30];``` has enough space to store the formated t
 
 ## local trigger
 
-There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (so it is not trigger on the clock display!!). I lambda's you can use two local string variables:
+There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (so doesn't trigger on the clock display!!). In lambda's you can use two local string variables:
 
 **x (Name of the icon, std::string):** value to use in lamba
 
@@ -173,8 +174,8 @@ To send data back to home assistant you can use events.
 
 ```
 ehmtx:
-  on_next_screen:
   ....
+  on_next_screen:
     - homeassistant.event:
       event: esphome.next_screen
       data_template:
@@ -187,7 +188,7 @@ For local automations you can use actions. This is the normal way of automations
 
 #### Force screen
 
-force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the string
+Force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the value/text.
 
 ```
     - ehmtx.force.screen:
@@ -197,7 +198,9 @@ force the selected screen ```icon_name``` to be displayed next. Afterwards the l
 
 #### Indicator on
 
-You have to use use id of your ehmtx component
+The indicator is a static colored corner on the display.
+
+You have to use use id of your ehmtx component, e.g. ```rgb8x32```
 
 ```
      - ehmtx.indicator.on:
@@ -229,18 +232,22 @@ You have to use use id of your ehmtx component
 
 Parameters:
 **id (required, ID):** ID of the ehmtx component
+
 **text (required, string):** the text to display
+
 **icon_name (required, string):** the name of the icon to display
+
 **duration (optional, int):** the lifetime of the screen in minutes (default=5)
+
 **alarm (optional, bool):** if alarm set true (default=false)
 
 ## Integration in homeassistant
 
-To control your display it has to be integrated in homeassistant. Then it provides at least three services, all prefixed with the devicename e.g. "ehmtx". See the sample yaml fpr the default services, you can add your own.
+To control your display it has to be integrated in homeassistant. Then it provides at least three services, all prefixed with the devicename e.g. "ehmtx". See the sample yaml for the default services, but you can add your own.
 
 ### use the light component
 
-To use the light component add the lambdas```on_turn_on``` and ```on_turn_off``` to the light
+To use the light component add the sample lambdas```on_turn_on``` and ```on_turn_off``` to the light component.
 
 Sample:
 
@@ -258,9 +265,10 @@ light:
 ```
 
 ### Services
-All communication with homeassistant use the api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
 
-*Sample*
+All communication with homeassistant use the homeasistant-api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
+
+*Sample *
 ```
 api:
   services:
@@ -282,7 +290,7 @@ parameters:
 
 Service **_alarm**
 
-Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red marker in the upper right corner.
+Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red text color and a red marker in the upper right corner.
 
 parameters:
 - ```icon_name```: The name of the predefined icon-id (see installation)
@@ -315,7 +323,7 @@ parameters:
 
 Service **indicator_on**
 
-Display a colored corner on all screen and the clock. You can define the color by parameter.
+Display a colored corner on all screens and the clock. You can define the color by parameter.
 
 parameters:
 - ```r``` red in 0..255
@@ -345,7 +353,7 @@ This service displays the running queue and a list of icons in the logs
 
 ### use in automations from homeassistant
 
-The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have a icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
+The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have an icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
 
 ```
 alias: EHMTX 8266 Test
@@ -403,3 +411,6 @@ The integration works with the homeassistant api so, after boot of the device, i
 # Disclaimer
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
+# Thanks
+
+**[jd1](https://github.com/jd1)** for his contributions
