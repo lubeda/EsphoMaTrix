@@ -1,17 +1,18 @@
 substitutions:
   devicename: ehmtx8266
   mypin: GPIO04 #  GPIO04
-
+  board: d1_mini
+  
 external_components:
   - source:
-      type: local
-      path: components
+      type: git
+      url: https://github.com/lubeda/EsphoMaTrix
 
 esphome:
   name: $devicename
 
 esp8266:
-  board: d1_mini
+  board: $board
 
 font:
   - file: _fonts/monobit.ttf
@@ -19,6 +20,7 @@ font:
     size: 16
     glyphs:  |
       !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>/
+
 logger:
 
 # Enable Home Assistant API
@@ -42,16 +44,7 @@ api:
             text: !lambda return text;
             icon_name: !lambda return icon_name;
             alarm: false
-        #lambda: |-
-        #  id(rgb8x32)->add_screen_u(icon_name,text,5,false);
-    - service: screen_t
-      variables:
-        icon_name: string
-        duration: int
-        text: string
-      then:
-        lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,duration,false);
+      
     - service: brightness
       variables:
         brightness: int
@@ -125,7 +118,7 @@ light:
     id: ehmtx_light
     type: GRB
     variant: WS2812
-    pin: GPIO04
+    pin: $mypin
     num_leds: 256
     color_correct: [30%, 30%, 30%]
     name: "$devicename Light"
@@ -136,6 +129,7 @@ light:
     on_turn_off:
        lambda: |-
          id(ehmtx_display)->set_enabled(true);
+
 time:
   - platform: homeassistant
     id: ehmtx_time
@@ -175,10 +169,6 @@ ehmtx:
   icons: 
     - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
       id: boot
-    - file: _icons/Network-Online_29041.png
-      id: internet
-    - file: _icons/Thermometer_20275.png
-      id: temp
     - file: _icons/Garage Door open_30081.gif
       id: garage
     - file: _icons/Wind_22148.gif

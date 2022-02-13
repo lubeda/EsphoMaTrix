@@ -27,6 +27,8 @@ Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 16
 
 You can use the ehmtx32.yaml as sample for an ESP32. As mentioned you have to edit to your needs. So check font, icons, board and the GPIO port for your display.
 
+The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx8266.yaml uses actions where possible.
+
 # Installation
 
 ## Font
