@@ -14,6 +14,10 @@ esphome:
 esp32:
   board: $board
 
+binary_sensor:
+  - platform: status
+    name: "$devicename Status"
+
 font:
   - file: _fonts/monobit.ttf
     id: ehmtx_font

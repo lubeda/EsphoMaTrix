@@ -23,6 +23,10 @@ font:
 
 logger:
 
+binary_sensor:
+  - platform: status
+    name: "$devicename Status"
+
 # Enable Home Assistant API
 api:
   services:
