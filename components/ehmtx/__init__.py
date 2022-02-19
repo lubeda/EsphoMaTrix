@@ -76,7 +76,7 @@ EHMTX_SCHEMA = cv.Schema({
             {
                 cv.Required(CONF_ICONID): cv.declare_id(Icons_),
                 cv.Required(CONF_FILE): cv.file_,
-                cv.Optional(CONF_TYPE, default="RGB24"): cv.enum(
+                cv.Optional(CONF_TYPE, default="RGB565"): cv.enum(
                     espImage.IMAGE_TYPE, upper=True
                 ),
                 cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
@@ -287,6 +287,21 @@ async def to_code(config):
                     pos += 1
                     data[pos] = pix[2] & 248
                     pos += 1
+
+        elif config[CONF_TYPE] == "RGB565":
+            image = image.convert("RGB")
+            pixels = list(image.getdata())
+            data = [0 for _ in range(height * width * 3)]
+            pos = 0
+            for pix in pixels:
+                R = pix[0] >> 3
+                G = pix[1] >> 2
+                B = pix[2] >> 3
+                rgb = (R << 11) | (G << 5) | B
+                data[pos] = rgb >> 8
+                pos += 1
+                data[pos] = rgb & 255
+                pos += 1
 
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
