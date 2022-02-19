@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
-MAXFRAMES = 8
+MAXFRAMES = 10
 
 Icons_ = display.display_ns.class_("Animation")
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
@@ -287,19 +287,25 @@ async def to_code(config):
                     pos += 1
 
         elif conf[CONF_TYPE] == "RGB565":
-            image = image.convert("RGB")
-            pixels = list(image.getdata())
-            data = [0 for _ in range(height * width * 3)]
+            data = [0 for _ in range(8 * 8 * 2 * frames)]
             pos = 0
-            for pix in pixels:
-                R = pix[0] >> 3
-                G = pix[1] >> 2
-                B = pix[2] >> 3
-                rgb = (R << 11) | (G << 5) | B
-                data[pos] = rgb >> 8
-                pos += 1
-                data[pos] = rgb & 255
-                pos += 1
+            for frameIndex in range(frames):
+                image.seek(frameIndex)
+                frame = image.convert("RGB")
+                pixels = list(frame.getdata())
+                if len(pixels) != 8 * 8:
+                    raise core.EsphomeError(
+                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                    )
+                for pix in pixels:
+                    R = pix[0] >> 3
+                    G = pix[1] >> 2
+                    B = pix[2] >> 3
+                    rgb = (R << 11) | (G << 5) | B
+                    data[pos] = rgb >> 8
+                    pos += 1
+                    data[pos] = rgb & 255
+                    pos += 1
 
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
