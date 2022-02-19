@@ -97,9 +97,7 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
     }
 )
 
-
 AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
-
 
 @automation.register_action(
     "ehmtx.add.screen", AddScreenAction, ADD_SCREEN_ACTION_SCHEMA
@@ -288,7 +286,7 @@ async def to_code(config):
                     data[pos] = pix[2] & 248
                     pos += 1
 
-        elif config[CONF_TYPE] == "RGB565":
+        elif conf[CONF_TYPE] == "RGB565":
             image = image.convert("RGB")
             pixels = list(image.getdata())
             data = [0 for _ in range(height * width * 3)]
