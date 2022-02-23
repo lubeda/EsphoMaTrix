@@ -202,8 +202,8 @@ namespace esphome
   void EHMTX::add_screen_u(std::string iname, std::string text, uint16_t duration, bool alarm)
   {
     uint8_t icon = this->find_icon(iname.c_str());
-    this->internal_add_screen(icon, text, this->duration, alarm);
-    ESP_LOGD(TAG, "add_screen_u icon: %d iconname: %s text: %s alarm: %d", icon, iname.c_str(), text.c_str(), alarm);
+    this->internal_add_screen(icon, text, duration, alarm);
+    ESP_LOGD(TAG, "add_screen_u icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iname.c_str(), text.c_str(), duration, alarm);
   }
 
   void EHMTX::add_screen_n(std::string iname, std::string text)
@@ -213,10 +213,10 @@ namespace esphome
     ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
   }
 
-  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t t)
+  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t duration  )
   {
     this->internal_add_screen(icon, text, duration, false);
-    ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, t, text.c_str());
+    ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, duration, text.c_str());
   }
 
   void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm = false)
@@ -231,7 +231,7 @@ namespace esphome
     int x, y, w, h;
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
-    screen->set_text(text, icon, w, this->duration);
+    screen->set_text(text, icon, w, duration);
   }
 
   void EHMTX::set_default_brightness(uint8_t b)
