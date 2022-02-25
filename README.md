@@ -290,6 +290,23 @@ Sets the overall brightness of the display (0..255)
 parameters:
 - ```brightness```: from dark to bright (0..255) (default=80) as set in the light component by ```color_correct: [30%, 30%, 30%]```
 
+There's an easier way in using a number component:
+
+```
+number:
+  - platform: template
+    name: "LED brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+```
+
+
 Service **_alarm**
 
 Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red text color and a red marker in the upper right corner.
