@@ -120,6 +120,18 @@ light:
        lambda: |-
          id(ehmtx_display)->set_enabled(true);
 
+number:
+  - platform: template
+    name: "LED brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+
 time:
   - platform: homeassistant
     id: ehmtx_time
