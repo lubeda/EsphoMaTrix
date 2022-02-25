@@ -247,6 +247,10 @@ namespace esphome
     this->display->get_light()->set_correction(br, br, br, br);
   }
 
+  uint8_t EHMTX::get_brightness() {
+    return this->brightness_;
+  }
+
   void EHMTX::set_clock_time(uint16_t t)
   {
     this->clock_time = t;

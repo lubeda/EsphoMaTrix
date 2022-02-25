@@ -63,6 +63,7 @@ namespace esphome
     void set_clock_time(uint16_t t);
     void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);
+    uint8_t get_brightness();
     void add_alarm(uint8_t icon, std::string text);
     void add_screen(uint8_t icon, std::string text);
     void add_screen_n(std::string icon, std::string text);
