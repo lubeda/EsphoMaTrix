@@ -131,7 +131,7 @@ namespace esphome
     {
         uint8_t status = 0;
         time_t ts = this->clock->now().timestamp;
-        ESP_LOGI(TAG, "status active slot: %d", status, this->active_slot);
+        ESP_LOGI(TAG, "status active slot: %d", this->active_slot);
         ESP_LOGI(TAG, "status screen count: %d of %d", this->count_active_screens(), MAXQUEUE);
         for (uint8_t i = 0; i < MAXQUEUE; i++)
         {
