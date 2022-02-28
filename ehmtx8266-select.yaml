@@ -4,13 +4,13 @@ substitutions:
 
 external_components:
   - source:
-    #  type: git
-    #  url: https://github.com/lubeda/EsphoMaTrix
-    #  ref: rgb565
-    #refresh: 600s 
-      components: [ ehmtx ]   
-      type: local
-      path: components
+      type: git
+      url: https://github.com/lubeda/EsphoMaTrix
+      ref: rgb565
+    refresh: 600s 
+    components: [ ehmtx ]   
+      #type: local
+      #path: components
   - source:
       type: git
       url: https://github.com/lubeda/esphome
