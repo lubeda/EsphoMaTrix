@@ -420,7 +420,7 @@ number:
 
 #### force screen
 
-with the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen.
+with the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen. The state of the select componenten doesn't reflect the actual display because it is published only all 120s. You should also consider to not record this state in your history.
 
 ```
 ehmtx:
