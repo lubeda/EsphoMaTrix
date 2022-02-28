@@ -9,6 +9,7 @@ import esphome.codegen as cg
 from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
+from .select import EHMTXSelect
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
+CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
@@ -48,6 +50,9 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
         CONF_SHOWCLOCK, default="5"
     ): cv.templatable(cv.positive_int),
+    cv.Optional(
+        CONF_SELECT, 
+    ): cv.use_id(EHMTXSelect),
     cv.Optional(
         CONF_YOFFSET, default="-5"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
@@ -351,6 +356,10 @@ async def to_code(config):
 
     ehmtxtime = await cg.get_variable(config[CONF_TIME])
     cg.add(var.set_clock(ehmtxtime))
+
+    if (config.get(CONF_SELECT)):
+        ehmtxselect = await cg.get_variable(config[CONF_SELECT])
+        cg.add(var.set_select(ehmtxselect))
 
     for conf in config.get(CONF_ON_NEXT_SCREEN, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)

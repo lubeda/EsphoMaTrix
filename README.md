@@ -398,6 +398,43 @@ mode: queued
 max: 10
 ```
 
+### integrate in home assistant ui
+
+you can add some entities to home assistant to your ui for interactive control of your display
+
+#### brightness
+
+```
+number:
+  - platform: template
+    name: "$devicename brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+```
+
+#### force screen
+
+with the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen.
+
+```
+ehmtx:
+  id: rgb8x32
+  ...
+  ehmtxselect: ehmtx_screens #id of your select component
+  ...
+  
+select:
+  - platform: ehmtx
+    id: ehmtx_screens
+    name: "ehmtx screens"
+```
+
 ## Hardware/Wifi
 
 Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP32) as port for the display.

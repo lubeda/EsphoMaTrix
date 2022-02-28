@@ -16,6 +16,7 @@ namespace esphome
 
   class EHMTX_screen;
   class EHMTX_store;
+  class EhmtxSelect;
   class EHMTXNextScreenTrigger;
 
   class EHMTX : public PollingComponent
@@ -38,6 +39,11 @@ namespace esphome
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
     void add_icon(display::Animation *icon, const char *name);
+    #ifdef USE_EHMTX_SELECT
+      std::vector<std::string> select_options;
+      esphome::EhmtxSelect *select;
+      void set_select(esphome::EhmtxSelect *es);
+    #endif
     addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
@@ -57,6 +63,7 @@ namespace esphome
     void tick();
     void draw();
     void get_status();
+    std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
     void set_font_offset(int8_t x, int8_t y);
