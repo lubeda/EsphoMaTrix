@@ -76,7 +76,7 @@ e.g.
 ```
 <HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>
 error: <img src="_icons/error fatal.gif" alt="error">&nbsp;
-leaia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
+leia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
 </BODY></HTML>
 ```
 you can save this to a file in the folder with the yaml to preview your icons as reference.
