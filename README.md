@@ -50,6 +50,7 @@ Download and install all needed icons (.jpg/.png)/animations (.gif) under the "e
 emhtx:
   icons: 
     - file: icons/rocket.gif
+      duration: 75
       id: boot 
     - file: temperature.png
       id: temp 
@@ -57,11 +58,28 @@ emhtx:
       id: garage
 ```
 
-Gifs are limited to 8 frames to limit the flash space. Thr first icon in your list is the fallback in case of an error.
+### Parameter
+**duration (Optional, ms):** in case of a gif file the component tries to read the default intervall for each frame. The default/fallback intervall is 192ms. In case you need to override set the duration per icon
+
+Gifs are limited to 10 frames to limit the flash space. The first icon in your list is the fallback in case of an error.
 
 All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
 The id of the icons is used later to configure the screens to display. So you should name them clever.
+
+### preview helper
+
+During compile the logfile contains a html code to preview the icons.
+
+e.g.
+
+```
+<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>
+error: <img src="_icons/error fatal.gif" alt="error">&nbsp;
+leaia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
+</BODY></HTML>
+```
+you can save this to a file in the folder with the yaml to preview your icons as reference.
 
 ## esphome component
 

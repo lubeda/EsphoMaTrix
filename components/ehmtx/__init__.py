@@ -81,6 +81,9 @@ EHMTX_SCHEMA = cv.Schema({
             {
                 cv.Required(CONF_ICONID): cv.declare_id(Icons_),
                 cv.Required(CONF_FILE): cv.file_,
+                cv.Optional(
+                    CONF_DURATION, default="0"
+                ): cv.templatable(cv.positive_int),
                 cv.Optional(CONF_TYPE, default="RGB565"): cv.enum(
                     espImage.IMAGE_TYPE, upper=True
                 ),
@@ -258,11 +261,13 @@ async def to_code(config):
             frames = 1
             
         print (str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" )
-        try:
-            duration =  image.info['duration']         
-        except:
-            duration = config[CONF_ANIMINTERVALL]
-
+        if (conf[CONF_DURATION] == 0):
+            try:
+                duration =  image.info['duration']         
+            except:
+                duration = config[CONF_ANIMINTERVALL]
+        else:
+            duration = conf[CONF_DURATION]
         if conf[CONF_TYPE] == "GRAYSCALE":
             data = [0 for _ in range(8 * 8 * frames)]
             pos = 0
