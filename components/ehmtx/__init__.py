@@ -238,7 +238,7 @@ async def to_code(config):
     from PIL import Image
 
     var = cg.new_Pvariable(config[CONF_ID])
-    
+    print("<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>")
     for conf in config[CONF_ICONS]:
 
         path = CORE.relative_config_path(conf[CONF_FILE])
@@ -257,6 +257,7 @@ async def to_code(config):
         else:
             frames = 1
             
+        print (str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" )
         try:
             duration =  image.info['duration']         
         except:
@@ -345,6 +346,7 @@ async def to_code(config):
         cg.add(var.add_icon(RawExpression(
             str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\","+ str(duration) + "")))
 
+    print("</BODY></HTML>")
     cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
