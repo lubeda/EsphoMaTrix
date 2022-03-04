@@ -238,7 +238,7 @@ async def to_code(config):
     from PIL import Image
 
     var = cg.new_Pvariable(config[CONF_ID])
-
+    
     for conf in config[CONF_ICONS]:
 
         path = CORE.relative_config_path(conf[CONF_FILE])
@@ -256,6 +256,11 @@ async def to_code(config):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
+            
+        try:
+            duration =  image.info['duration']         
+        except:
+            duration = config[CONF_ANIMINTERVALL]
 
         if conf[CONF_TYPE] == "GRAYSCALE":
             data = [0 for _ in range(8 * 8 * frames)]
@@ -293,7 +298,7 @@ async def to_code(config):
 
         elif conf[CONF_TYPE] == "RGB565":
             data = [0 for _ in range(8 * 8 * 2 * frames)]
-            pos = 0
+            pos = 0 
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
@@ -338,7 +343,7 @@ async def to_code(config):
         )
 
         cg.add(var.add_icon(RawExpression(
-            str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\"")))
+            str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\","+ str(duration) + "")))
 
     cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))

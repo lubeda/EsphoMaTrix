@@ -10,10 +10,10 @@ namespace esphome
     this->text_color = Color(240, 240, 240);
     this->alarm_color = Color(200, 50, 50);
     this->last_clock_time = 0;
-    #ifdef USE_EHMTX_SELECT
-      this->select = NULL;
-    #endif  
- }
+#ifdef USE_EHMTX_SELECT
+    this->select = NULL;
+#endif
+  }
 
   void EHMTX::force_screen(std::string name)
   {
@@ -82,13 +82,14 @@ namespace esphome
 
   void EHMTX::setup()
   {
-    #ifdef USE_EHMTX_SELECT
-        if (this->select != NULL){
-          ESP_LOGD(TAG, "setup select_component options");
-          this->select->traits.set_options(this->select_options);
-          this->select->parent = this;
-        }
-    #endif
+#ifdef USE_EHMTX_SELECT
+    if (this->select != NULL)
+    {
+      ESP_LOGD(TAG, "setup select_component options");
+      this->select->traits.set_options(this->select_options);
+      this->select->parent = this;
+    }
+#endif
   }
 
   void EHMTX::update()
@@ -223,7 +224,7 @@ namespace esphome
     ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
   }
 
-  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t duration  )
+  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t duration)
   {
     this->internal_add_screen(icon, text, duration, false);
     ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, duration, text.c_str());
@@ -257,14 +258,16 @@ namespace esphome
     this->display->get_light()->set_correction(br, br, br, br);
   }
 
-  uint8_t EHMTX::get_brightness() {
+  uint8_t EHMTX::get_brightness()
+  {
     return this->brightness_;
   }
 
-  std::string EHMTX::get_current() {
+  std::string EHMTX::get_current()
+  {
     return this->iconnames[this->store->current()->icon];
   }
-  
+
   void EHMTX::set_clock_time(uint16_t t)
   {
     this->clock_time = t;
@@ -312,25 +315,24 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
   }
 
-  #ifdef USE_EHMTX_SELECT
-    void EHMTX::set_select(esphome::EhmtxSelect *es)
-    {
-      this->select = es;
-    }
-  #endif
+#ifdef USE_EHMTX_SELECT
+  void EHMTX::set_select(esphome::EhmtxSelect *es)
+  {
+    this->select = es;
+  }
+#endif
 
-  void EHMTX::add_icon(display::Animation *icon, const char *name)
+  void EHMTX::add_icon(display::Animation *icon, const char *name, uint16_t animint)
   {
     this->icons[this->icon_count] = icon;
     this->iconnames[this->icon_count] = name;
+    this->iconduration[this->icon_count] = animint;
+    ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, name, this->iconduration[this->icon_count]);
     this->icon_count++;
-    
-    #ifdef USE_EHMTX_SELECT
-      this->select_options.push_back(name);
-      ESP_LOGD(TAG, "add_icon to select ");
-    #endif
-    
-    ESP_LOGD(TAG, "add_icon no.: %d name: %s", this->icon_count, name);
+
+#ifdef USE_EHMTX_SELECT
+    this->select_options.push_back(name);
+#endif   
   }
 
   void EHMTX::draw()

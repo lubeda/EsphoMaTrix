@@ -38,7 +38,8 @@ namespace esphome
     void force_screen(std::string name);
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
-    void add_icon(display::Animation *icon, const char *name);
+    uint16_t iconduration[MAXICONS];
+    void add_icon(display::Animation *icon, const char *name,uint16_t ai);
     #ifdef USE_EHMTX_SELECT
       std::vector<std::string> select_options;
       esphome::EhmtxSelect *select;

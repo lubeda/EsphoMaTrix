@@ -10,3 +10,6 @@ dev_*.yaml
 ehmtx8266.yaml
 info.de.md
 components/ehmtx/select/__pycache__/__init__.cpython-39.pyc
+ehmtx8266-rgb565.yaml
+icons.html
+components/ehmtx/__init__ copy.py

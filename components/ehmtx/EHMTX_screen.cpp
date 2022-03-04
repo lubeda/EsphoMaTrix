@@ -35,7 +35,7 @@ namespace esphome
       }
       this->config_->last_scroll_time = millis();
     }
-    if (millis() - this->config_->last_anim_time >= this->config_->anim_intervall &&
+    if (millis() - this->config_->last_anim_time >= this->config_->iconduration[this->icon] &&
         (this->config_->icons[this->icon]->get_current_frame() <
          this->config_->icons[this->icon]->get_animation_frame_count()))
     {
