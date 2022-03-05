@@ -101,7 +101,11 @@ namespace esphome
       this->last_clock_time = ts;
     }
   }
-
+  void EHMTX::skip_screen()
+  {
+    this->next_action_time = 1;
+  }
+  
   void EHMTX::tick()
   {
 

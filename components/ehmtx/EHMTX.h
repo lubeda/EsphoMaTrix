@@ -64,6 +64,7 @@ namespace esphome
     void tick();
     void draw();
     void get_status();
+    void skip_screen();
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);

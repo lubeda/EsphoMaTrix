@@ -30,6 +30,10 @@ logger:
 # Enable Home Assistant API
 api:
   services:
+    - service: skip
+      then:
+        lambda: |-
+          id(rgb8x32)->skip_screen();
     - service: alarm
       variables:
         icon_name: string

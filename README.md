@@ -371,6 +371,10 @@ Service **indicator_off**
 
 removes the indicator
 
+Service **skip**
+
+skips to the next screen
+
 Service **status**
 
 This service displays the running queue and a list of icons in the logs
