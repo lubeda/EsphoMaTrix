@@ -148,6 +148,8 @@ _Configuration variables:_
 
 **anim_intervall (Optional, ms):** the intervall in ms to display the next anim frame (default=192), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
+**html (Optional, boolean):** If true generate a html (_filename_.yaml.html) file to show all include icons.  (default: false)
+
 ## Usage without homeassistant
 
 You can add screens locally and display data directly from any local sensor. See this sample:
