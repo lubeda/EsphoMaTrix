@@ -2,7 +2,7 @@ from argparse import Namespace
 import logging
 
 from esphome import core, automation
-from esphome.components import display, font, time, text_sensor
+from esphome.components import display, font, time
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
@@ -31,6 +31,7 @@ CONF_EHMTX = "ehmtx"
 CONF_ICONS = "icons"
 CONF_DISPLAY = "display8x32"
 CONF_ICONID = "id"
+CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
 CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
@@ -56,6 +57,9 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
         CONF_YOFFSET, default="-5"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
+    cv.Optional(
+        CONF_HTML, default=False
+    ): cv.boolean,
     cv.Optional(
         CONF_XOFFSET, default="0"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
@@ -239,9 +243,8 @@ CODEOWNERS = ["@lubeda"]
 async def to_code(config):
 
     from PIL import Image
-
     var = cg.new_Pvariable(config[CONF_ID])
-    print("<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>")
+    html_string = "<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>"
     for conf in config[CONF_ICONS]:
 
         path = CORE.relative_config_path(conf[CONF_FILE])
@@ -260,7 +263,7 @@ async def to_code(config):
         else:
             frames = 1
             
-        print (str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" )
+        html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
         if (conf[CONF_DURATION] == 0):
             try:
                 duration =  image.info['duration']         
@@ -351,7 +354,16 @@ async def to_code(config):
         cg.add(var.add_icon(RawExpression(
             str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\","+ str(duration) + "")))
 
-    print("</BODY></HTML>")
+    html_string += "</BODY></HTML>"
+    
+    if config[CONF_HTML]:
+        try:
+            with open(CORE.config_path+".html", 'w') as f:
+                f.write(html_string)
+                f.close()
+        except:
+            print("Error writing HTML file")    
+    
     cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
