@@ -136,7 +136,9 @@ _Configuration variables:_
 
 **duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
-**yoffset (Optional, pixel):** yoffset of the font, default -5 (see installation/font)
+**yoffset (Optional, pixel):** yoffset the text is alligned BASELINE_LEFT, the baseline defaults to 6 
+
+**xoffset (Optional, pixel):** xoffset the text is alligned BASELINE_LEFT, the left defaults to 1
 
 **display8x32 (required, ID):** ID of the addressable display
 

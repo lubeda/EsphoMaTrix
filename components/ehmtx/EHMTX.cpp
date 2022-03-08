@@ -69,12 +69,12 @@ namespace esphome
   {
     if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
     {
-      this->display->strftime(6 + this->xoffset, this->yoffset, this->font, this->text_color, "%H:%M",
+      this->display->strftime(this->xoffset+15, this->yoffset, this->font, this->text_color, display::TextAlign::BASELINE_CENTER,"%H:%M",
                               this->clock->now());
     }
     else
     {
-      this->display->strftime(5 + this->xoffset, this->yoffset, this->font, this->text_color, "%d.%m.",
+      this->display->strftime(this->xoffset+15, this->yoffset, this->font, this->text_color,display::TextAlign::BASELINE_CENTER, "%d.%m.",
                               this->clock->now());
     }
     this->draw_day_of_week();
@@ -314,6 +314,7 @@ namespace esphome
   {
     ESP_LOGCONFIG(TAG, "EspHoMatriX %s", EHMTX_VERSION);
     ESP_LOGCONFIG(TAG, "Icons: %d of %d", this->icon_count, MAXICONS);
+    ESP_LOGCONFIG(TAG, "Offset: x= %d y=f %d", this->xoffset, this->yoffset);
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);

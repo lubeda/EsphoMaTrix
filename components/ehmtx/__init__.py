@@ -55,13 +55,13 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_SELECT, 
     ): cv.use_id(EHMTXSelect),
     cv.Optional(
-        CONF_YOFFSET, default="-5"
+        CONF_YOFFSET, default="6"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
         CONF_HTML, default=False
     ): cv.boolean,
     cv.Optional(
-        CONF_XOFFSET, default="0"
+        CONF_XOFFSET, default="1"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(CONF_SCROLLINTERVALL, default="80"
                 ): cv.templatable(cv.positive_int),

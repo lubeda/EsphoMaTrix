@@ -68,12 +68,12 @@ namespace esphome
 
     if (this->alarm)
     {
-      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color,
+      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color,esphome::display::TextAlign::BASELINE_LEFT,
                                    this->text.c_str());
     }
     else
     {
-      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color,
+      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color,esphome::display::TextAlign::BASELINE_LEFT,
                                    this->text.c_str());
     }
     this->config_->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
