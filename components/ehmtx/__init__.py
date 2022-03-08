@@ -1,5 +1,7 @@
 from argparse import Namespace
 import logging
+import io
+import requests
 
 from esphome import core, automation
 from esphome.components import display, font, time
@@ -28,6 +30,7 @@ NextScreenTrigger = ehmtx_ns.class_(
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
+CONF_URL = "url"
 CONF_ICONS = "icons"
 CONF_DISPLAY = "display8x32"
 CONF_ICONID = "id"
@@ -84,7 +87,9 @@ EHMTX_SCHEMA = cv.Schema({
         cv.ensure_list(
             {
                 cv.Required(CONF_ICONID): cv.declare_id(Icons_),
-                cv.Required(CONF_FILE): cv.file_,
+
+                cv.Exclusive(CONF_FILE,"uri"): cv.file_,
+                cv.Exclusive(CONF_URL,"uri"): cv.url,
                 cv.Optional(
                     CONF_DURATION, default="0"
                 ): cv.templatable(cv.positive_int),
@@ -247,12 +252,17 @@ async def to_code(config):
     html_string = "<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>"
     for conf in config[CONF_ICONS]:
 
-        path = CORE.relative_config_path(conf[CONF_FILE])
-        try:
-            image = Image.open(path)
-        except Exception as e:
-            raise core.EsphomeError(f"Could not load image file {path}: {e}")
-
+        if CONF_FILE in conf:
+            path = CORE.relative_config_path(conf[CONF_FILE])
+            try:
+                image = Image.open(path)
+            except Exception as e:
+                raise core.EsphomeError(f"Could not load image file {path}: {e}")
+        elif CONF_URL in conf:
+            r = requests.get(conf[CONF_URL], timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                raise core.EsphomeError(f"Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
+            image = Image.open(io.BytesIO(r.content))
         width, height = image.size
         if (width != 8) or (height != 8):
             image = image.resize([8, 8])
@@ -262,8 +272,10 @@ async def to_code(config):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
-            
-        html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        if CONF_FILE in conf:
+            html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        else: 
+            html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_URL] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
         if (conf[CONF_DURATION] == 0):
             try:
                 duration =  image.info['duration']         
