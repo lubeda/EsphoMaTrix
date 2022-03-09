@@ -314,7 +314,7 @@ namespace esphome
   {
     ESP_LOGCONFIG(TAG, "EspHoMatriX %s", EHMTX_VERSION);
     ESP_LOGCONFIG(TAG, "Icons: %d of %d", this->icon_count, MAXICONS);
-    ESP_LOGCONFIG(TAG, "Offset: x= %d y=f %d", this->xoffset, this->yoffset);
+    ESP_LOGCONFIG(TAG, "Font offset: x=%d y=%d", this->xoffset, this->yoffset);
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
