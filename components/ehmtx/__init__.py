@@ -34,7 +34,6 @@ CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_ICONS = "icons"
 CONF_DISPLAY = "display8x32"
-CONF_ICONID = "id"
 CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
 CONF_ANIMINTERVALL = "anim_intervall"
@@ -87,7 +86,7 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ICONS): cv.All(
         cv.ensure_list(
             {
-                cv.Required(CONF_ICONID): cv.declare_id(Icons_),
+                cv.Required(CONF_ID): cv.declare_id(Icons_),
 
                 cv.Exclusive(CONF_FILE,"uri"): cv.file_,
                 cv.Exclusive(CONF_URL,"uri"): cv.url,
@@ -258,11 +257,11 @@ async def to_code(config):
             try:
                 image = Image.open(path)
             except Exception as e:
-                raise core.EsphomeError(f"Could not load image file {path}: {e}")
+                raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
         elif CONF_URL in conf:
             r = requests.get(conf[CONF_URL], timeout=4.0)
             if r.status_code != requests.codes.ok:
-                raise core.EsphomeError(f"Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
+                raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
         width, height = image.size
         if (width != 8) or (height != 8):
