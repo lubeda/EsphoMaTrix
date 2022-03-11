@@ -18,6 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 16
+MAXICONS=64
 
 Icons_ = display.display_ns.class_("Animation")
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
@@ -99,7 +100,7 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
             }
         ),
-        cv.Length(max=64),
+        cv.Length(max=MAXICONS),
     )})
 
 CONFIG_SCHEMA = cv.All(font.validate_pillow_installed, EHMTX_SCHEMA)
