@@ -163,6 +163,7 @@ namespace esphome
 
     void play(Ts... x) override
     {
+      ESP_LOGD(TAG,"add screen action");
       this->parent_->add_screen_u(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
                                   this->alarm_.value(x...));
     }
