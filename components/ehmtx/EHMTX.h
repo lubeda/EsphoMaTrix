@@ -17,6 +17,7 @@ namespace esphome
   class EHMTX_screen;
   class EHMTX_store;
   class EhmtxSelect;
+  class EHMTX_Icon;
   class EHMTXNextScreenTrigger;
 
   class EHMTX : public PollingComponent
@@ -36,10 +37,8 @@ namespace esphome
     bool show_screen;
     bool show_indicator;
     void force_screen(std::string name);
-    display::Animation *icons[MAXICONS];
-    const char *iconnames[MAXICONS];
-    uint16_t iconduration[MAXICONS];
-    void add_icon(display::Animation *icon, const char *name,uint16_t ai);
+    EHMTX_Icon *icons[MAXICONS];
+    void add_icon(EHMTX_Icon *icon);
     #ifdef USE_EHMTX_SELECT
       std::vector<std::string> select_options;
       esphome::EhmtxSelect *select;
@@ -236,6 +235,19 @@ namespace esphome
 
   protected:
     EHMTX *parent_;
+  };
+
+class EHMTX_Icon : public display::Animation
+  {
+  protected:
+    bool counting_up;    
+
+  public:
+    EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type,std::string icon_name, bool revers, uint16_t frame_duration);
+    std::string name;
+    uint16_t frame_duration;
+    void next_frame();
+    bool reverse;
   };
 
 }

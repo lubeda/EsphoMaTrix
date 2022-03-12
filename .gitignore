@@ -15,3 +15,5 @@ icons.html
 components/ehmtx/__init__ copy.py
 ehmtx8266-rgb565.yaml.html
 ehmtx8266-rgb565-font.yaml
+components/ehmtx/EHMTX_icons._cpp
+.vscode/settings.json

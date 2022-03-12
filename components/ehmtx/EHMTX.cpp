@@ -34,7 +34,7 @@ namespace esphome
   {
     for (uint8_t i = 0; i < this->icon_count; i++)
     {
-      if (strcmp(this->iconnames[i], name.c_str()) == 0)
+      if (strcmp(this->icons[i]->name.c_str(), name.c_str()) == 0)
       {
         ESP_LOGD(TAG, "icon: %s found id: %d", name.c_str(), i);
         return i;
@@ -134,7 +134,7 @@ namespace esphome
           this->next_action_time = ts + (int)this->store->current()->display_duration;
           for (auto *t : on_next_screen_triggers_)
           {
-            t->process(this->iconnames[this->store->current()->icon], this->store->current()->text);
+            t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
           }
         }
       }
@@ -170,7 +170,7 @@ namespace esphome
 
       for (uint8_t i = 0; i < this->icon_count; i++)
       {
-        ESP_LOGI(TAG, "status icon: %d name: %s", i, this->iconnames[i]);
+        ESP_LOGI(TAG, "status icon: %d name: %s", i, this->icons[i]->name.c_str());
       }
     }
 
@@ -267,7 +267,7 @@ namespace esphome
 
     std::string EHMTX::get_current()
     {
-      return this->iconnames[this->store->current()->icon];
+      return this->icons[this->store->current()->icon]->name;
     }
 
     void EHMTX::set_clock_time(uint16_t t)
@@ -325,16 +325,14 @@ namespace esphome
     }
 #endif
 
-    void EHMTX::add_icon(display::Animation * icon, const char *name, uint16_t animint)
+    void EHMTX::add_icon(EHMTX_Icon * icon)
     {
       this->icons[this->icon_count] = icon;
-      this->iconnames[this->icon_count] = name;
-      this->iconduration[this->icon_count] = animint;
-      ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, name, this->iconduration[this->icon_count]);
+      ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, icon->name.c_str(), icon->frame_duration);
       this->icon_count++;
 
 #ifdef USE_EHMTX_SELECT
-      this->select_options.push_back(name);
+      this->select_options.push_back(icon->name);
 #endif
     }
 

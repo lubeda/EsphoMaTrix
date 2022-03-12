@@ -20,9 +20,10 @@ AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 16
 MAXICONS=64
 
-Icons_ = display.display_ns.class_("Animation")
+
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
+Icons_ = ehmtx_ns.class_("EHMTX_Icon")
 # Triggers
 NextScreenTrigger = ehmtx_ns.class_(
     "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
@@ -40,6 +41,7 @@ CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
+CONF_PINGPONG = "pingpong"
 CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ICON = "icon_name"
@@ -93,6 +95,9 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.Optional(
                     CONF_DURATION, default="0"
                 ): cv.templatable(cv.positive_int),
+                cv.Optional(
+                    CONF_PINGPONG, default=False
+                ): cv.boolean,
                 cv.Optional(CONF_TYPE, default="RGB565"): cv.enum(
                     espImage.IMAGE_TYPE, upper=True
                 ),
@@ -361,10 +366,12 @@ async def to_code(config):
             height,
             frames,
             espImage.IMAGE_TYPE[conf[CONF_TYPE]],
+            str(conf[CONF_ID]),
+            conf[CONF_PINGPONG],
+            duration,
         )
 
-        cg.add(var.add_icon(RawExpression(
-            str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\","+ str(duration) + "")))
+        cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
 
     html_string += "</BODY></HTML>"
     
