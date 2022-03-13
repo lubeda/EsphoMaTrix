@@ -5,7 +5,9 @@
 
 const uint8_t MAXQUEUE = 24;
 const uint8_t MAXICONS = 64;
-const uint8_t TEXTSCROLLSTART = 9;
+const uint8_t TEXTSCROLLSTART = 8;
+const uint8_t TEXTSTARTOFFSET = (32-8);
+
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
 static const char *const EHMTX_VERSION = "Version: 2022.3.11 (RGB)";
 static const char *const TAG = "EHMTX";
@@ -165,7 +167,7 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      ESP_LOGD(TAG, "add screen action");
+      ESP_LOGD(TAG, "triggered add screen action");
       this->parent_->add_screen_u(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
                                   this->alarm_.value(x...));
     }

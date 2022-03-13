@@ -27,7 +27,7 @@ void EhmtxSelect::dump_config() {
 void EhmtxSelect::control(const std::string &value) {
   // value from HA => check if displayable
   if (this->parent != NULL) {
-    ESP_LOGD(TAG, "Control %s",value.c_str());
+    ESP_LOGD(TAG, "select control to: %s",value.c_str());
     this->parent->force_screen(value.c_str());
   } 
 }

@@ -26,10 +26,10 @@ namespace esphome
 
   void EHMTX_screen::update_screen()
   {
-    if (millis() - this->config_->last_scroll_time >= this->config_->scroll_intervall && this->pixels_ > (32 - 9))
+    if (millis() - this->config_->last_scroll_time >= this->config_->scroll_intervall && this->pixels_ > TEXTSTARTOFFSET )
     {
       this->shiftx_++;
-      if (this->shiftx_ > this->pixels_ + (32 - 9))
+      if (this->shiftx_ > this->pixels_ + TEXTSTARTOFFSET )
       {
         this->shiftx_ = 0;
       }
@@ -59,9 +59,9 @@ namespace esphome
   {
     int8_t extraoffset = 0;
 
-    if (this->pixels_ > (32 - 9))
+    if (this->pixels_ > TEXTSTARTOFFSET)
     {
-      extraoffset = 32 - 9;
+      extraoffset = TEXTSTARTOFFSET;
     }
 
     if (this->alarm)
@@ -95,9 +95,9 @@ namespace esphome
     this->text = text;
     this->pixels_ = pixel;
     this->shiftx_ = 0;
-    float dd = (2 * (32 - 9 + pixel) * this->config_->scroll_intervall) / 1000;
+    float dd = (2 * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_intervall) / 1000;
     this->display_duration = (dd > this->config_->screen_time) ? dd : this->config_->screen_time;
-    ESP_LOGD(TAG, "display length text: %s t: %4f default: %d", text.c_str(), this->display_duration, this->config_->screen_time);
+    ESP_LOGD(TAG, "display length text: %s t: %.2f default: %d", text.c_str(), this->display_duration, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     if (this->alarm)
     {
