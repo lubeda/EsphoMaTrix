@@ -10,6 +10,7 @@ namespace esphome
     this->text_color = Color(240, 240, 240);
     this->alarm_color = Color(200, 50, 50);
     this->last_clock_time = 0;
+    this->icon_screen = new EHMTX_screen(this);
 #ifdef USE_EHMTX_SELECT
     this->select = NULL;
 #endif
@@ -24,6 +25,7 @@ namespace esphome
       ESP_LOGD(TAG, "Force next screen: %s", name.c_str());
     }
   }
+
   void EHMTX::set_indicator_color(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
@@ -111,9 +113,27 @@ namespace esphome
 
     time_t ts = this->clock->now().timestamp;
     if ((ts - this->next_action_time) > this->screen_time)
+    {
+      this->next_action_time = ts + this->screen_time;
+      if (this->show_icons)
       {
-
-        this->next_action_time = ts + this->screen_time;
+        uint8_t i = this->icon_screen->icon;
+        ++i;
+        if (i < this->icon_count)
+        {
+          int x, y, w, h;
+          this->display->get_text_bounds(0, 0, this->icons[i]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
+          this->icon_screen->set_text(this->icons[i]->name, i, w, 1);
+          ESP_LOGD(TAG, "show all icons icon: %d %s",i, this->icons[i]->name.c_str());
+        }
+        else
+        {
+          this->show_icons = false;
+          ESP_LOGD(TAG, "show all icons done");
+        }
+      }
+      else
+      {
         this->show_screen = false;
 
         if (!(ts - this->last_clock_time > 60))
@@ -139,205 +159,225 @@ namespace esphome
         }
       }
     }
-  
+  }
+
   void EHMTX::set_screen_time(uint16_t t)
   {
     this->screen_time = t;
+  }
+
+  void EHMTX::set_duration(uint8_t t)
+  {
+    this->duration = t;
+  }
+
+  void EHMTX::get_status()
+  {
+    time_t ts = this->clock->now().timestamp;
+    ESP_LOGI(TAG, "status time: %d.%d.%d %02d:%02d", this->clock->now().day_of_month,
+             this->clock->now().month, this->clock->now().year,
+             this->clock->now().hour, this->clock->now().minute);
+    ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
+    if (this->show_indicator)
+    {
+      ESP_LOGD(TAG, "status indicator on");
+    }
+    else
+    {
+      ESP_LOGD(TAG, "status indicator off");
     }
 
-    void EHMTX::set_duration(uint8_t t)
-    {
-      this->duration = t;
-    }
+    this->store->log_status();
 
-    void EHMTX::get_status()
+    for (uint8_t i = 0; i < this->icon_count; i++)
     {
-      time_t ts = this->clock->now().timestamp;
-      ESP_LOGI(TAG, "status time: %d.%d.%d %02d:%02d", this->clock->now().day_of_month,
-               this->clock->now().month, this->clock->now().year,
-               this->clock->now().hour, this->clock->now().minute);
-      ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
-      if (this->show_indicator)
+      ESP_LOGI(TAG, "status icon: %d name: %s", i, this->icons[i]->name.c_str());
+    }
+#ifdef USE_EHMTX_SELECT
+    ESP_LOGI(TAG, "select enabled");
+#endif
+  }
+
+  void EHMTX::set_font(display::Font *font)
+  {
+    this->font = font;
+  }
+
+  void EHMTX::set_anim_intervall(uint16_t ai)
+  {
+    this->anim_intervall = ai;
+  }
+
+  void EHMTX::set_scroll_intervall(uint16_t si)
+  {
+    this->scroll_intervall = si;
+  }
+
+  void EHMTX::del_screen_n(std::string iname)
+  {
+    uint8_t icon = this->find_icon(iname.c_str());
+    this->del_screen(icon);
+  }
+
+  void EHMTX::del_screen(uint8_t icon)
+  {
+    this->store->delete_screen(icon);
+  }
+
+  void EHMTX::add_alarm(uint8_t icon, std::string text)
+  {
+    this->internal_add_screen(icon, text, this->duration, true);
+    ESP_LOGD(TAG, "add_alarm icon: %d text: %s", icon, text.c_str());
+  }
+
+  void EHMTX::add_screen(uint8_t icon, std::string text)
+  {
+    this->internal_add_screen(icon, text, this->duration, false);
+    ESP_LOGD(TAG, "add_screen icon: %d text: %s", icon, text.c_str());
+  }
+
+  void EHMTX::add_screen_u(std::string iname, std::string text, uint16_t duration, bool alarm)
+  {
+    uint8_t icon = this->find_icon(iname.c_str());
+    this->internal_add_screen(icon, text, duration, alarm);
+    ESP_LOGD(TAG, "add_screen_u icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iname.c_str(), text.c_str(), duration, alarm);
+  }
+
+  void EHMTX::add_screen_n(std::string iname, std::string text)
+  {
+    uint8_t icon = this->find_icon(iname.c_str());
+    this->internal_add_screen(icon, text, this->duration, false);
+    ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
+  }
+
+  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t duration)
+  {
+    this->internal_add_screen(icon, text, duration, false);
+    ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, duration, text.c_str());
+  }
+
+  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm = false)
+  {
+    if (icon >= this->icon_count)
+    {
+      ESP_LOGD(TAG, "icon %d not found => default: 0", icon);
+      icon = 0;
+    }
+    EHMTX_screen *screen = this->store->find_free_screen(icon);
+
+    int x, y, w, h;
+    this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
+    screen->alarm = alarm;
+    screen->set_text(text, icon, w, duration);
+  }
+
+  void EHMTX::set_default_brightness(uint8_t b)
+  {
+    this->brightness_ = b;
+  }
+
+  void EHMTX::set_brightness(uint8_t b)
+  {
+    this->brightness_ = b;
+    float br = (float)b / (float)255;
+    ESP_LOGI(TAG, "set_brightness %d => %3.0f %%", b, 100 * br);
+    this->display->get_light()->set_correction(br, br, br, br);
+  }
+
+  uint8_t EHMTX::get_brightness()
+  {
+    return this->brightness_;
+  }
+
+  std::string EHMTX::get_current()
+  {
+    return this->icons[this->store->current()->icon]->name;
+  }
+
+  void EHMTX::set_clock_time(uint16_t t)
+  {
+    this->clock_time = t;
+  }
+
+  void EHMTX::set_display(addressable_light::AddressableLightDisplay *disp)
+  {
+    this->display = disp;
+  }
+
+  void EHMTX::set_clock(time::RealTimeClock *clock)
+  {
+    this->clock = clock;
+    this->store->clock = clock;
+  }
+
+  void EHMTX::draw_day_of_week()
+  {
+    auto dow = this->clock->now().day_of_week - 1;
+    for (uint8_t i = 0; i <= 6; i++)
+    {
+      if (dow == i)
       {
-        ESP_LOGD(TAG, "status indicator on");
+        this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->text_color);
       }
       else
       {
-        ESP_LOGD(TAG, "status indicator off");
-      }
-
-      this->store->log_status();
-
-      for (uint8_t i = 0; i < this->icon_count; i++)
-      {
-        ESP_LOGI(TAG, "status icon: %d name: %s", i, this->icons[i]->name.c_str());
+        this->display->line(2 + i * 4, 7, i * 4 + 4, 7, EHMTX_cday);
       }
     }
+  };
 
-    void EHMTX::set_font(display::Font * font)
-    {
-      this->font = font;
-    }
+  void EHMTX::set_font_offset(int8_t x, int8_t y)
+  {
+    this->xoffset = x;
+    this->yoffset = y;
+  }
 
-    void EHMTX::set_anim_intervall(uint16_t ai)
-    {
-      this->anim_intervall = ai;
-    }
-
-    void EHMTX::set_scroll_intervall(uint16_t si)
-    {
-      this->scroll_intervall = si;
-    }
-
-    void EHMTX::del_screen_n(std::string iname)
-    {
-      uint8_t icon = this->find_icon(iname.c_str());
-      this->del_screen(icon);
-    }
-
-    void EHMTX::del_screen(uint8_t icon)
-    {
-      this->store->delete_screen(icon);
-    }
-
-    void EHMTX::add_alarm(uint8_t icon, std::string text)
-    {
-      this->internal_add_screen(icon, text, this->duration, true);
-      ESP_LOGD(TAG, "add_alarm icon: %d text: %s", icon, text.c_str());
-    }
-
-    void EHMTX::add_screen(uint8_t icon, std::string text)
-    {
-      this->internal_add_screen(icon, text, this->duration, false);
-      ESP_LOGD(TAG, "add_screen icon: %d text: %s", icon, text.c_str());
-    }
-
-    void EHMTX::add_screen_u(std::string iname, std::string text, uint16_t duration, bool alarm)
-    {
-      uint8_t icon = this->find_icon(iname.c_str());
-      this->internal_add_screen(icon, text, duration, alarm);
-      ESP_LOGD(TAG, "add_screen_u icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iname.c_str(), text.c_str(), duration, alarm);
-    }
-
-    void EHMTX::add_screen_n(std::string iname, std::string text)
-    {
-      uint8_t icon = this->find_icon(iname.c_str());
-      this->internal_add_screen(icon, text, this->duration, false);
-      ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
-    }
-
-    void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t duration)
-    {
-      this->internal_add_screen(icon, text, duration, false);
-      ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, duration, text.c_str());
-    }
-
-    void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm = false)
-    {
-      if (icon >= this->icon_count)
-      {
-        icon = 0;
-        ESP_LOGD(TAG, "icon no: %d not found", icon);
-      }
-      EHMTX_screen *screen = this->store->find_free_screen(icon);
-
-      int x, y, w, h;
-      this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
-      screen->alarm = alarm;
-      screen->set_text(text, icon, w, duration);
-    }
-
-    void EHMTX::set_default_brightness(uint8_t b)
-    {
-      this->brightness_ = b;
-    }
-
-    void EHMTX::set_brightness(uint8_t b)
-    {
-      this->brightness_ = b;
-      float br = (float)b / (float)255;
-      ESP_LOGI(TAG, "set_brightness %d => %3.0f %%", b, 100 * br);
-      this->display->get_light()->set_correction(br, br, br, br);
-    }
-
-    uint8_t EHMTX::get_brightness()
-    {
-      return this->brightness_;
-    }
-
-    std::string EHMTX::get_current()
-    {
-      return this->icons[this->store->current()->icon]->name;
-    }
-
-    void EHMTX::set_clock_time(uint16_t t)
-    {
-      this->clock_time = t;
-    }
-
-    void EHMTX::set_display(addressable_light::AddressableLightDisplay * disp)
-    {
-      this->display = disp;
-    }
-
-    void EHMTX::set_clock(time::RealTimeClock * clock)
-    {
-      this->clock = clock;
-      this->store->clock = clock;
-    }
-
-    void EHMTX::draw_day_of_week()
-    {
-      auto dow = this->clock->now().day_of_week - 1;
-      for (uint8_t i = 0; i <= 6; i++)
-      {
-        if (dow == i)
-        {
-          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->text_color);
-        }
-        else
-        {
-          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, EHMTX_cday);
-        }
-      }
-    };
-
-    void EHMTX::set_font_offset(int8_t x, int8_t y)
-    {
-      this->xoffset = x;
-      this->yoffset = y;
-    }
-
-    void EHMTX::dump_config()
-    {
-      ESP_LOGCONFIG(TAG, "EspHoMatriX %s", EHMTX_VERSION);
-      ESP_LOGCONFIG(TAG, "Icons: %d of %d", this->icon_count, MAXICONS);
-      ESP_LOGCONFIG(TAG, "Font offset: x=%d y=%d", this->xoffset, this->yoffset);
-      ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
-      ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
-      ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
-    }
+  void EHMTX::dump_config()
+  {
+    ESP_LOGCONFIG(TAG, "EspHoMatriX %s", EHMTX_VERSION);
+    ESP_LOGCONFIG(TAG, "Icons: %d of %d", this->icon_count, MAXICONS);
+    ESP_LOGCONFIG(TAG, "Font offset: x=%d y=%d", this->xoffset, this->yoffset);
+    ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
+    ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
+    ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
+  }
 
 #ifdef USE_EHMTX_SELECT
-    void EHMTX::set_select(esphome::EhmtxSelect * es)
-    {
-      this->select = es;
-    }
+  void EHMTX::set_select(esphome::EhmtxSelect *es)
+  {
+    this->select = es;
+  }
 #endif
 
-    void EHMTX::add_icon(EHMTX_Icon * icon)
-    {
-      this->icons[this->icon_count] = icon;
-      ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, icon->name.c_str(), icon->frame_duration);
-      this->icon_count++;
+  void EHMTX::add_icon(EHMTX_Icon *icon)
+  {
+    this->icons[this->icon_count] = icon;
+    ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, icon->name.c_str(), icon->frame_duration);
+    this->icon_count++;
 
 #ifdef USE_EHMTX_SELECT
-      this->select_options.push_back(icon->name);
+    this->select_options.push_back(icon->name);
 #endif
-    }
+  }
 
-    void EHMTX::draw()
+  void EHMTX::show_all_icons()
+  {
+    int x, y, w, h;
+    ESP_LOGD(TAG, "show all icons icon: %s", this->icons[0]->name.c_str());
+    this->display->get_text_bounds(0, 0, this->icons[0]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
+    this->icon_screen->set_text(this->icons[0]->name, 0, w, 1);
+    this->show_icons = true;
+  }
+
+  void EHMTX::draw()
+  {
+    if (this->show_icons)
     {
+      this->icon_screen->draw();
+    }
+    else
+    {
+
       if (this->show_screen)
       {
         this->store->current()->draw();
@@ -346,6 +386,7 @@ namespace esphome
       {
         this->draw_clock();
       }
+    }
     if (this->show_indicator)
     {
       this->display->line(31, 5, 29, 7, this->indicator_color);

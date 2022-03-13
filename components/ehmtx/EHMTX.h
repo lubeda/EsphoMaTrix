@@ -36,14 +36,16 @@ namespace esphome
     void dump_config();
     bool show_screen;
     bool show_indicator;
+    bool show_icons;
     void force_screen(std::string name);
     EHMTX_Icon *icons[MAXICONS];
+    EHMTX_screen *icon_screen;
     void add_icon(EHMTX_Icon *icon);
-    #ifdef USE_EHMTX_SELECT
-      std::vector<std::string> select_options;
-      esphome::EhmtxSelect *select;
-      void set_select(esphome::EhmtxSelect *es);
-    #endif
+#ifdef USE_EHMTX_SELECT
+    std::vector<std::string> select_options;
+    esphome::EhmtxSelect *select;
+    void set_select(esphome::EhmtxSelect *es);
+#endif
     addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
@@ -60,6 +62,7 @@ namespace esphome
     time_t last_clock_time = 0;  // starttime clock display
     time_t next_action_time = 0; // when is the nextscreenchange
     void draw_day_of_week();
+    void show_all_icons();
     void tick();
     void draw();
     void get_status();
@@ -162,7 +165,7 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      ESP_LOGD(TAG,"add screen action");
+      ESP_LOGD(TAG, "add screen action");
       this->parent_->add_screen_u(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
                                   this->alarm_.value(x...));
     }
@@ -237,13 +240,13 @@ namespace esphome
     EHMTX *parent_;
   };
 
-class EHMTX_Icon : public display::Animation
+  class EHMTX_Icon : public display::Animation
   {
   protected:
-    bool counting_up;    
+    bool counting_up;
 
   public:
-    EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type,std::string icon_name, bool revers, uint16_t frame_duration);
+    EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type, std::string icon_name, bool revers, uint16_t frame_duration);
     std::string name;
     uint16_t frame_duration;
     void next_frame();
