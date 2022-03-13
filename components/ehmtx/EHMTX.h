@@ -101,7 +101,6 @@ namespace esphome
   protected:
     EHMTX_screen *slots[MAXQUEUE];
     uint8_t active_slot;
-    uint8_t icon_count;
     uint8_t force_screen;
     uint8_t count_active_screens();
 

@@ -9,7 +9,6 @@ namespace esphome
             this->slots[i] = new EHMTX_screen(config);
         }
         this->active_slot = 0;
-        this->icon_count = config->icon_count;
     }
 
     EHMTX_screen *EHMTX_store::find_free_screen(uint8_t icon)
