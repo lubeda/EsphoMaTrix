@@ -1,5 +1,6 @@
 #include "esphome.h"
 
+
 namespace esphome
 {
   EHMTX::EHMTX() : PollingComponent(TICKINTERVAL)
@@ -22,14 +23,14 @@ namespace esphome
     if (icon_id < MAXICONS)
     {
       this->store->force_next_screen(icon_id);
-      ESP_LOGD(TAG, "Force next screen: %s", name.c_str());
+      ESP_LOGD(TAG, "force next screen: %s", name.c_str());
     }
   }
 
   void EHMTX::set_indicator_color(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD(TAG, "Indicator r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD(TAG, "indicator r: %d g: %d b: %d", r, g, b);
   }
 
   uint8_t EHMTX::find_icon(std::string name)
@@ -59,12 +60,12 @@ namespace esphome
   void EHMTX::set_indicator_off()
   {
     this->show_indicator = false;
-    ESP_LOGD(TAG, "Indicator off");
+    ESP_LOGD(TAG, "indicator off");
   }
   void EHMTX::set_indicator_on()
   {
     this->show_indicator = true;
-    ESP_LOGD(TAG, "Indicator on");
+    ESP_LOGD(TAG, "indicator on");
   }
 
   void EHMTX::draw_clock()
@@ -87,7 +88,7 @@ namespace esphome
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
     {
-      ESP_LOGD(TAG, "setup select_component options");
+      ESP_LOGD(TAG, "use select_component");
       this->select->traits.set_options(this->select_options);
       this->select->parent = this;
     }
@@ -124,7 +125,7 @@ namespace esphome
           int x, y, w, h;
           this->display->get_text_bounds(0, 0, this->icons[i]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
           this->icon_screen->set_text(this->icons[i]->name, i, w, 1);
-          ESP_LOGD(TAG, "show all icons icon: %d %s",i, this->icons[i]->name.c_str());
+          ESP_LOGD(TAG, "show all icons icon: %d name: %s",i, this->icons[i]->name.c_str());
         }
         else
         {
