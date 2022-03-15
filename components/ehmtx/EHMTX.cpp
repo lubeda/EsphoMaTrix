@@ -144,13 +144,16 @@ namespace esphome
              this->clock->now().month, this->clock->now().year,
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
+    ESP_LOGI(TAG, "status default duration: %d", this->duration);
+    ESP_LOGI(TAG, "status text_color: RGB(%d,%d,%d)", this->text_color.r, this->text_color.g, this->text_color.b);
+    ESP_LOGI(TAG, "status alarm_color: RGB(%d,%d,%d)", this->alarm_color.r, this->alarm_color.g, this->alarm_color.b);
     if (this->show_indicator)
     {
-      ESP_LOGD("EHMTX", "status indicator on");
+      ESP_LOGI("EHMTX", "status indicator on");
     }
     else
     {
-      ESP_LOGD("EHMTX", "status indicator off");
+      ESP_LOGI("EHMTX", "status indicator off");
     }
 
     this->store->log_status();
