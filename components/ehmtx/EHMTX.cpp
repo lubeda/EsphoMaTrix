@@ -217,47 +217,17 @@ namespace esphome
     this->scroll_intervall = si;
   }
 
-  void EHMTX::del_screen_n(std::string iname)
+  void EHMTX::del_screen(std::string iname)
   {
     uint8_t icon = this->find_icon(iname.c_str());
-    this->del_screen(icon);
-  }
-
-  void EHMTX::del_screen(uint8_t icon)
-  {
     this->store->delete_screen(icon);
   }
 
-  void EHMTX::add_alarm(uint8_t icon, std::string text)
+  void EHMTX::add_screen(std::string iconname, std::string text, uint16_t duration, bool alarm)
   {
-    this->internal_add_screen(icon, text, this->duration, true);
-    ESP_LOGD(TAG, "add_alarm icon: %d text: %s", icon, text.c_str());
-  }
-
-  void EHMTX::add_screen(uint8_t icon, std::string text)
-  {
-    this->internal_add_screen(icon, text, this->duration, false);
-    ESP_LOGD(TAG, "add_screen icon: %d text: %s", icon, text.c_str());
-  }
-
-  void EHMTX::add_screen_u(std::string iname, std::string text, uint16_t duration, bool alarm)
-  {
-    uint8_t icon = this->find_icon(iname.c_str());
+    uint8_t icon = this->find_icon(iconname.c_str());
     this->internal_add_screen(icon, text, duration, alarm);
-    ESP_LOGD(TAG, "add_screen_u icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iname.c_str(), text.c_str(), duration, alarm);
-  }
-
-  void EHMTX::add_screen_n(std::string iname, std::string text)
-  {
-    uint8_t icon = this->find_icon(iname.c_str());
-    this->internal_add_screen(icon, text, this->duration, false);
-    ESP_LOGD(TAG, "add_screen_n icon: %d iconname: %s text: %s", icon, iname.c_str(), text.c_str());
-  }
-
-  void EHMTX::add_screen_t(uint8_t icon, std::string text, uint16_t duration)
-  {
-    this->internal_add_screen(icon, text, duration, false);
-    ESP_LOGD(TAG, "add_screen_t icon: %d duration: %d text: %s", icon, duration, text.c_str());
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration, alarm);
   }
 
   void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm = false)

@@ -77,13 +77,8 @@ namespace esphome
     void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);
     uint8_t get_brightness();
-    void add_alarm(uint8_t icon, std::string text);
-    void add_screen(uint8_t icon, std::string text);
-    void add_screen_n(std::string icon, std::string text);
-    void add_screen_u(std::string icon, std::string text, uint16_t duration, bool alarm);
-    void add_screen_t(uint8_t icon, std::string text, uint16_t t);
-    void del_screen(uint8_t icon);
-    void del_screen_n(std::string iname);
+    void add_screen(std::string icon, std::string text, uint16_t duration, bool alarm);
+    void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
     void set_anim_intervall(uint16_t intervall);
@@ -167,9 +162,16 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      ESP_LOGD(TAG, "triggered add screen action");
-      this->parent_->add_screen_u(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
-                                  this->alarm_.value(x...));
+      auto icon = this->icon_.value(x...);
+      auto text = this->text_.value(x...);
+      auto duration = this->duration_.value(x...);
+      auto alarm = this->alarm_.value(x...);
+
+      if(duration) {
+        this->parent_->add_screen(icon, text, duration, alarm);
+      } else {
+        this->parent_->add_screen(icon, text, this->parent_->duration, alarm);
+      }
     }
 
   protected:
@@ -219,7 +221,7 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      this->parent_->del_screen(this->parent_->find_icon(this->icon_.value(x...)));
+        this->parent_->del_screen(this->icon_.value(x...));
     }
 
   protected:
