@@ -114,7 +114,7 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.use_id(EHMTX_),
         cv.Required(CONF_ICON): cv.templatable(cv.string),
         cv.Required(CONF_TEXT): cv.templatable(cv.string),
-        cv.Optional(CONF_DURATION, default=5): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
 )
@@ -127,17 +127,20 @@ AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
 async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_arg, paren)
+    
     template_ = await cg.templatable(config[CONF_ICON], args, cg.std_string)
     cg.add(var.set_icon(template_))
 
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
-    template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
-    cg.add(var.set_duration(template_))
+     
+    if CONF_DURATION in config:
+        template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
+        cg.add(var.set_duration(template_))
+
     template_ = await cg.templatable(config[CONF_ALARM], args, bool)
     cg.add(var.set_alarm(template_))
     return var
-
 
 SET_BRIGHTNESS_ACTION_SCHEMA = cv.Schema(
     {
