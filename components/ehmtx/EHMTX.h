@@ -150,8 +150,16 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      this->parent_->add_screen(this->icon_.value(x...), this->text_.value(x...), this->duration_.value(x...),
-                                  this->alarm_.value(x...));
+      auto icon = this->icon_.value(x...);
+      auto text = this->text_.value(x...);
+      auto duration = this->duration_.value(x...);
+      auto alarm = this->alarm_.value(x...);
+
+      if(duration) {
+        this->parent_->add_screen(icon, text, duration, alarm);
+      } else {
+        this->parent_->add_screen(icon, text, this->parent_->duration, alarm);
+      }
     }
 
   protected:
