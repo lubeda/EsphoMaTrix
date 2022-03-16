@@ -131,7 +131,7 @@ namespace esphome
     {
         uint8_t status = 0;
         time_t ts = this->clock->now().timestamp;
-        ESP_LOGI(TAG, "status active slot: %d", status, this->active_slot);
+        ESP_LOGI(TAG, "status active slot: %d", this->active_slot);
         ESP_LOGI(TAG, "status screen count: %d of %d", this->count_active_screens(), MAXQUEUE);
         for (uint8_t i = 0; i < MAXQUEUE; i++)
         {
@@ -139,7 +139,7 @@ namespace esphome
             {
                 EHMTX_screen *screen = this->slots[i];
                 int td = screen->endtime - ts;
-                ESP_LOGI(TAG, "status slot %d icon %d text: %s end: %d sec", i, screen->icon, screen->text.c_str(), td);
+                ESP_LOGI(TAG, "status slot %d icon %d text: %s alarm: %d end: %d sec", i, screen->icon, screen->text.c_str(), screen->alarm, td);
             }
         }
     }
