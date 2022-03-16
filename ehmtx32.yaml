@@ -36,7 +36,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+          id(rgb8x32)->add_screen(icon_name, text, 7, true);
           id(rgb8x32)->force_screen(icon_name);
     - service: screen
       variables:
@@ -44,7 +44,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,5,false);
+          id(rgb8x32)->add_screen(icon_name, text, 5, false);
     - service: brightness
       variables:
         brightness: int
@@ -60,7 +60,7 @@ api:
         icon_name: string
       then:
         lambda: |-
-          id(rgb8x32)->del_screen_n(icon_name);
+          id(rgb8x32)->del_screen(icon_name);
     - service: indicator_on
       variables:
         r: int

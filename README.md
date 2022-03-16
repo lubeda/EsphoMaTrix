@@ -144,7 +144,7 @@ sensor:
         lambda: |-
           char text[30];
           sprintf(text,"Light: %2.1f lx", id(sensorlx).state);
-          id(rgb8x32)->add_screen_u("sun",  text ,5,false); // 5 Minutes, no alarm
+          id(rgb8x32)->add_screen("sun", text, 5, false); // 5 Minutes, no alarm
 ```
 
 Take care that the ```char text[30];``` has enough space to store the formated text. 
@@ -280,7 +280,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,7,true); // 7 Minutes alarm=true
+          id(rgb8x32)->add_screen(icon_name, text, 7, true); // 7 Minutes alarm=true
 ```
 
 Service **_brightness**
