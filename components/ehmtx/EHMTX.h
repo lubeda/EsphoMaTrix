@@ -34,10 +34,12 @@ namespace esphome
 
   public:
     EHMTX();
-    Color text_color, alarm_color;
+    Color text_color, alarm_color,gauge_color;
     void dump_config();
     bool show_screen;
     bool show_indicator;
+    bool show_gauge;
+    uint8_t gauge_value;
     bool show_icons;
     void force_screen(std::string name);
     EHMTX_Icon *icons[MAXICONS];
@@ -87,6 +89,9 @@ namespace esphome
     void set_indicator_off();
     void set_indicator_on();
     void set_indicator_color(int r, int g, int b);
+    void set_gauge_off();
+    void set_gauge_value(uint8_t v);
+    void set_gauge_color(int r, int g, int b);
     void set_text_color(int r, int g, int b);
     void set_alarm_color(int r, int g, int b);
     void set_icon_count(uint8_t ic);

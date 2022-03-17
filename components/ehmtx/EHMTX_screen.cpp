@@ -63,7 +63,12 @@ namespace esphome
     {
       extraoffset = TEXTSTARTOFFSET;
     }
-
+    if (this->config_->show_gauge)
+    {
+      //this->display->line(31, 7, 31, 0,esphome::display::COLOR_OFF );
+      extraoffset +=2;
+    }
+     
     if (this->alarm)
     {
       this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color, esphome::display::TextAlign::BASELINE_LEFT,
@@ -74,14 +79,28 @@ namespace esphome
       this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color, esphome::display::TextAlign::BASELINE_LEFT,
                                     this->text.c_str());
     }
-    this->config_->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
+    
     if (this->alarm)
     {
       this->config_->display->draw_pixel_at(30, 0, this->config_->alarm_color);
       this->config_->display->draw_pixel_at(31, 1, this->config_->alarm_color);
       this->config_->display->draw_pixel_at(31, 0, this->config_->alarm_color);
     }
-    this->config_->display->image(0, 0, this->config_->icons[this->icon]);
+  
+    if (this->config_->show_gauge)
+    {
+      //this->display->line(31, 7, 31, 0,esphome::display::COLOR_OFF );
+      this->config_->display->line(0, 7, 0, this->config_->gauge_value, this->config_->gauge_color);
+      this->config_->display->line(1, 7, 1, 0,esphome::display::COLOR_OFF );
+      this->config_->display->image(2, 0, this->config_->icons[this->icon]);
+      this->config_->display->line(10, 0, 10, 7, esphome::display::COLOR_OFF);
+    }
+    else
+    {
+        this->config_->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
+        this->config_->display->image(0, 0, this->config_->icons[this->icon]);
+    }
+
   }
 
   void EHMTX_screen::draw()

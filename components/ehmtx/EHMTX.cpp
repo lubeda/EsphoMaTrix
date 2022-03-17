@@ -1,15 +1,17 @@
 #include "esphome.h"
 
-
 namespace esphome
 {
   EHMTX::EHMTX() : PollingComponent(TICKINTERVAL)
   {
     this->store = new EHMTX_store(this);
     this->show_screen = false;
+    this->show_gauge = false;
+    this->gauge_value = 0;
     this->icon_count = 0;
     this->text_color = Color(240, 240, 240);
     this->alarm_color = Color(200, 50, 50);
+    this->gauge_color = Color(100, 100, 200);
     this->last_clock_time = 0;
     this->icon_screen = new EHMTX_screen(this);
 #ifdef USE_EHMTX_SELECT
@@ -31,6 +33,12 @@ namespace esphome
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
     ESP_LOGD(TAG, "indicator r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_gauge_color(int r, int g, int b)
+  {
+    this->gauge_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD(TAG, "gauge r: %d g: %d b: %d", r, g, b);
   }
 
   uint8_t EHMTX::find_icon(std::string name)
@@ -66,6 +74,22 @@ namespace esphome
   {
     this->show_indicator = true;
     ESP_LOGD(TAG, "indicator on");
+  }
+
+  void EHMTX::set_gauge_off()
+  {
+    this->show_gauge = false;
+    ESP_LOGD(TAG, "gauge off");
+  }
+  void EHMTX::set_gauge_value(uint8_t val)
+  {
+    this->show_gauge = false;
+    if (val > 0)
+    {
+      this->show_gauge = true;
+      this->gauge_value = (uint8_t)(100-val) * 7 / 100;
+      ESP_LOGD(TAG, "gauge value: %d", this->gauge_value);
+    }
   }
 
   void EHMTX::draw_clock()
@@ -125,7 +149,7 @@ namespace esphome
           int x, y, w, h;
           this->display->get_text_bounds(0, 0, this->icons[i]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
           this->icon_screen->set_text(this->icons[i]->name, i, w, 1);
-          ESP_LOGD(TAG, "show all icons icon: %d name: %s",i, this->icons[i]->name.c_str());
+          ESP_LOGD(TAG, "show all icons icon: %d name: %s", i, this->icons[i]->name.c_str());
         }
         else
         {
@@ -361,6 +385,7 @@ namespace esphome
         this->draw_clock();
       }
     }
+    
     if (this->show_indicator)
     {
       this->display->line(31, 5, 29, 7, this->indicator_color);
