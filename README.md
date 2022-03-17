@@ -84,6 +84,30 @@ leia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
 ```
 you can save this to a file in the folder with the yaml to preview your icons as reference.
 
+### show all icons on your matrix
+
+this code shows all icons once on boot up
+```
+esphome:
+  ....
+  on_boot:
+    priority: -100
+    # ...
+    then:
+      - lambda: !lambda |-
+          id(rgb8x32)->show_all_icons();
+```
+here you can show all of your icons via a service call
+
+```
+api:
+  services:
+    - service: icons
+      then:
+        lambda: |-
+          id(rgb8x32)->show_all_icons();
+```
+
 ## esphome component
 
 ### local use
