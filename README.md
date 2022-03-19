@@ -124,6 +124,8 @@ _Configuration variables:_
 
 **time (required, ID):** ID of the time component
 
+**week_start_monday (optional, bool):** default monday is first day of week, false => sunday
+
 **font (required, ID):** ID of the font component
 
 **scroll_intervall (Optional, ms):** the intervall in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
