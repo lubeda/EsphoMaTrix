@@ -281,8 +281,7 @@ namespace esphome
       ESP_LOGI(TAG, "weekstart: monday");
     } else {
       ESP_LOGI(TAG, "weekstart: sunday");
-    }
-    
+    } 
   }
 
   void EHMTX::set_brightness(uint8_t b)
