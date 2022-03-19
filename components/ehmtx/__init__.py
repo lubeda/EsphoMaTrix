@@ -44,6 +44,7 @@ CONF_XOFFSET = "xoffset"
 CONF_PINGPONG = "pingpong"
 CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
+CONF_WEEK_ON_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
 CONF_ALARM = "alarm"
@@ -64,6 +65,9 @@ EHMTX_SCHEMA = cv.Schema({
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
         CONF_HTML, default=False
+    ): cv.boolean,
+    cv.Optional(
+        CONF_WEEK_ON_MONDAY, default=True
     ): cv.boolean,
     cv.Optional(
         CONF_XOFFSET, default="1"
@@ -392,6 +396,7 @@ async def to_code(config):
     cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
     cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
+    cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])

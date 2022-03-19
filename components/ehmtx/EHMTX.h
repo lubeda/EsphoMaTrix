@@ -39,6 +39,7 @@ namespace esphome
     bool show_screen;
     bool show_indicator;
     bool show_gauge;
+    bool week_starts_monday;
     uint8_t gauge_value;
     bool show_icons;
     void force_screen(std::string name);
@@ -76,6 +77,7 @@ namespace esphome
     void set_screen_time(uint16_t t);
     void set_font_offset(int8_t x, int8_t y);
     void set_clock_time(uint16_t t);
+    void set_week_start(bool b);
     void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);
     uint8_t get_brightness();

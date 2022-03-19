@@ -274,11 +274,22 @@ namespace esphome
     this->brightness_ = b;
   }
 
+  void EHMTX::set_week_start(bool b)
+  {
+    this->week_starts_monday = b;
+    if (b){
+      ESP_LOGI(TAG, "weekstart: monday");
+    } else {
+      ESP_LOGI(TAG, "weekstart: sunday");
+    }
+    
+  }
+
   void EHMTX::set_brightness(uint8_t b)
   {
     this->brightness_ = b;
     float br = (float)b / (float)255;
-    ESP_LOGI(TAG, "set_brightness %d => %3.0f %%", b, 100 * br);
+    ESP_LOGI(TAG, "set_brightness %d => %.2f %%", b, 100 * br);
     this->display->get_light()->set_correction(br, br, br, br);
   }
 
@@ -310,18 +321,19 @@ namespace esphome
 
   void EHMTX::draw_day_of_week()
   {
-    auto dow = this->clock->now().day_of_week - 1;
-    for (uint8_t i = 0; i <= 6; i++)
-    {
-      if (dow == i)
+    auto dow = this->clock->now().day_of_week - 1; // SUN = 0
+      for (uint8_t i = 0; i <= 6; i++)
       {
-        this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->text_color);
+        if ((!this->week_starts_monday && (dow == i)) || (this->week_starts_monday && ((dow-1) == i)))
+        {
+          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->text_color);
+        }
+        else
+        {
+          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, EHMTX_cday);
+        }
       }
-      else
-      {
-        this->display->line(2 + i * 4, 7, i * 4 + 4, 7, EHMTX_cday);
-      }
-    }
+    
   };
 
   void EHMTX::set_font_offset(int8_t x, int8_t y)
