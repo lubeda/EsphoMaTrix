@@ -1,21 +1,17 @@
 substitutions:
   devicename: ehmtx8266
-  mypin: GPIO04 #  GPIO04
+  mypin: GPIO02
+   #  GPIO04
 
 external_components:
   - source:
       type: git
       url: https://github.com/lubeda/EsphoMaTrix
-      ref: rgb565
-    refresh: 600s 
+      ref: main
+    refresh: 120s 
     components: [ ehmtx ]   
       #type: local
       #path: components
-  - source:
-      type: git
-      url: https://github.com/lubeda/esphome
-    refresh: 600s 
-    components: [ image, display, animation ]   
 
 esphome:
   name: $devicename
@@ -45,7 +41,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+          id(rgb8x32)->add_screen(icon_name,text,7,true);
           id(rgb8x32)->force_screen(icon_name);
     - service: screen
       variables:
@@ -137,7 +133,7 @@ light:
     id: ehmtx_light
     type: GRB
     variant: WS2812
-    pin: GPIO04
+    pin: $mypin
     num_leds: 256
     color_correct: [30%, 30%, 30%]
     name: "$devicename Light"
@@ -176,9 +172,9 @@ ehmtx:
   show_screen: 6
   display8x32: ehmtx_display
   time: ehmtx_time
+  week_start_monday: false
   duration: 7
   font_id: ehmtx_font
-  ehmtxselect: ehmtx_screens
   icons: 
     - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
       id: boot
@@ -261,7 +257,3 @@ ehmtx:
     - file: _icons/Thunder_37533.gif
       id: thunder
   
-select:
-  - platform: ehmtx
-    id: ehmtx_screens
-    name: "$devicename screens"

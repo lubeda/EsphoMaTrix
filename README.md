@@ -173,6 +173,8 @@ _Configuration variables:_
 
 **font (required, ID):** ID of the font component
 
+**week_start_monday (optional, bool):** default monday is first day of week, false => sunday
+
 **scroll_intervall (Optional, ms):** the intervall in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
 **anim_intervall (Optional, ms):** the intervall in ms to display the next anim frame (default=192), should be a multiple of the ```update_interval``` from the display (default: 16ms)

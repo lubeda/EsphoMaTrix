@@ -323,7 +323,7 @@ namespace esphome
     auto dow = this->clock->now().day_of_week - 1; // SUN = 0
       for (uint8_t i = 0; i <= 6; i++)
       {
-        if ((!this->week_starts_monday && (dow == i)) || (this->week_starts_monday && ((dow-1) == i)))
+        if ((!this->week_starts_monday && (dow == i)) || (this->week_starts_monday && (dow == (i+1))))
         {
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->text_color);
         }
@@ -349,6 +349,11 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
+    if (this->week_starts_monday){
+      ESP_LOGCONFIG(TAG, "weekstart: monday");
+    } else {
+      ESP_LOGCONFIG(TAG, "weekstart: sunday");
+    } 
   }
 
 #ifdef USE_EHMTX_SELECT
