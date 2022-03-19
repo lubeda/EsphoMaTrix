@@ -23,6 +23,7 @@ namespace esphome
   protected:
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
+    bool week_starts_monday;
     Color indicator_color;
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
@@ -34,6 +35,7 @@ namespace esphome
     void dump_config();
     bool show_screen;
     bool show_indicator;
+    void set_week_start(bool b);
     void force_screen(std::string name);
     display::Animation *icons[MAXICONS];
     const char *iconnames[MAXICONS];
