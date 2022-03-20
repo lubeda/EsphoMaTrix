@@ -33,6 +33,7 @@ CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
+CONF_LAMEID = "lameid"
 CONF_ICONS = "icons"
 CONF_DISPLAY = "display8x32"
 CONF_HTML = "html"
@@ -96,6 +97,7 @@ EHMTX_SCHEMA = cv.Schema({
 
                 cv.Exclusive(CONF_FILE,"uri"): cv.file_,
                 cv.Exclusive(CONF_URL,"uri"): cv.url,
+                cv.Exclusive(CONF_LAMEID,"uri"): cv.string,
                 cv.Optional(
                     CONF_DURATION, default="0"
                 ): cv.templatable(cv.positive_int),
@@ -270,6 +272,11 @@ async def to_code(config):
                 image = Image.open(path)
             except Exception as e:
                 raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
+        elif CONF_LAMEID in conf:
+            r = requests.get("https://developer.lametric.com/content/apps/icon_thumbs/" + conf[CONF_LAMEID], timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_LAMEID]}: {conf[CONF_ID]}")
+            image = Image.open(io.BytesIO(r.content))
         elif CONF_URL in conf:
             r = requests.get(conf[CONF_URL], timeout=4.0)
             if r.status_code != requests.codes.ok:
@@ -286,8 +293,11 @@ async def to_code(config):
             frames = 1
         if CONF_FILE in conf:
             html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
-        else: 
+        elif CONF_URL in conf: 
             html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_URL] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        elif CONF_LAMEID in conf: 
+            html_string += str(conf[CONF_ID]) + ": <img src=\"https://developer.lametric.com/content/apps/icon_thumbs/"+ conf[CONF_LAMEID] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+            
         if (conf[CONF_DURATION] == 0):
             try:
                 duration =  image.info['duration']         
