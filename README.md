@@ -400,7 +400,7 @@ sensor:
     on_value:
       then:
          lambda: |-  
-            if (x > 200) then
+            if (x > 200)
             {
                id(rgb8x32)->set_brightness(50);
             } else {
