@@ -1,4 +1,5 @@
 from argparse import Namespace
+from email.policy import default
 import logging
 
 from esphome import core, automation
@@ -150,14 +151,106 @@ async def ehmtx_set_brightness_action_to_code(config, action_id, template_arg, a
 SET_COLOR_ACTION_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(EHMTX_),
-        cv.Required(CONF_RED): cv.templatable(cv.uint8_t,),
-        cv.Required(CONF_BLUE): cv.templatable(cv.uint8_t,),
-        cv.Required(CONF_GREEN): cv.templatable(cv.uint8_t,),
+        cv.Optional(CONF_RED,default=80): cv.templatable(cv.uint8_t,),
+        cv.Optional(CONF_BLUE,default=80): cv.templatable(cv.uint8_t,),
+        cv.Optional(CONF_GREEN,default=80): cv.templatable(cv.uint8_t,),
     }
 )
 
-SetIndicatorOnAction = ehmtx_ns.class_("SetIndicatorOn", automation.Action)
+SetClockColorAction = ehmtx_ns.class_("SetClockColor", automation.Action)
 
+@automation.register_action(
+    "ehmtx.clock.color", SetClockColorAction, SET_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_clock_color_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
+
+    return var
+
+
+SetTextColorAction = ehmtx_ns.class_("SetTextColor", automation.Action)
+
+@automation.register_action(
+    "ehmtx.text.color", SetTextColorAction, SET_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_text_color_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
+
+    return var
+
+
+SetAlarmColorAction = ehmtx_ns.class_("SetAlarmColor", automation.Action)
+
+@automation.register_action(
+    "ehmtx.alarm.color", SetAlarmColorAction, SET_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_alarm_color_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
+
+    return var
+
+SetTodayColorAction = ehmtx_ns.class_("SetTodayColor", automation.Action)
+
+@automation.register_action(
+    "ehmtx.today.color", SetTodayColorAction, SET_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_today_color_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
+
+    return var
+
+SetWeekdayColorAction = ehmtx_ns.class_("SetWeekdayColor", automation.Action)
+
+@automation.register_action(
+    "ehmtx.weekday.color", SetWeekdayColorAction, SET_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_week_color_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
+
+    return var
+
+
+SetIndicatorOnAction = ehmtx_ns.class_("SetIndicatorOn", automation.Action)
 
 @automation.register_action(
     "ehmtx.indicator.on", SetIndicatorOnAction, SET_COLOR_ACTION_SCHEMA

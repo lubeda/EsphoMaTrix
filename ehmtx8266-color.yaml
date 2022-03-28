@@ -1,15 +1,37 @@
 substitutions:
   devicename: ehmtx8266
-  mypin: GPIO04 #  GPIO04
+  mypin: GPIO02 #  GPIO04
   board: d1_mini
   
 external_components:
-  - source:
-      type: git
-      url: https://github.com/lubeda/EsphoMaTrix
+   - source:
+       type: local
+       path: components
 
 esphome:
   name: $devicename
+  on_boot:
+    priority: -100
+    then: 
+      - ehmtx.text.color:
+          id: rgb8x32
+          red: !lambda return 200;
+          blue: !lambda return 170;
+      - ehmtx.today.color:
+          id: rgb8x32
+          red: !lambda return 10;
+          green: !lambda return 250;
+      - ehmtx.clock.color:
+          id: rgb8x32
+          red: !lambda return 50;
+          green: !lambda return 150;
+          blue: !lambda return 230;
+      - ehmtx.weekday.color:
+          id: rgb8x32
+          red: !lambda return 250;
+          green: !lambda return 50;
+          blue: !lambda return 30;
+
 
 esp8266:
   board: $board
@@ -36,7 +58,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+          id(rgb8x32)->add_screen(icon_name,text,7,true);
           id(rgb8x32)->force_screen(icon_name);
     - service: screen
       variables:
@@ -48,7 +70,6 @@ api:
             text: !lambda return text;
             icon_name: !lambda return icon_name;
             alarm: false
-      
     - service: brightness
       variables:
         brightness: int
@@ -194,24 +215,6 @@ ehmtx:
             iconname: !lambda "return x.c_str();"
             text: !lambda "return y.c_str();"
   icons: 
-    - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
-      id: boot
-    - file: _icons/Garage Door open_30081.gif
-      id: garage
-    - file: _icons/Wind_22148.gif
-      id: wind
-    - file: _icons/Rain 1H_6427.gif
-      id: rain
-    - file: _icons/dog_2698.png
-      id: dog
-    - file: _icons/Pool_28103.gif
-      id: pool
-    - file: _icons/shop_18567.gif
-      id: shop
-    - file: _icons/Phonering_1232.gif
-      id: phone
-    - file: _icons/Fire_9272.gif
-      id: fire
     - file: _icons/Alexa Ani_31194.gif
       id: alexa
     - file: _icons/TV Start_9754.gif

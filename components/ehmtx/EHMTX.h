@@ -12,8 +12,6 @@ static const char *const TAG = "EHMTX";
 
 namespace esphome
 {
-  const Color EHMTX_cday = Color(90, 90, 90);
-
   class EHMTX_screen;
   class EHMTX_store;
   class EHMTXNextScreenTrigger;
@@ -25,6 +23,9 @@ namespace esphome
     uint8_t brightness_;
     bool week_starts_monday;
     Color indicator_color;
+    Color clock_color;
+    Color today_color;
+    Color weekday_color;
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
     void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
@@ -76,7 +77,10 @@ namespace esphome
     void set_indicator_off();
     void set_indicator_on();
     void set_indicator_color(int r, int g, int b);
+    void set_clock_color(int r, int g, int b);
     void set_text_color(int r, int g, int b);
+    void set_today_color(int r, int g, int b);
+    void set_weekday_color(int r, int g, int b);
     void set_alarm_color(int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
@@ -186,6 +190,80 @@ namespace esphome
   protected:
     EHMTX *parent_;
   };
+
+template <typename... Ts>
+  class SetClockColor : public Action<Ts...>
+  {
+  public:
+    SetClockColor(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_clock_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+template <typename... Ts>
+  class SetTodayColor : public Action<Ts...>
+  {
+  public:
+    SetTodayColor(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_today_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+template <typename... Ts>
+  class SetTextColor : public Action<Ts...>
+  {
+  public:
+    SetTextColor(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_text_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+
+template <typename... Ts>
+  class SetWeekdayColor : public Action<Ts...>
+  {
+  public:
+    SetWeekdayColor(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_weekday_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
 
   template <typename... Ts>
   class SetIndicatorOff : public Action<Ts...>
