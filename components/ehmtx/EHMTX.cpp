@@ -10,6 +10,9 @@ namespace esphome
     this->gauge_value = 0;
     this->icon_count = 0;
     this->text_color = Color(240, 240, 240);
+    this->today_color = Color(240, 240, 240);
+    this->weekday_color = Color(100, 100, 100);
+    this->clock_color = Color(240, 240, 240);
     this->alarm_color = Color(200, 50, 50);
     this->gauge_color = Color(100, 100, 200);
     this->last_clock_time = 0;
@@ -34,6 +37,25 @@ namespace esphome
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
     ESP_LOGD(TAG, "indicator r: %d g: %d b: %d", r, g, b);
   }
+
+  void EHMTX::set_today_color(int r, int g, int b)
+  {
+    this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "Today r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_weekday_color(int r, int g, int b)
+  {
+    this->weekday_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "Weekday r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_clock_color(int r, int g, int b)
+  {
+    this->clock_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
+  }
+
 
   void EHMTX::set_gauge_color(int r, int g, int b)
   {
@@ -96,12 +118,12 @@ namespace esphome
   {
     if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
     {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->text_color, display::TextAlign::BASELINE_CENTER, "%H:%M",
+      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%H:%M",
                               this->clock->now());
     }
     else
     {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->text_color, display::TextAlign::BASELINE_CENTER, "%d.%m.",
+      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%d.%m.",
                               this->clock->now());
     }
     this->draw_day_of_week();
@@ -326,11 +348,11 @@ namespace esphome
         if ( ((!this->week_starts_monday) && (dow == i)) || 
              ((this->week_starts_monday) && ((dow == (i+1)) || ((dow==0 && i == 6)) )))
         {
-          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->text_color);
+          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->today_color);
         }
         else
         {
-          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, EHMTX_cday);
+          this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->weekday_color);
         }
       }
     

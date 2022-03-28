@@ -249,6 +249,56 @@ Force the selected screen ```icon_name``` to be displayed next. Afterwards the l
         icon_name: !lambda return icon_name;
 ```
 
+#### set (text/alarm/clock/weekday/today) color action
+
+Sets the color of the select element
+
+You have to use use id of your ehmtx component, e.g. ```rgb8x32```
+
+```
+     - ehmtx.***.color:
+        id: rgb8x32
+        red: !lambda return r;
+        green: !lambda return g;
+        blue: !lambda return b;
+```
+valid elements:
+- ehmtx.text.color:
+- ehmtx.alarm.color:
+- ehmtx.clock.color:
+- ehmtx.weekday.color:
+- ehmtx.today.color:
+
+- ```red, green, blue```: the color components (0..255) (default=80)
+
+##### sample:
+
+````
+esphome:
+  name: $devicename
+  on_boot:
+    priority: -100
+    then: 
+      - ehmtx.text.color:
+          id: rgb8x32
+          red: !lambda return 200;
+          blue: !lambda return 170;
+      - ehmtx.today.color:
+          id: rgb8x32
+          red: !lambda return 10;
+          green: !lambda return 250;
+      - ehmtx.clock.color:
+          id: rgb8x32
+          red: !lambda return 50;
+          green: !lambda return 150;
+          blue: !lambda return 230;
+      - ehmtx.weekday.color:
+          id: rgb8x32
+          red: !lambda return 250;
+          green: !lambda return 50;
+          blue: !lambda return 30;
+```
+
 #### Indicator on
 
 The indicator is a static colored corner on the display.
