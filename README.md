@@ -273,8 +273,6 @@ esphome:
           blue: !lambda return 30;
 ```
 
-
-
 #### add screen to loop
 
 ```
