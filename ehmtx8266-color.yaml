@@ -26,6 +26,11 @@ esphome:
           red: !lambda return 50;
           green: !lambda return 150;
           blue: !lambda return 230;
+      - ehmtx.alarm.color:
+          id: rgb8x32
+          red: !lambda return 250;
+          green: !lambda return 50;
+          blue: !lambda return 30;
       - ehmtx.weekday.color:
           id: rgb8x32
           red: !lambda return 250;

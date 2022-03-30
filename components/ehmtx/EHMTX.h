@@ -209,6 +209,27 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
+
+template <typename... Ts>
+  class SetAlarmColor : public Action<Ts...>
+  {
+  public:
+    SetAlarmColor(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_alarm_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+
+
 template <typename... Ts>
   class SetTodayColor : public Action<Ts...>
   {
