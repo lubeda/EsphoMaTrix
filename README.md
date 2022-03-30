@@ -247,7 +247,7 @@ valid elements:
 
 ##### sample:
 
-````
+```
 esphome:
   name: $devicename
   on_boot:
