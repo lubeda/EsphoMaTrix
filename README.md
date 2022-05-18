@@ -1,9 +1,9 @@
 # EspHoMaTriX (ehmtx)
-A simple DIY status display build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
+A simple DIY status display build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io). It needs at least the version 2022.5.0 to run
 
 # Introduction
 
-There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lamtric and some very good d.i.y.-alternatives. 
+There are some "RGB-matrix" status displays/clocks out there, the commercial one from LaMetric and some very good d.i.y.-alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/)
@@ -12,8 +12,6 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration!
 
 ## State
-
-**First release!**
 
 It is a working solution with the core funtionality coded. Advanced features, like automatic brigtness control can be done with esphome actions and automations. 
 
@@ -32,7 +30,7 @@ The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx826
 # Installation
 
 ## Font
-Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright i can't provide my modified version :-(.
+Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright i can't provide my modified version :-(. When you try other fonts you can scale the font with the size parameter. Optional you can use the **yoffset** parameter from the component. Not all fonts are suited for such a minimal display
 
 ```
 font:
@@ -50,14 +48,17 @@ Download and install all needed icons (.jpg/.png)/animations (.gif) under the "e
 emhtx:
   icons: 
     - file: icons/rocket.gif
+      pingpong: true
       id: boot 
     - file: temperature.png
       id: temp 
-    - file: garage.gif
-      id: garage
+    - url: https://developer.lametric.com/content/apps/icon_thumbs/10527.gif
+      id: print3d
 ```
 
-Gifs are limited to 8 frames to limit the flash space. Thr first icon in your list is the fallback in case of an error.
+Gifs are limited to 8 frames to limit the flash space. The first icon in your list is the fallback in case of an error. you can specify icon by the filename of a downloaded file or an url for external files. The are stored in the flash of your esp.
+
+The ```pingpong``` parameter is optional with it set to true you loop your animation on the last frame it will display the secondlast. Try it with a gif.
 
 All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
@@ -67,7 +68,7 @@ The id of the icons is used later to configure the screens to display. So you sh
 
 ### local use
 
-If you download the componets-folder from the repo an install it in your esphome you have more stable installation. But if there are new features you won't see them. If needed customize the yaml to your folder structure.
+If you download the componets-folder from the repo an install it in your esphome you have more stable installation. But if there are new features you won't see them. If needed to customize the yaml to your folder structure.
 
 ```
 external_components:
@@ -103,10 +104,10 @@ ehmtx:
   icons: 
     - file: sample.png  # use your icons/animations here
       id: boot 
-    - file: celsius.png
+    - file: celsius.gif
       id: temp 
-    - file: garage door.gif
-      id: garage
+    - url: https://developer.lametric.com/content/apps/icon_thumbs/10527.gif
+      id: print3d
 ```
 
 _Configuration variables:_
@@ -208,10 +209,10 @@ You have to use use id of your ehmtx component, e.g. ```rgb8x32```
 
 ```
      - ehmtx.indicator.on:
-        id: rgb8x32
-        red: !lambda return r;
-        green: !lambda return g;
-        blue: !lambda return b;
+       id: rgb8x32
+       red: !lambda return r;
+       green: !lambda return g;
+       blue: !lambda return b;
 ```
 
 - ```red, green, blue```: the color components (0..255) (default=80)
@@ -220,7 +221,7 @@ You have to use use id of your ehmtx component, e.g. ```rgb8x32```
 
 ```
      - ehmtx.indicator.off:
-            id: rgb8x32
+       id: rgb8x32
 ```
 
 #### set (text/alarm/clock/weekday/today) color action
@@ -322,7 +323,7 @@ light:
 
 All communication with homeassistant use the homeasistant-api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
 
-*Sample *
+*Sample*
 ```
 api:
   services:

@@ -81,7 +81,7 @@ EHMTX_SCHEMA = cv.Schema({
             {
                 cv.Required(CONF_ICONID): cv.declare_id(Icons_),
                 cv.Required(CONF_FILE): cv.file_,
-                cv.Optional(CONF_TYPE, default="RGB24"): cv.enum(
+                cv.Optional(CONF_TYPE, default="RGB565"): cv.enum(
                     espImage.IMAGE_TYPE, upper=True
                 ),
                 cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
