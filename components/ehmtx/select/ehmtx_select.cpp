@@ -6,9 +6,7 @@ namespace esphome {
 static const char *const TAG = "ehmtx.select";
 
 void EhmtxSelect::setup() {
- // this->traits.set_options({"*clock"});
- 
-   this->publish_state("unknown");
+   this->publish_state("initializing...");
 }
 
 void EhmtxSelect::update() {
