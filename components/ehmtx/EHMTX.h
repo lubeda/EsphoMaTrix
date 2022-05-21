@@ -3,17 +3,21 @@
 #define EHMTX_H
 #include "esphome.h"
 
-const uint8_t MAXQUEUE = 16;
-const uint8_t MAXICONS = 48;
-const uint8_t TEXTSCROLLSTART = 9;
+const uint8_t MAXQUEUE = 24;
+const uint8_t MAXICONS = 64;
+const uint8_t TEXTSCROLLSTART = 8;
+const uint8_t TEXTSTARTOFFSET = (32-8);
+
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2022.2.7";
+static const char *const EHMTX_VERSION = "Version: 2022.3.11 (RGB)";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
 {
   class EHMTX_screen;
   class EHMTX_store;
+  class EhmtxSelect;
+  class EHMTX_Icon;
   class EHMTXNextScreenTrigger;
 
   class EHMTX : public PollingComponent
@@ -32,15 +36,20 @@ namespace esphome
 
   public:
     EHMTX();
-    Color text_color, alarm_color;
+    Color text_color, alarm_color,gauge_color;
     void dump_config();
     bool show_screen;
     bool show_indicator;
     void set_week_start(bool b);
     void force_screen(std::string name);
-    display::Animation *icons[MAXICONS];
-    const char *iconnames[MAXICONS];
-    void add_icon(display::Animation *icon, const char *name);
+    EHMTX_Icon *icons[MAXICONS];
+    EHMTX_screen *icon_screen;
+    void add_icon(EHMTX_Icon *icon);
+#ifdef USE_EHMTX_SELECT
+    std::vector<std::string> select_options;
+    esphome::EhmtxSelect *select;
+    void set_select(esphome::EhmtxSelect *es);
+#endif
     addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
@@ -57,13 +66,17 @@ namespace esphome
     time_t last_clock_time = 0;  // starttime clock display
     time_t next_action_time = 0; // when is the nextscreenchange
     void draw_day_of_week();
+    void show_all_icons();
     void tick();
     void draw();
     void get_status();
+    void skip_screen();
+    std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
     void set_font_offset(int8_t x, int8_t y);
     void set_clock_time(uint16_t t);
+    void set_week_start(bool b);
     void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);
     uint8_t get_brightness();
@@ -94,7 +107,6 @@ namespace esphome
   protected:
     EHMTX_screen *slots[MAXQUEUE];
     uint8_t active_slot;
-    uint8_t icon_count;
     uint8_t force_screen;
     uint8_t count_active_screens();
 
@@ -331,6 +343,19 @@ template <typename... Ts>
 
   protected:
     EHMTX *parent_;
+  };
+
+  class EHMTX_Icon : public display::Animation
+  {
+  protected:
+    bool counting_up;
+
+  public:
+    EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type, std::string icon_name, bool revers, uint16_t frame_duration);
+    std::string name;
+    uint16_t frame_duration;
+    void next_frame();
+    bool reverse;
   };
 
 }

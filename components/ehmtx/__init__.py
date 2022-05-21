@@ -1,25 +1,30 @@
 from argparse import Namespace
 from email.policy import default
 import logging
+import io
+import requests
 
 from esphome import core, automation
-from esphome.components import display, font, time, text_sensor
+from esphome.components import display, font, time
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
 from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
+from .select import EHMTXSelect
 
 _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
-MAXFRAMES = 8
+MAXFRAMES = 16
+MAXICONS=64
 
-Icons_ = display.display_ns.class_("Animation")
+
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
+Icons_ = ehmtx_ns.class_("EHMTX_Icon")
 # Triggers
 NextScreenTrigger = ehmtx_ns.class_(
     "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
@@ -28,14 +33,18 @@ NextScreenTrigger = ehmtx_ns.class_(
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
+CONF_URL = "url"
+CONF_LAMEID = "lameid"
 CONF_ICONS = "icons"
 CONF_DISPLAY = "display8x32"
-CONF_ICONID = "id"
+CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
 CONF_ANIMINTERVALL = "anim_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
+CONF_PINGPONG = "pingpong"
+CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_WEEK_ON_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
@@ -51,7 +60,10 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_SHOWCLOCK, default="5"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_YOFFSET, default="-5"
+        CONF_SELECT, 
+    ): cv.use_id(EHMTXSelect),
+    cv.Optional(
+        CONF_YOFFSET, default="6"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
         CONF_WEEK_ON_MONDAY, default=True
@@ -87,7 +99,7 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
             }
         ),
-        cv.Length(max=64),
+        cv.Length(max=MAXICONS),
     )})
 
 CONFIG_SCHEMA = cv.All(font.validate_pillow_installed, EHMTX_SCHEMA)
@@ -116,7 +128,6 @@ async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args)
 
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
-
     if CONF_DURATION in config:
         template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
         cg.add(var.set_duration(template_))
@@ -124,7 +135,6 @@ async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args)
     template_ = await cg.templatable(config[CONF_ALARM], args, bool)
     cg.add(var.set_alarm(template_))
     return var
-
 
 SET_BRIGHTNESS_ACTION_SCHEMA = cv.Schema(
     {
@@ -332,17 +342,26 @@ CODEOWNERS = ["@lubeda"]
 async def to_code(config):
 
     from PIL import Image
-
     var = cg.new_Pvariable(config[CONF_ID])
-
+    html_string = "<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>"
     for conf in config[CONF_ICONS]:
 
-        path = CORE.relative_config_path(conf[CONF_FILE])
-        try:
-            image = Image.open(path)
-        except Exception as e:
-            raise core.EsphomeError(f"Could not load image file {path}: {e}")
-
+        if CONF_FILE in conf:
+            path = CORE.relative_config_path(conf[CONF_FILE])
+            try:
+                image = Image.open(path)
+            except Exception as e:
+                raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
+        elif CONF_LAMEID in conf:
+            r = requests.get("https://developer.lametric.com/content/apps/icon_thumbs/" + conf[CONF_LAMEID], timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_LAMEID]}: {conf[CONF_ID]}")
+            image = Image.open(io.BytesIO(r.content))
+        elif CONF_URL in conf:
+            r = requests.get(conf[CONF_URL], timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
+            image = Image.open(io.BytesIO(r.content))
         width, height = image.size
         if (width != 8) or (height != 8):
             image = image.resize([8, 8])
@@ -352,7 +371,20 @@ async def to_code(config):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
-
+        if CONF_FILE in conf:
+            html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        elif CONF_URL in conf: 
+            html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_URL] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        elif CONF_LAMEID in conf: 
+            html_string += str(conf[CONF_ID]) + ": <img src=\"https://developer.lametric.com/content/apps/icon_thumbs/"+ conf[CONF_LAMEID] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+            
+        if (conf[CONF_DURATION] == 0):
+            try:
+                duration =  image.info['duration']         
+            except:
+                duration = config[CONF_ANIMINTERVALL]
+        else:
+            duration = conf[CONF_DURATION]
         if conf[CONF_TYPE] == "GRAYSCALE":
             data = [0 for _ in range(8 * 8 * frames)]
             pos = 0
@@ -387,6 +419,27 @@ async def to_code(config):
                     data[pos] = pix[2] & 248
                     pos += 1
 
+        elif conf[CONF_TYPE] == "RGB565":
+            data = [0 for _ in range(8 * 8 * 2 * frames)]
+            pos = 0 
+            for frameIndex in range(frames):
+                image.seek(frameIndex)
+                frame = image.convert("RGB")
+                pixels = list(frame.getdata())
+                if len(pixels) != 8 * 8:
+                    raise core.EsphomeError(
+                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                    )
+                for pix in pixels:
+                    R = pix[0] >> 3
+                    G = pix[1] >> 2
+                    B = pix[2] >> 3
+                    rgb = (R << 11) | (G << 5) | B
+                    data[pos] = rgb >> 8
+                    pos += 1
+                    data[pos] = rgb & 255
+                    pos += 1
+
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
             data = [0 for _ in range((height * width8 // 8) * frames)]
@@ -410,11 +463,23 @@ async def to_code(config):
             height,
             frames,
             espImage.IMAGE_TYPE[conf[CONF_TYPE]],
+            str(conf[CONF_ID]),
+            conf[CONF_PINGPONG],
+            duration,
         )
 
-        cg.add(var.add_icon(RawExpression(
-            str(conf[CONF_ID])+",\""+str(conf[CONF_ID])+"\"")))
+        cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
 
+    html_string += "</BODY></HTML>"
+    
+    if config[CONF_HTML]:
+        try:
+            with open(CORE.config_path+".html", 'w') as f:
+                f.write(html_string)
+                f.close()
+        except:
+            print("Error writing HTML file")    
+    
     cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
@@ -432,6 +497,10 @@ async def to_code(config):
 
     ehmtxtime = await cg.get_variable(config[CONF_TIME])
     cg.add(var.set_clock(ehmtxtime))
+
+    if (config.get(CONF_SELECT)):
+        ehmtxselect = await cg.get_variable(config[CONF_SELECT])
+        cg.add(var.set_select(ehmtxselect))
 
     for conf in config.get(CONF_ON_NEXT_SCREEN, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)

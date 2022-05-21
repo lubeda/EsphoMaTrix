@@ -30,6 +30,10 @@ logger:
 # Enable Home Assistant API
 api:
   services:
+    - service: skip
+      then:
+        lambda: |-
+          id(rgb8x32)->skip_screen();
     - service: alarm
       variables:
         icon_name: string
@@ -131,7 +135,6 @@ number:
     set_action:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
-
 time:
   - platform: homeassistant
     id: ehmtx_time
@@ -166,83 +169,5 @@ ehmtx:
     lambda: |-
         ESP_LOGD("Trigger","Ole it works");
   icons: 
-    - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
-      id: boot
-    - file: _icons/Garage Door open_30081.gif
-      id: garage
-    - file: _icons/Wind_22148.gif
-      id: wind
-    - file: _icons/Rain 1H_6427.gif
-      id: rain
-    - file: _icons/dog_2698.png
-      id: dog
-    - file: _icons/Pool_28103.gif
-      id: pool
-    - file: _icons/shop_18567.gif
-      id: shop
-    - file: _icons/Phonering_1232.gif
-      id: phone
-    - file: _icons/Fire_9272.gif
-      id: fire
-    - file: _icons/Alexa Ani_31194.gif
-      id: alexa
-    - file: _icons/TV Start_9754.gif
-      id: tv
-    - file: _icons/MovieReel_1944.gif
-      id: media
-    - file: _icons/ring doorbell_24087.gif
-      id: ring
-    - file: _icons/Cold Icy Ice Snow -bmt _17140.gif
-      id: frost
-    - file: _icons/wheelie bin_11034.png
-      id: muell
-    - file: _icons/Gasoline_18757.png
-      id: sprit
-    - file: _icons/Wifi_3925.gif
-      id: wlan
-    - file: _icons/Rice Cooker_22604.gif
-      id: cookit
-    - file: _icons/Avengers _12091.gif
-      id: avengers    
-    - file: _icons/Beach_23726.gif
-      id: nature
-    - file: _icons/Chair moves to desk_2074.gif
-      id: work
-    - file: _icons/nintendo switch_15121.gif
-      id: nintendo
-    - file: _icons/Bike strava3_22841.gif
-      id: bike
-    - file: _icons/School  I  Schule_42529.gif
-      id: school
-    - file: _icons/Amazon_656.png
-      id: amazon
-    - file: _icons/Abstract Post Logo_13998.png
-      id: post
-    - file: _icons/Money Gagi_35538.gif
-      id: money
-    - file: _icons/power2_32930.gif
-      id: power
-    - file: _icons/solar-power_27464.gif
-      id: solar
-    - file: _icons/3d printing_10527.gif
-      id: print3d
-    - file: _icons/yoga-bridge-R-gil_37276.gif
-      id: yoga
-    - file: _icons/Star Trek_43568.gif
-      id: startrek
-    - file: _icons/Princess Leia_6582.png
-      id: leia
-    - file: _icons/Cookie Monster_20492.gif
-      id: cookie
-    - file: _icons/energy_today_26034.png
-      id: energy
     - file: _icons/SUN_5807.gif
-      id: sun
-    - file: _icons/Vacuum_30171.png
-      id: vacuum
-    - file: _icons/Rain_12018.gif
-      id: rainprecip
-    - file: _icons/Enterprise Orbit_10714.png
-      id: iss
-    - file: _icons/Thunder_37533.gif
-      id: thunder
+      id: boot

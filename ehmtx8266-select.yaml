@@ -1,18 +1,23 @@
 substitutions:
   devicename: ehmtx8266
-  mypin: GPIO04 #  GPIO04
-  board: d1_mini
-  
+  mypin: GPIO02
+   #  GPIO04
+
 external_components:
   - source:
       type: git
       url: https://github.com/lubeda/EsphoMaTrix
+      ref: main
+    refresh: 120s 
+    components: [ ehmtx ]   
+      #type: local
+      #path: components
 
 esphome:
   name: $devicename
 
 esp8266:
-  board: $board
+  board: d1_mini
 
 font:
   - file: _fonts/monobit.ttf
@@ -21,11 +26,11 @@ font:
     glyphs:  |
       !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>/
 
-logger:
-
 binary_sensor:
   - platform: status
     name: "$devicename Status"
+
+logger:
 
 # Enable Home Assistant API
 api:
@@ -36,7 +41,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen_u(icon_name,text,7,true);
+          id(rgb8x32)->add_screen(icon_name,text,7,true);
           id(rgb8x32)->force_screen(icon_name);
     - service: screen
       variables:
@@ -48,7 +53,6 @@ api:
             text: !lambda return text;
             icon_name: !lambda return icon_name;
             alarm: false
-      
     - service: brightness
       variables:
         brightness: int
@@ -116,17 +120,24 @@ api:
         - ehmtx.indicator.off:
             id: rgb8x32
 
+number:
+  - platform: template
+    name: "$devicename brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+
 ota:
   password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: $devicename
-    password: "InM2TlqVfJe4"
 
 light:
   - platform: neopixelbus
@@ -185,14 +196,9 @@ ehmtx:
   show_screen: 6
   display8x32: ehmtx_display
   time: ehmtx_time
+  week_start_monday: false
   duration: 7
   font_id: ehmtx_font
-  on_next_screen:
-    - homeassistant.event:
-        event: esphome.next_screen
-        data_template:
-            iconname: !lambda "return x.c_str();"
-            text: !lambda "return y.c_str();"
   icons: 
     - file: _icons/TAKE OFF ROCKET START COUNTDOWN_8631.gif
       id: boot
@@ -274,3 +280,4 @@ ehmtx:
       id: iss
     - file: _icons/Thunder_37533.gif
       id: thunder
+  

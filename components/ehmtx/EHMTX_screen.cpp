@@ -18,7 +18,7 @@ namespace esphome
     {
       this->endtime = 0;
       this->icon = 0;
-      ESP_LOGD(TAG,"delete screen icon: %d",_icon);
+      ESP_LOGD(TAG, "delete screen icon: %d", _icon);
       return true;
     }
     return false;
@@ -26,18 +26,16 @@ namespace esphome
 
   void EHMTX_screen::update_screen()
   {
-    if (millis() - this->config_->last_scroll_time >= this->config_->scroll_intervall && this->pixels_ > (32 - 9))
+    if (millis() - this->config_->last_scroll_time >= this->config_->scroll_intervall && this->pixels_ > TEXTSTARTOFFSET )
     {
       this->shiftx_++;
-      if (this->shiftx_ > this->pixels_ + (32-9))
+      if (this->shiftx_ > this->pixels_ + TEXTSTARTOFFSET )
       {
-          this->shiftx_ = 0;
+        this->shiftx_ = 0;
       }
       this->config_->last_scroll_time = millis();
     }
-    if (millis() - this->config_->last_anim_time >= this->config_->anim_intervall &&
-        (this->config_->icons[this->icon]->get_current_frame() <
-         this->config_->icons[this->icon]->get_animation_frame_count()))
+    if (millis() - this->config_->last_anim_time >= this->config_->icons[this->icon]->frame_duration)
     {
       this->config_->icons[this->icon]->next_frame();
       this->config_->last_anim_time = millis();
@@ -59,31 +57,50 @@ namespace esphome
 
   void EHMTX_screen::draw_()
   {
-    int8_t extraoffset =0;
+    int8_t extraoffset = 0;
 
-      if (this->pixels_ > (32 - 9))
-      {
-        extraoffset =32-9;
-      }
-
+    if (this->pixels_ > TEXTSTARTOFFSET)
+    {
+      extraoffset = TEXTSTARTOFFSET;
+    }
+    if (this->config_->show_gauge)
+    {
+      //this->display->line(31, 7, 31, 0,esphome::display::COLOR_OFF );
+      extraoffset +=2;
+    }
+     
     if (this->alarm)
     {
-      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color,
-                                   this->text.c_str());
+      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color, esphome::display::TextAlign::BASELINE_LEFT,
+                                    this->text.c_str());
     }
     else
     {
-      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color,
-                                   this->text.c_str());
+      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color, esphome::display::TextAlign::BASELINE_LEFT,
+                                    this->text.c_str());
     }
-    this->config_->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
+    
     if (this->alarm)
     {
       this->config_->display->draw_pixel_at(30, 0, this->config_->alarm_color);
       this->config_->display->draw_pixel_at(31, 1, this->config_->alarm_color);
       this->config_->display->draw_pixel_at(31, 0, this->config_->alarm_color);
     }
-    this->config_->display->image(0, 0, this->config_->icons[this->icon]);
+  
+    if (this->config_->show_gauge)
+    {
+      //this->display->line(31, 7, 31, 0,esphome::display::COLOR_OFF );
+      this->config_->display->line(0, 7, 0, this->config_->gauge_value, this->config_->gauge_color);
+      this->config_->display->line(1, 7, 1, 0,esphome::display::COLOR_OFF );
+      this->config_->display->image(2, 0, this->config_->icons[this->icon]);
+      this->config_->display->line(10, 0, 10, 7, esphome::display::COLOR_OFF);
+    }
+    else
+    {
+        this->config_->display->line(8, 0, 8, 7, esphome::display::COLOR_OFF);
+        this->config_->display->image(0, 0, this->config_->icons[this->icon]);
+    }
+
   }
 
   void EHMTX_screen::draw()
@@ -97,9 +114,9 @@ namespace esphome
     this->text = text;
     this->pixels_ = pixel;
     this->shiftx_ = 0;
-    float dd = (2*(32-9+pixel)*this->config_->scroll_intervall) / 1000;
+    float dd = (2 * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_intervall) / 1000;
     this->display_duration = (dd > this->config_->screen_time) ? dd : this->config_->screen_time;
-    ESP_LOGD(TAG,"display length text: %s t: %4f default: %d",text.c_str(),this->display_duration,this->config_->screen_time);
+    ESP_LOGD(TAG, "display length text: %s t: %.2f default: %d", text.c_str(), this->display_duration, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     if (this->alarm)
     {

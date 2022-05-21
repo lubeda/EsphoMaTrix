@@ -42,7 +42,7 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
+Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. You can also specify an url to directly download an image file.
 
 ```
 emhtx:
@@ -63,6 +63,51 @@ The ```pingpong``` parameter is optional with it set to true you loop your anima
 All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
 The id of the icons is used later to configure the screens to display. So you should name them clever.
+
+**file (Exlusive, filename):** a local filename
+**url (Exclusive, url):** a url to download an icon
+
+### preview helper
+
+You can create a file with all icons an names as reference in the config directory. The file is named like the yaml with the extension ".html"
+
+```
+emhtx:
+  html: true
+```
+
+e.g.
+
+```
+<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>
+error: <img src="_icons/error fatal.gif" alt="error">&nbsp;
+leia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
+</BODY></HTML>
+```
+
+### show all icons on your matrix
+
+this code shows all icons once on boot up
+```
+esphome:
+  ....
+  on_boot:
+    priority: -100
+    # ...
+    then:
+      - lambda: !lambda |-
+          id(rgb8x32)->show_all_icons();
+```
+here you can show all of your icons via a service call
+
+```
+api:
+  services:
+    - service: icons
+      then:
+        lambda: |-
+          id(rgb8x32)->show_all_icons();
+```
 
 ## esphome component
 
@@ -98,6 +143,7 @@ ehmtx:
   show_clock: 6 
   show_screen: 8
   duration: 5
+  html: true
   display8x32: ehmtxdisplay
   time: EHMTX_clock
   font_id: EHMTX_font
@@ -119,7 +165,9 @@ _Configuration variables:_
 
 **duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
-**yoffset (Optional, pixel):** yoffset of the font, default -5 (see installation/font)
+**yoffset (Optional, pixel):** yoffset the text is alligned BASELINE_LEFT, the baseline defaults to 6 
+
+**xoffset (Optional, pixel):** xoffset the text is alligned BASELINE_LEFT, the left defaults to 1
 
 **display8x32 (required, ID):** ID of the addressable display
 
@@ -129,9 +177,13 @@ _Configuration variables:_
 
 **font (required, ID):** ID of the font component
 
+**week_start_monday (optional, bool):** default monday is first day of week, false => sunday
+
 **scroll_intervall (Optional, ms):** the intervall in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
 **anim_intervall (Optional, ms):** the intervall in ms to display the next anim frame (default=192), should be a multiple of the ```update_interval``` from the display (default: 16ms)
+
+**html (Optional, boolean):** If true generate a html (_filename_.yaml.html) file to show all include icons.  (default: false)
 
 ## Usage without homeassistant
 
@@ -199,6 +251,56 @@ Force the selected screen ```icon_name``` to be displayed next. Afterwards the l
     - ehmtx.force.screen:
         id: rgb8x32
         icon_name: !lambda return icon_name;
+```
+
+#### set (text/alarm/clock/weekday/today) color action
+
+Sets the color of the select element
+
+You have to use use id of your ehmtx component, e.g. ```rgb8x32```
+
+```
+     - ehmtx.indicator.on:
+       id: rgb8x32
+       red: !lambda return r;
+       green: !lambda return g;
+       blue: !lambda return b;
+```
+valid elements:
+- ehmtx.text.color:
+- ehmtx.alarm.color:
+- ehmtx.clock.color:
+- ehmtx.weekday.color:
+- ehmtx.today.color:
+
+- ```red, green, blue```: the color components (0..255) (default=80)
+
+##### sample:
+
+````
+esphome:
+  name: $devicename
+  on_boot:
+    priority: -100
+    then: 
+      - ehmtx.text.color:
+          id: rgb8x32
+          red: !lambda return 200;
+          blue: !lambda return 170;
+      - ehmtx.today.color:
+          id: rgb8x32
+          red: !lambda return 10;
+          green: !lambda return 250;
+      - ehmtx.clock.color:
+          id: rgb8x32
+          red: !lambda return 50;
+          green: !lambda return 150;
+          blue: !lambda return 230;
+      - ehmtx.weekday.color:
+          id: rgb8x32
+          red: !lambda return 250;
+          green: !lambda return 50;
+          blue: !lambda return 30;
 ```
 
 #### Indicator on
@@ -343,6 +445,21 @@ Sets the overall brightness of the display (0..255)
 parameters:
 - ```brightness```: from dark to bright (0..255) (default=80) as set in the light component by ```color_correct: [30%, 30%, 30%]```
 
+There's an easier way in using a number component:
+
+```
+number:
+  - platform: template
+    name: "LED brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+```
 Service **_alarm**
 
 Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red text color and a red marker in the upper right corner.
@@ -389,6 +506,10 @@ Service **indicator_off**
 
 removes the indicator
 
+Service **skip**
+
+skips to the next screen
+
 Service **status**
 
 This service displays the running queue and a list of icons in the logs
@@ -434,6 +555,59 @@ mode: queued
 max: 10
 ```
 
+### integrate in home assistant ui
+
+you can add some entities to home assistant to your ui for interactive control of your display
+
+#### brightness
+
+```
+number:
+  - platform: template
+    name: "$devicename brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+```
+
+#### force screen
+
+With the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen. The state of the select componenten doesn't reflect the actual display because it is published only all 30s. You should also consider to not record this state in your history.
+
+```
+ehmtx:
+  id: rgb8x32
+  ...
+  ehmtxselect: ehmtx_screens #id of your select component
+  ...
+  
+select:
+  - platform: ehmtx
+    id: ehmtx_screens
+    name: "ehmtx screens"
+```
+
+With the select-component you can use a script like this to show all icons. The integrated script editor in home assistant doesn't support it, so you have to add it with e.g. the vs-code addon
+
+```
+alias: EHMTX show all icons
+sequence:
+  - repeat:
+      for_each: '{{ states.select.ehmtx8266_screens.attributes.options }}'
+      sequence:
+        service: esphome.ehmtx8266_screen
+        data:
+          icon_name: '{{ repeat.item }}'
+          text: '{{ repeat.item }}'
+mode: single
+icon: mdi:led-strip
+```
+
 ## Hardware/Wifi
 
 Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP32) as port for the display.
@@ -458,6 +632,11 @@ sensor:
                id(rgb8x32)->set_brightness(250);
             }
 ```
+
+# notifier
+
+There is a optional [notifier component](https://github.com/lubeda/EHMTX_custom_component) you can install with hacs. It is compareable to the **_screen** service but more streamlined.
+
 
 # Usage
 
