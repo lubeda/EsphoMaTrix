@@ -91,6 +91,24 @@ namespace esphome
     ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
   }
 
+  void EHMTX::set_today_color(int r, int g, int b)
+  {
+    this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "Today r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_weekday_color(int r, int g, int b)
+  {
+    this->weekday_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "Weekday r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_clock_color(int r, int g, int b)
+  {
+    this->clock_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
+  }
+
   uint8_t EHMTX::find_icon(std::string name)
   {
     for (uint8_t i = 0; i < this->icon_count; i++)

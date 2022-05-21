@@ -260,11 +260,11 @@ Sets the color of the select element
 You have to use use id of your ehmtx component, e.g. ```rgb8x32```
 
 ```
-     - ehmtx.***.color:
-        id: rgb8x32
-        red: !lambda return r;
-        green: !lambda return g;
-        blue: !lambda return b;
+     - ehmtx.indicator.on:
+       id: rgb8x32
+       red: !lambda return r;
+       green: !lambda return g;
+       blue: !lambda return b;
 ```
 valid elements:
 - ehmtx.text.color:

@@ -122,6 +122,7 @@ AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
 async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_arg, paren)
+
     template_ = await cg.templatable(config[CONF_ICON], args, cg.std_string)
     cg.add(var.set_icon(template_))
 
