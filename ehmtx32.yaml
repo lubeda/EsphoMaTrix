@@ -135,6 +135,7 @@ number:
     set_action:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
+        
 time:
   - platform: homeassistant
     id: ehmtx_time

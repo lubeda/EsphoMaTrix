@@ -1,5 +1,4 @@
 from argparse import Namespace
-from email.policy import default
 import logging
 import io
 import requests
@@ -66,10 +65,13 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_YOFFSET, default="6"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
+        CONF_HTML, default=False
+    ): cv.boolean,
+    cv.Optional(
         CONF_WEEK_ON_MONDAY, default=True
     ): cv.boolean,
     cv.Optional(
-        CONF_XOFFSET, default="0"
+        CONF_XOFFSET, default="1"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(CONF_SCROLLINTERVALL, default="80"
                 ): cv.templatable(cv.positive_int),
@@ -91,8 +93,17 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ICONS): cv.All(
         cv.ensure_list(
             {
-                cv.Required(CONF_ICONID): cv.declare_id(Icons_),
-                cv.Required(CONF_FILE): cv.file_,
+                cv.Required(CONF_ID): cv.declare_id(Icons_),
+
+                cv.Exclusive(CONF_FILE,"uri"): cv.file_,
+                cv.Exclusive(CONF_URL,"uri"): cv.url,
+                cv.Exclusive(CONF_LAMEID,"uri"): cv.string,
+                cv.Optional(
+                    CONF_DURATION, default="0"
+                ): cv.templatable(cv.positive_int),
+                cv.Optional(
+                    CONF_PINGPONG, default=False
+                ): cv.boolean,
                 cv.Optional(CONF_TYPE, default="RGB565"): cv.enum(
                     espImage.IMAGE_TYPE, upper=True
                 ),
@@ -122,12 +133,13 @@ AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
 async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_arg, paren)
-
+    
     template_ = await cg.templatable(config[CONF_ICON], args, cg.std_string)
     cg.add(var.set_icon(template_))
 
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
+     
     if CONF_DURATION in config:
         template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
         cg.add(var.set_duration(template_))
@@ -160,7 +172,7 @@ async def ehmtx_set_brightness_action_to_code(config, action_id, template_arg, a
 
 SET_COLOR_ACTION_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(): cv.use_id(EHMTX_),
+        cv.GenerateID(): cv.use_id(EHMTX_), 
         cv.Optional(CONF_RED,default=80): cv.templatable(cv.uint8_t,),
         cv.Optional(CONF_BLUE,default=80): cv.templatable(cv.uint8_t,),
         cv.Optional(CONF_GREEN,default=80): cv.templatable(cv.uint8_t,),
@@ -261,6 +273,7 @@ async def ehmtx_set_week_color_action_to_code(config, action_id, template_arg, a
 
 
 SetIndicatorOnAction = ehmtx_ns.class_("SetIndicatorOn", automation.Action)
+
 
 @automation.register_action(
     "ehmtx.indicator.on", SetIndicatorOnAction, SET_COLOR_ACTION_SCHEMA

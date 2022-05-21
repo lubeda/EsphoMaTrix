@@ -22,16 +22,6 @@ namespace esphome
 #endif
   }
 
-  void EHMTX::set_week_start(bool b)
-  {
-    this->week_starts_monday = b;
-    if (b){
-      ESP_LOGI(TAG, "weekstart: monday");
-    } else {
-      ESP_LOGI(TAG, "weekstart: sunday");
-    } 
-  }
-  
   void EHMTX::force_screen(std::string name)
   {
     uint8_t icon_id = this->find_icon(name);
@@ -73,42 +63,6 @@ namespace esphome
     ESP_LOGD(TAG, "gauge r: %d g: %d b: %d", r, g, b);
   }
 
-  void EHMTX::set_today_color(int r, int g, int b)
-  {
-    this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Today r: %d g: %d b: %d", r, g, b);
-  }
-
-  void EHMTX::set_weekday_color(int r, int g, int b)
-  {
-    this->weekday_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Weekday r: %d g: %d b: %d", r, g, b);
-  }
-
-  void EHMTX::set_clock_color(int r, int g, int b)
-  {
-    this->clock_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
-  }
-
-  void EHMTX::set_today_color(int r, int g, int b)
-  {
-    this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Today r: %d g: %d b: %d", r, g, b);
-  }
-
-  void EHMTX::set_weekday_color(int r, int g, int b)
-  {
-    this->weekday_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Weekday r: %d g: %d b: %d", r, g, b);
-  }
-
-  void EHMTX::set_clock_color(int r, int g, int b)
-  {
-    this->clock_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
-  }
-
   uint8_t EHMTX::find_icon(std::string name)
   {
     for (uint8_t i = 0; i < this->icon_count; i++)
@@ -119,7 +73,7 @@ namespace esphome
         return i;
       }
     }
-    ESP_LOGE(TAG, "icon: %s not found", name.c_str());
+    ESP_LOGD(TAG, "icon: %s not found", name.c_str());
     return MAXICONS;
   }
 
@@ -164,12 +118,12 @@ namespace esphome
   {
     if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
     {
-      this->display->strftime(6 + this->xoffset, this->yoffset, this->font, this->clock_color, "%H:%M",
+      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%H:%M",
                               this->clock->now());
     }
     else
     {
-      this->display->strftime(5 + this->xoffset, this->yoffset, this->font, this->clock_color, "%d.%m.",
+      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%d.%m.",
                               this->clock->now());
     }
     this->draw_day_of_week();
@@ -276,11 +230,11 @@ namespace esphome
     ESP_LOGI(TAG, "status alarm_color: RGB(%d,%d,%d)", this->alarm_color.r, this->alarm_color.g, this->alarm_color.b);
     if (this->show_indicator)
     {
-      ESP_LOGI("EHMTX", "status indicator on");
+      ESP_LOGI(TAG, "status indicator on");
     }
     else
     {
-      ESP_LOGI("EHMTX", "status indicator off");
+      ESP_LOGI(TAG, "status indicator off");
     }
 
     this->store->log_status();
@@ -360,8 +314,14 @@ namespace esphome
     this->display->get_light()->set_correction(br, br, br, br);
   }
 
-  uint8_t EHMTX::get_brightness() {
+  uint8_t EHMTX::get_brightness()
+  {
     return this->brightness_;
+  }
+
+  std::string EHMTX::get_current()
+  {
+    return this->icons[this->store->current()->icon]->name;
   }
 
   void EHMTX::set_clock_time(uint16_t t)
@@ -380,12 +340,13 @@ namespace esphome
     this->store->clock = clock;
   }
 
- void EHMTX::draw_day_of_week()
+  void EHMTX::draw_day_of_week()
   {
     auto dow = this->clock->now().day_of_week - 1; // SUN = 0
       for (uint8_t i = 0; i <= 6; i++)
       {
-        if ((!this->week_starts_monday && (dow == i)) || ((this->week_starts_monday) && ((dow == (i+1))) || ((dow==0 && i == 6)) ))
+        if ( ((!this->week_starts_monday) && (dow == i)) || 
+             ((this->week_starts_monday) && ((dow == (i+1)) || ((dow==0 && i == 6)) )))
         {
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->today_color);
         }
@@ -394,6 +355,7 @@ namespace esphome
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->weekday_color);
         }
       }
+    
   };
 
   void EHMTX::set_font_offset(int8_t x, int8_t y)
