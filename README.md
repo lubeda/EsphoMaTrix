@@ -545,6 +545,22 @@ select:
     name: "ehmtx screens"
 ```
 
+With the select-component you can use a script like this to show all icons. The integrated script editor in home assistant doesn't support it, so you have to add it with e.g. the vs-code addon
+
+```
+alias: EHMTX show all icons
+sequence:
+  - repeat:
+      for_each: '{{ states.select.ehmtx8266_screens.attributes.options }}'
+      sequence:
+        service: esphome.ehmtx8266_screen
+        data:
+          icon_name: '{{ repeat.item }}'
+          text: '{{ repeat.item }}'
+mode: single
+icon: mdi:led-strip
+```
+
 ## Hardware/Wifi
 
 Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP32) as port for the display.
@@ -569,6 +585,11 @@ sensor:
                id(rgb8x32)->set_brightness(250);
             }
 ```
+
+# notifier
+
+There is a optional [notifier component](https://github.com/lubeda/EHMTX_custom_component) you can install with hacs. It is compareable to the **_screen** service but more streamlined.
+
 
 # Usage
 
