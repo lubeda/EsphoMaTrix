@@ -9,7 +9,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32-8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2022.3.11 (RGB)";
+static const char *const EHMTX_VERSION = "Version: 2022.5.0";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
