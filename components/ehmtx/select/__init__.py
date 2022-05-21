@@ -17,7 +17,7 @@ CONFIG_SCHEMA = cv.All(
         {
             cv.GenerateID(): cv.declare_id(EHMTXSelect),
         }
-    ).extend(cv.polling_component_schema("120s")),
+    ).extend(cv.polling_component_schema("30s")),
 )
 
 async def to_code(config):

@@ -15,7 +15,7 @@ The other d.i.y. solutions have their pros and cons. I tried both and used AwTri
 
 **First release!**
 
-It is a working solution with the core funtionality coded. Advanced features, like automatic brigtness control can be done with esphome actions and automations. 
+It is a working solution with core functionality coded. Advanced features, like automatic brigtness control can be done with esphome actions and automations. 
 
 See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles)
 
@@ -32,7 +32,7 @@ The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx826
 # Installation
 
 ## Font
-Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright i can't provide my modified version :-(.
+Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright i can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. 
 
 ```
 font:
@@ -44,7 +44,7 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. 
+Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. You can also specify an url to directly download an image file.
 
 ```
 emhtx:
@@ -56,6 +56,8 @@ emhtx:
       id: temp 
     - file: garage.gif
       id: garage
+    - url: https://github.com/home-assistant/assets/raw/master/logo/logo-small.png
+      id: homeassistant
 ```
 
 ### Parameter
@@ -72,7 +74,12 @@ The id of the icons is used later to configure the screens to display. So you sh
 
 ### preview helper
 
-During compile the logfile contains a html code to preview the icons.
+You can create a file with all icons an names as reference in the config directory. The file is named like the yaml with the extension ".html"
+
+```
+emhtx:
+  html: true
+```
 
 e.g.
 
@@ -82,7 +89,6 @@ error: <img src="_icons/error fatal.gif" alt="error">&nbsp;
 leia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
 </BODY></HTML>
 ```
-you can save this to a file in the folder with the yaml to preview your icons as reference.
 
 ### show all icons on your matrix
 
@@ -142,6 +148,7 @@ ehmtx:
   show_clock: 6 
   show_screen: 8
   duration: 5
+  html: true
   display8x32: ehmtxdisplay
   time: EHMTX_clock
   font_id: EHMTX_font
@@ -406,8 +413,6 @@ number:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
 ```
-
-
 Service **_alarm**
 
 Sets an alarm, the alarm is like a normal screen but is displayed two minutes longer than a normal screen and has a red text color and a red marker in the upper right corner.
@@ -525,7 +530,7 @@ number:
 
 #### force screen
 
-with the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen. The state of the select componenten doesn't reflect the actual display because it is published only all 120s. You should also consider to not record this state in your history.
+With the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen. The state of the select componenten doesn't reflect the actual display because it is published only all 30s. You should also consider to not record this state in your history.
 
 ```
 ehmtx:
