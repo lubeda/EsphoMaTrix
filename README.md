@@ -1,21 +1,21 @@
 # EspHoMaTriX (ehmtx)
-A simple DIY status display build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
+A simple DIY status display, build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 
 # Introduction
 
-There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lamtric and some very good d.i.y.-alternatives. 
+There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good d.i.y.-alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/)
 - [PixelIt](https://docs.bastelbunker.de/pixelit/)
 
-The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration!
+The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant. Targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration!
 
 ## State
 
 **First release!**
 
-It is a working solution with core functionality coded. Advanced features, like automatic brigtness control can be done with esphome actions and automations. 
+It is a working solution with core functionality coded. Advanced features, like automatic brightness control can be done with esphome actions and automations. 
 
 See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles)
 
@@ -27,7 +27,7 @@ Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 16
 
 You can use the ehmtx32.yaml as sample for an ESP32. As mentioned you have to edit to your needs. So check font, icons, board and the GPIO port for your display.
 
-The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx8266.yaml uses actions where possible.
+The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx8266.yaml uses actions where possible. You have to adapt the yaml to your hardware, since there are other RGB-LED Displays possible.
 
 # Installation
 
@@ -54,7 +54,11 @@ emhtx:
       id: boot 
     - file: temperature.png
       id: temp 
+    - file: _icons/yoga-bridge.gif
+      pingpong: true
+      id: yoga
     - file: garage.gif
+      duration: 100
       id: garage
     - url: https://github.com/home-assistant/assets/raw/master/logo/logo-small.png
       id: homeassistant
@@ -63,9 +67,11 @@ emhtx:
 ### Parameter
 **duration (Optional, ms):** in case of a gif file the component tries to read the default intervall for each frame. The default/fallback intervall is 192ms. In case you need to override set the duration per icon
 
-Gifs are limited to 10 frames to limit the flash space. The first icon in your list is the fallback in case of an error.
+**pingpong (Optional, boolean):** in case of a gif file you can reverse the frames instead of starting from the first.
 
-All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
+Gifs are limited to 16 frames to limit the flash space. The first icon in your list is the fallback in case of an error.
+
+All other solutions provide ready made icons, especialy lametric has a big database of [icons](https://developer.lametric.com/icons) or the [awtrix.blueforcer.de](https://awtrix.blueforcer.de/icons.html). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flashspace and the RAM of your board.
 
 The id of the icons is used later to configure the screens to display. So you should name them clever.
 
@@ -74,14 +80,14 @@ The id of the icons is used later to configure the screens to display. So you sh
 
 ### preview helper
 
-You can create a file with all icons an names as reference in the config directory. The file is named like the yaml with the extension ".html"
+You can create a file with all icons and names as reference in the config directory. The file is named like the yaml with the extension ".html"
 
 ```
 emhtx:
   html: true
 ```
 
-e.g.
+sample result
 
 ```
 <HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>
@@ -92,7 +98,8 @@ leia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
 
 ### show all icons on your matrix
 
-this code shows all icons once on boot up
+This code shows all icons once on boot up, depending on the amount of your icons it can take a while to see them all.
+
 ```
 esphome:
   ....
@@ -103,7 +110,8 @@ esphome:
       - lambda: !lambda |-
           id(rgb8x32)->show_all_icons();
 ```
-here you can show all of your icons via a service call
+
+Here you can show all of your icons via a service call:
 
 ```
 api:
@@ -118,14 +126,13 @@ api:
 
 ### local use
 
-If you download the componets-folder from the repo an install it in your esphome you have more stable installation. But if there are new features you won't see them. If needed customize the yaml to your folder structure.
+If you download the components-folder from the repo and install it in your esphome you have a stable installation. But if there are new features you won't see them. If needed customize the yaml to your folder structure.
 
 ```
 external_components:
    - source:
        type: local
        path: components # e.g. /config/esphome/components
-
 ```
 
 ### use from repo direct
@@ -170,9 +177,9 @@ _Configuration variables:_
 
 **duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
-**yoffset (Optional, pixel):** yoffset the text is alligned BASELINE_LEFT, the baseline defaults to 6 
+**yoffset (Optional, pixel):** yoffset the text is aligned BASELINE_LEFT, the baseline defaults to 6 
 
-**xoffset (Optional, pixel):** xoffset the text is alligned BASELINE_LEFT, the left defaults to 1
+**xoffset (Optional, pixel):** xoffset the text is aligned BASELINE_LEFT, the left defaults to 1
 
 **display8x32 (required, ID):** ID of the addressable display
 
@@ -209,7 +216,7 @@ Take care that the ```char text[30];``` has enough space to store the formated t
 
 ## local trigger
 
-There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (so doesn't trigger on the clock display!!). In lambda's you can use two local string variables:
+There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (it doesn't trigger on the clock/date display!!). In lambda's you can use two local string variables:
 
 **x (Name of the icon, std::string):** value to use in lamba
 
@@ -228,7 +235,7 @@ ehmtx:
         ESP_LOGI("TriggerTest","Text: %s",y.c_str());
 ```
 
-#### send event to homeassistant
+#### send an event to homeassistant
 
 To send data back to home assistant you can use events.
 
