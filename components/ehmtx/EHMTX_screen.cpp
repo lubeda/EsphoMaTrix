@@ -89,7 +89,7 @@ namespace esphome
   
     if (this->config_->show_gauge)
     {
-      //this->display->line(31, 7, 31, 0,esphome::display::COLOR_OFF );
+      this->display->display->line(0, 7, 0, 0,esphome::display::COLOR_OFF );
       this->config_->display->line(0, 7, 0, this->config_->gauge_value, this->config_->gauge_color);
       this->config_->display->line(1, 7, 1, 0,esphome::display::COLOR_OFF );
       this->config_->display->image(2, 0, this->config_->icons[this->icon]);

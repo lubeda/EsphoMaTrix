@@ -106,7 +106,7 @@ namespace esphome
   void EHMTX::set_gauge_value(uint8_t val)
   {
     this->show_gauge = false;
-    if (val > 0)
+    if ((val > 0) && (val <= 100))
     {
       this->show_gauge = true;
       this->gauge_value = (uint8_t)(100-val) * 7 / 100;
