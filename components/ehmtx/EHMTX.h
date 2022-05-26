@@ -1,5 +1,4 @@
 #ifndef EHMTX_H
-
 #define EHMTX_H
 #include "esphome.h"
 
@@ -25,6 +24,7 @@ namespace esphome
   protected:
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
+    bool week_starts_monday;
     Color indicator_color;
     Color clock_color;
     Color today_color;
@@ -40,7 +40,6 @@ namespace esphome
     bool show_screen;
     bool show_indicator;
     bool show_gauge;
-    bool week_starts_monday;
     uint8_t gauge_value;
     bool show_icons;
     void force_screen(std::string name);
@@ -98,7 +97,7 @@ namespace esphome
     void set_text_color(int r, int g, int b);
     void set_clock_color(int r, int g, int b);
     void set_today_color(int r, int g, int b);
-    void set_weekday_color(int r, int g, int b); 
+    void set_weekday_color(int r, int g, int b);
     void set_alarm_color(int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
@@ -208,7 +207,7 @@ namespace esphome
     EHMTX *parent_;
   };
 
-  template <typename... Ts>
+template <typename... Ts>
   class SetClockColor : public Action<Ts...>
   {
   public:
@@ -225,6 +224,27 @@ namespace esphome
   protected:
     EHMTX *parent_;
   };
+
+
+template <typename... Ts>
+  class SetAlarmColor : public Action<Ts...>
+  {
+  public:
+    SetAlarmColor(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_alarm_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+
 
 template <typename... Ts>
   class SetTodayColor : public Action<Ts...>
@@ -306,7 +326,7 @@ template <typename... Ts>
 
     void play(Ts... x) override
     {
-        this->parent_->del_screen(this->icon_.value(x...));
+      this->parent_->del_screen(this->icon_.value(x...));
     }
 
   protected:
