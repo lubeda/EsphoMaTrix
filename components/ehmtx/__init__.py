@@ -17,9 +17,8 @@ _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
-MAXFRAMES = 16
-MAXICONS=64
-
+MAXFRAMES = 20
+MAXICONS=72
 
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
@@ -348,17 +347,19 @@ async def ehmtx_set_indicator_off_action_to_code(config, action_id, template_arg
 
     return var
 
-
 CODEOWNERS = ["@lubeda"]
-
 
 async def to_code(config):
 
     from PIL import Image
     var = cg.new_Pvariable(config[CONF_ID])
-    html_string = "<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>"
+    html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD><STYLE> img {{ height: 40px; width: 40px; background: black;}} "
+    body_string = ""
     for conf in config[CONF_ICONS]:
-
+               
+        html_string += F".{conf[CONF_ID]} {{ width: 40px; height: 40px; margin: 12px;  position: relative; font-size: 6px; }} "
+        html_string += F".{conf[CONF_ID]}:after {{ content: \"\"; position: absolute; top: 0; left: 0;  width: 1em; height: 1em; box-shadow: "
+  
         if CONF_FILE in conf:
             path = CORE.relative_config_path(conf[CONF_FILE])
             try:
@@ -375,6 +376,7 @@ async def to_code(config):
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
+        
         width, height = image.size
         if (width != 8) or (height != 8):
             image = image.resize([8, 8])
@@ -384,13 +386,15 @@ async def to_code(config):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
-        if CONF_FILE in conf:
-            html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
-        elif CONF_URL in conf: 
-            html_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_URL] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
-        elif CONF_LAMEID in conf: 
-            html_string += str(conf[CONF_ID]) + ": <img src=\"https://developer.lametric.com/content/apps/icon_thumbs/"+ conf[CONF_LAMEID] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
-            
+     
+        # if CONF_FILE in conf:
+        #     #body_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        #     body_string += " "
+        # elif CONF_URL in conf: 
+        #     body_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_URL] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
+        # elif CONF_LAMEID in conf: 
+        #     body_string += str(conf[CONF_ID]) + ": <img src=\"https://developer.lametric.com/content/apps/icon_thumbs/"+ conf[CONF_LAMEID] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;"   
+        
         if (conf[CONF_DURATION] == 0):
             try:
                 duration =  image.info['duration']         
@@ -398,6 +402,10 @@ async def to_code(config):
                 duration = config[CONF_ANIMINTERVALL]
         else:
             duration = conf[CONF_DURATION]
+
+
+        body_string += F"<B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<DIV CLASS=\"{conf[CONF_ID]}\" align=left></DIV>"
+
         if conf[CONF_TYPE] == "GRAYSCALE":
             data = [0 for _ in range(8 * 8 * frames)]
             pos = 0
@@ -424,7 +432,12 @@ async def to_code(config):
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
+                i = 0
                 for pix in pixels:
+                    x = 1+ (i % 8)
+                    y = i//8
+                    i += 1
+                    html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
                     data[pos] = pix[0] & 248
                     pos += 1
                     data[pos] = pix[1] & 252
@@ -435,6 +448,7 @@ async def to_code(config):
         elif conf[CONF_TYPE] == "RGB565":
             data = [0 for _ in range(8 * 8 * 2 * frames)]
             pos = 0 
+            
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
@@ -443,16 +457,21 @@ async def to_code(config):
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
+                i = 0
                 for pix in pixels:
                     R = pix[0] >> 3
                     G = pix[1] >> 2
                     B = pix[2] >> 3
+                    x = 1+ (i % 8)
+                    y = i//8
+                    i +=1
                     rgb = (R << 11) | (G << 5) | B
+                    html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
                     data[pos] = rgb >> 8
                     pos += 1
                     data[pos] = rgb & 255
                     pos += 1
-
+        
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
             data = [0 for _ in range((height * width8 // 8) * frames)]
@@ -466,7 +485,10 @@ async def to_code(config):
                         pos = x + y * width8 + (height * width8 * frameIndex)
                         data[pos // 8] |= 0x80 >> (pos % 8)
 
+        html_string =  html_string[:-2] + "; "
         rhs = [HexInt(x) for x in data]
+        html_string += F"}} "
+
         prog_arr = cg.progmem_array(conf[CONF_RAW_DATA_ID], rhs)
 
         cg.new_Pvariable(
@@ -482,12 +504,13 @@ async def to_code(config):
         )
 
         cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
-
+    html_string += "</STYLE><BODY>" + body_string
     html_string += "</BODY></HTML>"
     
     if config[CONF_HTML]:
         try:
             with open(CORE.config_path+".html", 'w') as f:
+                f.truncate()
                 f.write(html_string)
                 f.close()
         except:
