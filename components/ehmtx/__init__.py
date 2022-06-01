@@ -42,6 +42,8 @@ CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
 CONF_PINGPONG = "pingpong"
+CONF_TIME_FORMAT = "time_format"
+CONF_DATE_FORMAT = "date_format"
 CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_WEEK_ON_MONDAY = "week_start_monday"
@@ -69,6 +71,12 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
         CONF_WEEK_ON_MONDAY, default=True
     ): cv.boolean,
+    cv.Optional(
+        CONF_TIME_FORMAT, default="%H:%M"
+    ): cv.string,
+    cv.Optional(
+        CONF_DATE_FORMAT, default="%d.%m."
+    ): cv.string,
     cv.Optional(
         CONF_XOFFSET, default="1"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
@@ -523,6 +531,8 @@ async def to_code(config):
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
     cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
     cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
+    cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
+    cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])

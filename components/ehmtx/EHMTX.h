@@ -25,6 +25,8 @@ namespace esphome
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
     bool week_starts_monday;
+    std::string time_fmt;
+    std::string date_fmt;
     Color indicator_color;
     Color clock_color;
     Color today_color;
@@ -89,6 +91,8 @@ namespace esphome
     void set_scroll_intervall(uint16_t intervall);
     void set_duration(uint8_t d);
     void set_indicator_off();
+    void set_time_format(std::string s);
+    void set_date_format(std::string s);
     void set_indicator_on();
     void set_indicator_color(int r, int g, int b);
     void set_gauge_off();
@@ -243,8 +247,6 @@ template <typename... Ts>
   protected:
     EHMTX *parent_;
   };
-
-
 
 template <typename... Ts>
   class SetTodayColor : public Action<Ts...>

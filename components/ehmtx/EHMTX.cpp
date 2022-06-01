@@ -32,6 +32,16 @@ namespace esphome
     }
   }
 
+  void EHMTX::set_time_format(std::string s)
+  {
+    this->time_fmt = s;
+  }
+
+  void EHMTX::set_date_format(std::string s)
+  {
+    this->date_fmt = s;
+  }
+
   void EHMTX::set_indicator_color(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
@@ -118,12 +128,12 @@ namespace esphome
   {
     if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
     {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%H:%M",
+      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
                               this->clock->now());
     }
     else
     {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%d.%m.",
+      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->date_fmt.c_str(),
                               this->clock->now());
     }
     this->draw_day_of_week();
@@ -372,6 +382,7 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
+    
     if (this->week_starts_monday){
       ESP_LOGCONFIG(TAG, "weekstart: monday");
     } else {
