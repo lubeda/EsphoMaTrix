@@ -2,6 +2,7 @@ from argparse import Namespace
 import logging
 import io
 import requests
+import os
 
 from esphome import core, automation
 from esphome.components import display, font, time
@@ -19,6 +20,9 @@ DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 20
 MAXICONS=72
+WIDTH = 8
+HEIGHT = 8
+SIZE = [WIDTH, HEIGHT]
 
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
@@ -351,7 +355,14 @@ CODEOWNERS = ["@lubeda"]
 
 async def to_code(config):
 
-    from PIL import Image
+    from PIL import Image, ImageSequence
+
+    def openImageFile(path):
+        try:
+            return Image.open(path)
+        except Exception as e:
+            raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
+
     var = cg.new_Pvariable(config[CONF_ID])
     html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD><STYLE> img {{ height: 40px; width: 40px; background: black;}} "
     body_string = ""
@@ -362,10 +373,7 @@ async def to_code(config):
   
         if CONF_FILE in conf:
             path = CORE.relative_config_path(conf[CONF_FILE])
-            try:
-                image = Image.open(path)
-            except Exception as e:
-                raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
+            image = openImageFile(path)
         elif CONF_LAMEID in conf:
             r = requests.get("https://developer.lametric.com/content/apps/icon_thumbs/" + conf[CONF_LAMEID], timeout=4.0)
             if r.status_code != requests.codes.ok:
@@ -376,17 +384,30 @@ async def to_code(config):
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
-        
-        width, height = image.size
-        if (width != 8) or (height != 8):
-            image = image.resize([8, 8])
-            width, height = image.size
 
         if hasattr(image, 'n_frames'):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
      
+        width, height = image.size
+        if (width != WIDTH) or (height != HEIGHT):
+            if frames > 1:
+                imgFrames = ImageSequence.Iterator(image)
+                resizedFrames = []
+                for frame in imgFrames:
+                    frame = frame.resize(SIZE)
+                    resizedFrames.append(frame)
+                resizedFilePath = f'{path}.resized.gif'
+                resizedFrames[1].save(resizedFilePath, save_all=True, append_images=resizedFrames[2:], loop=0) # The first frame [0] is broken,  therefore starting from [1].
+                frames = frames-1
+                image = openImageFile(resizedFilePath)
+                os.remove(resizedFilePath)
+                width, height = image.size
+            else:
+                image = image.resize(SIZE)
+                width, height = image.size
+
         # if CONF_FILE in conf:
         #     #body_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
         #     body_string += " "
