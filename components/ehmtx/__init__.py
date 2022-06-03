@@ -400,10 +400,10 @@ async def to_code(config):
                     resizedFrames.append(frame)
                 resizedFilePath = f'{path}.resized.gif'
                 resizedFrames[1].save(resizedFilePath, save_all=True, append_images=resizedFrames[2:], loop=0) # The first frame [0] is broken,  therefore starting from [1].
-                frames = frames-1
                 image = openImageFile(resizedFilePath)
                 os.remove(resizedFilePath)
                 width, height = image.size
+                frames = image.n_frames
             else:
                 image = image.resize(SIZE)
                 width, height = image.size
