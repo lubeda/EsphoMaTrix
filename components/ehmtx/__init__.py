@@ -476,7 +476,6 @@ async def to_code(config):
                     duration = awtrixdata["tick"]
                     for frame in awtrixdata["data"]:
                         frameIndex= +1
-                        print(frame)
                         if len(frame) != 8 * 8:
                             raise core.EsphomeError(
                                 f"Unexpected number of pixels in awtrix"
