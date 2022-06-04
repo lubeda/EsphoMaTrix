@@ -32,7 +32,6 @@ namespace esphome
                 return screen;
             }
         }
-        // Default to first screen. Is this intended?
         return this->slots[0];
     }
 

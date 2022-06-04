@@ -65,7 +65,6 @@ namespace esphome
     }
     if (this->config_->show_gauge)
     {
-      //this->display->line(31, 7, 31, 0,esphome::display::COLOR_OFF );
       extraoffset +=2;
     }
      
@@ -124,5 +123,4 @@ namespace esphome
     }
     this->icon = icon;
   }
-
 }

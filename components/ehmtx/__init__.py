@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 20
-MAXICONS=72
+MAXICONS = 72
 ISIZE = 8
 
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
@@ -179,7 +179,6 @@ async def ehmtx_set_brightness_action_to_code(config, action_id, template_arg, a
 
     return var
 
-
 SET_COLOR_ACTION_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(EHMTX_), 
@@ -207,7 +206,6 @@ async def ehmtx_set_clock_color_action_to_code(config, action_id, template_arg, 
 
     return var
 
-
 SetTextColorAction = ehmtx_ns.class_("SetTextColor", automation.Action)
 
 @automation.register_action(
@@ -225,7 +223,6 @@ async def ehmtx_set_text_color_action_to_code(config, action_id, template_arg, a
     cg.add(var.set_blue(template_))
 
     return var
-
 
 SetAlarmColorAction = ehmtx_ns.class_("SetAlarmColor", automation.Action)
 
@@ -281,9 +278,7 @@ async def ehmtx_set_week_color_action_to_code(config, action_id, template_arg, a
 
     return var
 
-
 SetIndicatorOnAction = ehmtx_ns.class_("SetIndicatorOn", automation.Action)
-
 
 @automation.register_action(
     "ehmtx.indicator.on", SetIndicatorOnAction, SET_COLOR_ACTION_SCHEMA
@@ -301,7 +296,6 @@ async def ehmtx_set_indicator_on_action_to_code(config, action_id, template_arg,
 
     return var
 
-
 DELETE_SCREEN_ACTION_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(EHMTX_),
@@ -310,7 +304,6 @@ DELETE_SCREEN_ACTION_SCHEMA = cv.Schema(
 )
 
 DeleteScreenAction = ehmtx_ns.class_("DeleteScreen", automation.Action)
-
 
 @automation.register_action(
     "ehmtx.delete.screen", DeleteScreenAction, DELETE_SCREEN_ACTION_SCHEMA
@@ -326,7 +319,6 @@ async def ehmtx_delete_screen_action_to_code(config, action_id, template_arg, ar
 
 ForceScreenAction = ehmtx_ns.class_("ForceScreen", automation.Action)
 
-
 @automation.register_action(
     "ehmtx.force.screen", ForceScreenAction, DELETE_SCREEN_ACTION_SCHEMA
 )
@@ -339,7 +331,6 @@ async def ehmtx_force_screen_action_to_code(config, action_id, template_arg, arg
 
     return var
 
-
 SetIndicatorOffAction = ehmtx_ns.class_("SetIndicatorOff", automation.Action)
 
 INDICATOR_OFF_ACTION_SCHEMA = cv.Schema(
@@ -347,7 +338,6 @@ INDICATOR_OFF_ACTION_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.use_id(EHMTX_),
     }
 )
-
 
 @automation.register_action(
     "ehmtx.indicator.off", SetIndicatorOffAction, INDICATOR_OFF_ACTION_SCHEMA
@@ -390,14 +380,12 @@ async def to_code(config):
             r = requests.get("https://awtrix.blueforcer.de/icons/"+conf[CONF_AWTRIXID], timeout=4.0)
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download awtrix icon {conf[CONF_URL]}: {conf[CONF_ID]}")
-            image = Image.open(io.BytesIO(r.content))
-            
+            image = Image.open(io.BytesIO(r.content))         
         elif CONF_URL in conf:
             r = requests.get(conf[CONF_URL], timeout=4.0)
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
-        
         width, height = image.size
         if (width != ISIZE) or (height != ISIZE):
             image = image.resize([ISIZE, ISIZE])
@@ -407,15 +395,7 @@ async def to_code(config):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
-     
-        # if CONF_FILE in conf:
-        #     #body_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_FILE] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
-        #     body_string += " "
-        # elif CONF_URL in conf: 
-        #     body_string += str(conf[CONF_ID]) + ": <img src=\""+ conf[CONF_URL] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;" 
-        # elif CONF_LAMEID in conf: 
-        #     body_string += str(conf[CONF_ID]) + ": <img src=\"https://developer.lametric.com/content/apps/icon_thumbs/"+ conf[CONF_LAMEID] + "\" alt=\""+  str(conf[CONF_ID]) +"\">&nbsp;"   
-        
+            
         if (conf[CONF_DURATION] == 0):
             try:
                 duration =  image.info['duration']         
@@ -423,7 +403,6 @@ async def to_code(config):
                 duration = config[CONF_ANIMINTERVALL]
         else:
             duration = conf[CONF_DURATION]
-
 
         body_string += F"<B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<DIV CLASS=\"{conf[CONF_ID]}\" align=left></DIV>"
 

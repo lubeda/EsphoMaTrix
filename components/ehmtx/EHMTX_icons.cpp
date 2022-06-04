@@ -13,17 +13,8 @@ namespace esphome
   }
 
   void EHMTX_Icon::next_frame(){
-    // int get_animation_frame_count() const;
-    // int get_current_frame() const;
     if (this->get_animation_frame_count() > 1)
     {
-    //  this->current_frame_++;
-    // if (this->current_frame_ >= animation_frame_count_) {
-    //   this->current_frame_ = 0;
-    //   }
-
-      // 0 up =>  nf
-      // l up
       if (this->counting_up)
       {
          if (this->reverse && (this->get_current_frame() == this->get_animation_frame_count()-2))
@@ -42,5 +33,4 @@ namespace esphome
        }
     }
   }
-
 }

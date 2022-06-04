@@ -284,7 +284,6 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-
 template <typename... Ts>
   class SetWeekdayColor : public Action<Ts...>
   {
@@ -302,7 +301,6 @@ template <typename... Ts>
   protected:
     EHMTX *parent_;
   };
-
 
   template <typename... Ts>
   class SetIndicatorOff : public Action<Ts...>
@@ -363,7 +361,6 @@ template <typename... Ts>
     void next_frame();
     bool reverse;
   };
-
 }
 
 #endif
