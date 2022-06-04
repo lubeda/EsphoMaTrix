@@ -123,6 +123,7 @@ EHMTX_SCHEMA = cv.Schema({
         cv.Length(max=MAXICONS),
     )})
 
+
 CONFIG_SCHEMA = cv.All(font.validate_pillow_installed, EHMTX_SCHEMA)
 
 ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
@@ -446,17 +447,15 @@ async def to_code(config):
                     pos += 1
 
         elif conf[CONF_TYPE] == "RGB565":
-            
             pos = 0 
-            frameIndex= 0
+            frameIndex = 0
             if CONF_AWTRIXID in conf:
                 if "data" in awtrixdata:
                     frames = len(awtrixdata["data"])
-                    frameIndex =0
+                    frameIndex = 0
                     data = [0 for _ in range(ISIZE * ISIZE * 2 * frames)]
                     duration = awtrixdata["tick"]
                     for frame in awtrixdata["data"]:
-                        frameIndex= +1
                         if len(frame) != ISIZE * ISIZE:
                             raise core.EsphomeError(
                                 f"Unexpected number of pixels in awtrix"
@@ -464,18 +463,21 @@ async def to_code(config):
                         i = 0
                         for pix in frame:
                             G = (pix & 0x07e0) >> 5
-                            B = pix & 0x001f    
-                            R = (pix & 0xF800) >> 8
-                            x = 1+ (i % ISIZE)
+                            B =  pix & 0x1f  
+                            R = (pix & 0xF800) >> 11                       
+                            r = (R << 3) | (R >> 2)
+                            g = (G << 2) | (G >> 4)
+                            b = (B << 3) | (B >> 2)
+                            x = 1 + (i % ISIZE)
                             y = i//ISIZE
-                            i +=1
+                            i += 1
                             rgb = pix  # (R << 11) | (G << 5) | B
-                            html_string += F"{x + (frameIndex*10)}em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
+                            html_string += F"{x + (frameIndex*10)}em {y}em #{hex(r).replace('0x','').zfill(2)}{hex(g).replace('0x','').zfill(2)}{hex(b).replace('0x','').zfill(2)}, "
                             data[pos] = rgb >> 8
                             pos += 1               
                             data[pos] = rgb & 255
                             pos += 1
-
+                        frameIndex += 1
                 else:
                     frames = 1
                     i = 0
@@ -486,9 +488,12 @@ async def to_code(config):
                         i +=1
                         rgb = pix  
                         G = (pix & 0x07e0) >> 5
-                        B = pix & 0x001f
-                        R = (pix & 0xF800) >> 8
-                        html_string += F"{x }em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
+                        B =  pix & 0x1f  
+                        R = (pix & 0xF800) >> 11                       
+                        r = (R << 3) | (R >> 2)
+                        g = (G << 2) | (G >> 4)
+                        b = (B << 3) | (B >> 2)
+                        html_string += F"{x }em {y}em #{hex(r).replace('0x','').zfill(2)}{hex(g).replace('0x','').zfill(2)}{hex(b).replace('0x','').zfill(2)}, "
                         data[pos] = rgb >> 8
                         pos += 1               
                         data[pos] = rgb & 255
