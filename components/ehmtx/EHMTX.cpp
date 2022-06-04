@@ -425,7 +425,6 @@ namespace esphome
     }
     else
     {
-
       if (this->show_screen)
       {
         this->store->current()->draw();
@@ -444,8 +443,6 @@ namespace esphome
       this->display->draw_pixel_at(31, 7, this->indicator_color);
     }
   }
-
-  /* Trigger */
 
   void EHMTXNextScreenTrigger::process(std::string iconname, std::string text)
   {
