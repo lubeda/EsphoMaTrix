@@ -33,6 +33,7 @@ CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_LAMEID = "lameid"
+CONF_AWTRIXID = "awtrixid"
 CONF_ICONS = "icons"
 CONF_DISPLAY = "display8x32"
 CONF_HTML = "html"
@@ -105,6 +106,7 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.Exclusive(CONF_FILE,"uri"): cv.file_,
                 cv.Exclusive(CONF_URL,"uri"): cv.url,
                 cv.Exclusive(CONF_LAMEID,"uri"): cv.string,
+                cv.Exclusive(CONF_AWTRIXID,"uri"): cv.string,
                 cv.Optional(
                     CONF_DURATION, default="0"
                 ): cv.templatable(cv.positive_int),
@@ -379,6 +381,16 @@ async def to_code(config):
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_LAMEID]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
+        elif CONF_AWTRIXID in conf:
+            r = requests.post("https://awtrix.blueforcer.de/icon",json={"reqType":"getIcon","ID":"" + conf[CONF_AWTRIXID] + ""}  , timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                raise core.EsphomeError(f" ICONS: Could not download awtrix data {conf[CONF_AWTRIXID]}: {conf[CONF_ID]}")
+            awtrixdata = r.json()
+            r = requests.get("https://awtrix.blueforcer.de/icons/"+conf[CONF_AWTRIXID], timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                raise core.EsphomeError(f" ICONS: Could not download awtrix icon {conf[CONF_URL]}: {conf[CONF_ID]}")
+            image = Image.open(io.BytesIO(r.content))
+            
         elif CONF_URL in conf:
             r = requests.get(conf[CONF_URL], timeout=4.0)
             if r.status_code != requests.codes.ok:
@@ -454,31 +466,75 @@ async def to_code(config):
                     pos += 1
 
         elif conf[CONF_TYPE] == "RGB565":
-            data = [0 for _ in range(8 * 8 * 2 * frames)]
-            pos = 0 
             
-            for frameIndex in range(frames):
-                image.seek(frameIndex)
-                frame = image.convert("RGB")
-                pixels = list(frame.getdata())
-                if len(pixels) != 8 * 8:
-                    raise core.EsphomeError(
-                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                    )
-                i = 0
-                for pix in pixels:
-                    R = pix[0] >> 3
-                    G = pix[1] >> 2
-                    B = pix[2] >> 3
-                    x = 1+ (i % 8)
-                    y = i//8
-                    i +=1
-                    rgb = (R << 11) | (G << 5) | B
-                    html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
-                    data[pos] = rgb >> 8
-                    pos += 1
-                    data[pos] = rgb & 255
-                    pos += 1
+            pos = 0 
+            frameIndex= 0
+            if CONF_AWTRIXID in conf:
+                if "data" in awtrixdata:
+                    frames = len(awtrixdata["data"])
+                    data = [0 for _ in range(8 * 8 * 2 * frames)]
+                    duration = awtrixdata["tick"]
+                    for frame in awtrixdata["data"]:
+                        frameIndex= +1
+                        print(frame)
+                        if len(frame) != 8 * 8:
+                            raise core.EsphomeError(
+                                f"Unexpected number of pixels in awtrix"
+                            )
+                        i = 0
+                        for pix in frame:
+                            B = ((pix >> 16) & 255) >> 3
+                            G = ((pix >> 8) & 255) >> 2
+                            R = (pix & 255) >> 3
+                            x = 1+ (i % 8)
+                            y = i//8
+                            i +=1
+                            rgb = pix  # (R << 11) | (G << 5) | B
+                            #html_string += F"{x + (frameIndex*10)}em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
+                            data[pos] = rgb >> 8
+                            pos += 1               
+                            data[pos] = rgb & 255
+                            pos += 1
+                else:
+                    frames = 1
+                    data = [0 for _ in range(8 * 8 * 2 * frames)]
+                    for pix in awtrixdata:
+                        B = ((pix >> 16) & 255) >> 3
+                        G = ((pix >> 8) & 255) >> 2
+                        R = (pix & 255) >> 3
+                        x = 1+ (i % 8)
+                        y = i//8
+                        i +=1
+                        rgb = pix  # (R << 11) | (G << 5) | B
+                        #html_string += F"{x + (frameIndex*10)}em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
+                        data[pos] = rgb >> 8
+                        pos += 1               
+                        data[pos] = rgb & 255
+                        pos += 1              
+            else:
+                data = [0 for _ in range(8 * 8 * 2 * frames)]
+                for frameIndex in range(frames):
+                    image.seek(frameIndex)
+                    frame = image.convert("RGB")
+                    pixels = list(frame.getdata())
+                    if len(pixels) != 8 * 8:
+                        raise core.EsphomeError(
+                            f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                        )
+                    i = 0
+                    for pix in pixels:
+                        R = pix[0] >> 3
+                        G = pix[1] >> 2
+                        B = pix[2] >> 3
+                        x = 1+ (i % 8)
+                        y = i//8
+                        i +=1
+                        rgb = (R << 11) | (G << 5) | B
+                        html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
+                        data[pos] = rgb >> 8
+                        pos += 1
+                        data[pos] = rgb & 255
+                        pos += 1
         
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
