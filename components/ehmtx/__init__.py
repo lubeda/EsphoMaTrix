@@ -19,6 +19,7 @@ DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 20
 MAXICONS=72
+ISIZE = 8
 
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
@@ -398,8 +399,8 @@ async def to_code(config):
             image = Image.open(io.BytesIO(r.content))
         
         width, height = image.size
-        if (width != 8) or (height != 8):
-            image = image.resize([8, 8])
+        if (width != ISIZE) or (height != ISIZE):
+            image = image.resize([ISIZE, ISIZE])
             width, height = image.size
 
         if hasattr(image, 'n_frames'):
@@ -427,13 +428,13 @@ async def to_code(config):
         body_string += F"<B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<DIV CLASS=\"{conf[CONF_ID]}\" align=left></DIV>"
 
         if conf[CONF_TYPE] == "GRAYSCALE":
-            data = [0 for _ in range(8 * 8 * frames)]
+            data = [0 for _ in range(ISIZE * ISIZE * frames)]
             pos = 0
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("L", dither=Image.NONE)
                 pixels = list(frame.getdata())
-                if len(pixels) != 8 * 8:
+                if len(pixels) != ISIZE * ISIZE:
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
@@ -442,20 +443,20 @@ async def to_code(config):
                     pos += 1
 
         elif conf[CONF_TYPE] == "RGB24":
-            data = [0 for _ in range(8 * 8 * 3 * frames)]
+            data = [0 for _ in range(ISIZE * ISIZE * 3 * frames)]
             pos = 0
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
                 pixels = list(frame.getdata())
-                if len(pixels) != 8 * 8:
+                if len(pixels) != ISIZE * ISIZE:
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
                 i = 0
                 for pix in pixels:
-                    x = 1+ (i % 8)
-                    y = i//8
+                    x = 1+ (i % ISIZE)
+                    y = i//ISIZE
                     i += 1
                     html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
                     data[pos] = pix[0] & 248
@@ -472,51 +473,54 @@ async def to_code(config):
             if CONF_AWTRIXID in conf:
                 if "data" in awtrixdata:
                     frames = len(awtrixdata["data"])
-                    data = [0 for _ in range(8 * 8 * 2 * frames)]
+                    frameIndex =0
+                    data = [0 for _ in range(ISIZE * ISIZE * 2 * frames)]
                     duration = awtrixdata["tick"]
                     for frame in awtrixdata["data"]:
                         frameIndex= +1
-                        if len(frame) != 8 * 8:
+                        if len(frame) != ISIZE * ISIZE:
                             raise core.EsphomeError(
                                 f"Unexpected number of pixels in awtrix"
                             )
                         i = 0
                         for pix in frame:
-                            B = ((pix >> 16) & 255) >> 3
-                            G = ((pix >> 8) & 255) >> 2
-                            R = (pix & 255) >> 3
-                            x = 1+ (i % 8)
-                            y = i//8
+                            G = (pix & 0x07e0) >> 5
+                            B = pix & 0x001f    
+                            R = (pix & 0xF800) >> 8
+                            x = 1+ (i % ISIZE)
+                            y = i//ISIZE
                             i +=1
                             rgb = pix  # (R << 11) | (G << 5) | B
-                            #html_string += F"{x + (frameIndex*10)}em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
+                            html_string += F"{x + (frameIndex*10)}em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
                             data[pos] = rgb >> 8
                             pos += 1               
                             data[pos] = rgb & 255
                             pos += 1
+
                 else:
                     frames = 1
-                    data = [0 for _ in range(8 * 8 * 2 * frames)]
+                    i = 0
+                    data = [0 for _ in range(ISIZE * ISIZE * 2)]
                     for pix in awtrixdata:
-                        B = ((pix >> 16) & 255) >> 3
-                        G = ((pix >> 8) & 255) >> 2
-                        R = (pix & 255) >> 3
-                        x = 1+ (i % 8)
-                        y = i//8
+                        x = 1+ (i % ISIZE)
+                        y = i//ISIZE
                         i +=1
-                        rgb = pix  # (R << 11) | (G << 5) | B
-                        #html_string += F"{x + (frameIndex*10)}em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
+                        rgb = pix  
+                        G = (pix & 0x07e0) >> 5
+                        B = pix & 0x001f
+                        R = (pix & 0xF800) >> 8
+                        html_string += F"{x }em {y}em #{hex(R).replace('0x','').zfill(2)}{hex(G).replace('0x','').zfill(2)}{hex(B).replace('0x','').zfill(2)}, "
                         data[pos] = rgb >> 8
                         pos += 1               
                         data[pos] = rgb & 255
                         pos += 1              
             else:
-                data = [0 for _ in range(8 * 8 * 2 * frames)]
+                data = [0 for _ in range(ISIZE * ISIZE * 2 * frames)]
                 for frameIndex in range(frames):
                     image.seek(frameIndex)
                     frame = image.convert("RGB")
                     pixels = list(frame.getdata())
-                    if len(pixels) != 8 * 8:
+                    if len(pixels) != ISIZE * ISIZE:
                         raise core.EsphomeError(
                             f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                         )
@@ -525,8 +529,8 @@ async def to_code(config):
                         R = pix[0] >> 3
                         G = pix[1] >> 2
                         B = pix[2] >> 3
-                        x = 1+ (i % 8)
-                        y = i//8
+                        x = 1+ (i % ISIZE)
+                        y = i//ISIZE
                         i +=1
                         rgb = (R << 11) | (G << 5) | B
                         html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
