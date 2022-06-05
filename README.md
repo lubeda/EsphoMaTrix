@@ -175,6 +175,8 @@ _Configuration variables:_
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
+![timing](./images/timing.png)
+
 **duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
 **yoffset (Optional, pixel):** yoffset the text is aligned BASELINE_LEFT, the baseline defaults to 6 
