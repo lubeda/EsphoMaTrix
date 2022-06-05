@@ -126,17 +126,23 @@ namespace esphome
 
   void EHMTX::draw_clock()
   {
-    if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
-    {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
+    if (this->clock->timestamp_now() > 6000){ // 
+      if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
+      {
+        this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
+                                this->clock->now());
+      }
+      else
+      {
+        this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->date_fmt.c_str(),
                               this->clock->now());
+      }
+      this->draw_day_of_week();
     }
     else
     {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->date_fmt.c_str(),
-                              this->clock->now());
+      this->display->print(this->xoffset + 15, this->yoffset, this->font, this->alarm_color, display::TextAlign::BASELINE_CENTER ,"!time!");
     }
-    this->draw_day_of_week();
   }
 
   void EHMTX::setup()
