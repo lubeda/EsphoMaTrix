@@ -179,6 +179,10 @@ _Configuration variables:_
 
 **duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
+**date_format (Optional, string):** formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults "%d.%m." (use "%m.%d." for the US)
+
+**time_format (Optional, string):** formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults "%H:%m" (use "%I:%M%p" for the US)
+
 **yoffset (Optional, pixel):** yoffset the text is aligned BASELINE_LEFT, the baseline defaults to 6 
 
 **xoffset (Optional, pixel):** xoffset the text is aligned BASELINE_LEFT, the left defaults to 1
