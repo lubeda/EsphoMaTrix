@@ -165,6 +165,24 @@ namespace esphome
   };
 
   template <typename... Ts>
+  class SetBrightnessAction : public Action<Ts...>
+  {
+  public:
+    SetBrightnessAction(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, brightness)
+
+    void play(Ts... x) override
+    {
+      auto brightness = this->brightness_.value(x...);
+
+      this->parent_->set_brightness(brightness);
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+  template <typename... Ts>
   class AddScreenAction : public Action<Ts...>
   {
   public:
