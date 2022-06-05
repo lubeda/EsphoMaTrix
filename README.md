@@ -353,7 +353,8 @@ You have to use use id of your ehmtx component, e.g. ```rgb8x32```
             alarm: false
 ```
 
-Parameters:
+parameters:
+
 **id (required, ID):** ID of the ehmtx component
 
 **text (required, string):** the text to display
