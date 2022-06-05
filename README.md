@@ -62,6 +62,8 @@ emhtx:
       id: garage
     - url: https://github.com/home-assistant/assets/raw/master/logo/logo-small.png
       id: homeassistant
+    - awtrixid: 1945
+      id: wled
 ```
 
 ### Parameter
@@ -77,6 +79,8 @@ The id of the icons is used later to configure the screens to display. So you sh
 
 **file (Exlusive, filename):** a local filename
 **url (Exclusive, url):** a url to download an icon
+**awtrixid (Exclusive, number):** the number of the icon from the [Awtrix icon database](https://awtrix.blueforcer.de/icons.html)
+
 
 ### preview helper
 
@@ -189,7 +193,7 @@ _Configuration variables:_
 
 **display8x32 (required, ID):** ID of the addressable display
 
-**time (required, ID):** ID of the time component
+**time (required, ID):** ID of the time component. the display shows `!time!` until the time source is valid.
 
 **font (required, ID):** ID of the font component
 
