@@ -615,3 +615,4 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 # Thanks
 
 **[jd1](https://github.com/jd1)** for his contributions
+**[ofirsnb](https://github.com/ofirsnb)** for his contributions
