@@ -19,7 +19,10 @@ DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 20
 MAXICONS = 72
-ISIZE = 8
+ICONWIDTH = 8
+ICONHEIGHT = 8
+ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT
+ICONSIZE = [ICONWIDTH,ICONHEIGHT]
 SVG_START = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" width="80px" height="80px" viewBox="0 0 80 80">'
 
 # SVG_START = '<svg xmlns="http://www.w3.org/2000/svg">'
@@ -396,8 +399,8 @@ async def to_code(config):
         
         width, height = image.size
         
-        if (width != ISIZE) or (height != ISIZE):
-            image = image.resize([ISIZE, ISIZE])
+        if (width != ICONWIDTH) or (height != ICONHEIGHT):
+            image = image.resize(ICONSIZE)
             width, height = image.size
 
         if hasattr(image, 'n_frames'):
@@ -416,13 +419,13 @@ async def to_code(config):
         html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
         if conf[CONF_TYPE] == "GRAYSCALE":
-            data = [0 for _ in range(ISIZE * ISIZE * frames)]
+            data = [0 for _ in range(ICONBUFFERSIZE * frames)]
             pos = 0
             for frameIndex in range(frames):
                 image.seek(frameIndex)
                 frame = image.convert("L", dither=Image.NONE)
                 pixels = list(frame.getdata())
-                if len(pixels) != ISIZE * ISIZE:
+                if len(pixels) != ICONBUFFERSIZE:
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
@@ -431,7 +434,7 @@ async def to_code(config):
                     pos += 1
 
         elif conf[CONF_TYPE] == "RGB24":
-            data = [0 for _ in range(ISIZE * ISIZE * 3 * frames)]
+            data = [0 for _ in range(ICONBUFFERSIZE * 3 * frames)]
             pos = 0
             
             for frameIndex in range(frames):
@@ -439,14 +442,14 @@ async def to_code(config):
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
                 pixels = list(frame.getdata())
-                if len(pixels) != ISIZE * ISIZE:
+                if len(pixels) != ICONBUFFERSIZE:
                     raise core.EsphomeError(
                         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                     )
                 i = 0
                 for pix in pixels:
-                    x = (i % ISIZE)
-                    y = i//ISIZE
+                    x = (i % ICONWIDTH)
+                    y = i//ICONHEIGHT
                     i += 1
                     html_string += rgb888_svg(x,y,r,g,b)
                     data[pos] = pix[0] & 248
@@ -463,10 +466,10 @@ async def to_code(config):
                 if "data" in awtrixdata:
                     frames = len(awtrixdata["data"])
                     frameIndex = 0
-                    data = [0 for _ in range(ISIZE * ISIZE * 2 * frames)]
+                    data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
                     duration = awtrixdata["tick"]
                     for frame in awtrixdata["data"]:
-                        if len(frame) != ISIZE * ISIZE:
+                        if len(frame) != ICONBUFFERSIZE:
                             raise core.EsphomeError(
                                 f"Unexpected number of pixels in awtrix"
                             )
@@ -476,8 +479,8 @@ async def to_code(config):
                             G = (pix & 0x07e0) >> 5
                             B =  pix & 0x1f  
                             R = (pix & 0xF800) >> 11                       
-                            x = (i % ISIZE)
-                            y = i//ISIZE
+                            x = (i % ICONWIDTH)
+                            y = i//ICONHEIGHT
                             i += 1
                             rgb = pix  # (R << 11) | (G << 5) | B
                             html_string += rgb565_svg(x,y,R,G,B)
@@ -490,11 +493,11 @@ async def to_code(config):
                 else:
                     frames = 1
                     i = 0
-                    data = [0 for _ in range(ISIZE * ISIZE * 2)]
+                    data = [0 for _ in range(ICONBUFFERSIZE * 2)]
                     html_string += SVG_START
                     for pix in awtrixdata:
-                        x = (i % ISIZE) 
-                        y = i//ISIZE
+                        x = (i % ICONWIDTH) 
+                        y = i//ICONHEIGHT
                         i +=1
                         rgb = pix  
                         G = (pix & 0x07e0) >> 5
@@ -509,14 +512,13 @@ async def to_code(config):
                         pos += 1              
                     html_string += SVG_END                  
             else:
-                data = [0 for _ in range(ISIZE * ISIZE * 2 * frames)]
-
+                data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
                 for frameIndex in range(frames):
                     html_string += "&nbsp;" + SVG_START
                     image.seek(frameIndex)
                     frame = image.convert("RGB")
                     pixels = list(frame.getdata())
-                    if len(pixels) != ISIZE * ISIZE:
+                    if len(pixels) != ICONBUFFERSIZE:
                         raise core.EsphomeError(
                             f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
                         )
@@ -525,8 +527,8 @@ async def to_code(config):
                         R = pix[0] >> 3
                         G = pix[1] >> 2
                         B = pix[2] >> 3
-                        x = (i % ISIZE)
-                        y = i//ISIZE
+                        x = (i % ICONWIDTH)
+                        y = i//ICONHEIGHT
                         i +=1
                         rgb = (R << 11) | (G << 5) | B
                         html_string += rgb565_svg(x,y,R,G,B)
@@ -571,7 +573,7 @@ async def to_code(config):
     
     if config[CONF_HTML]:
         try:
-            with open(CORE.config_path+".html", 'w') as f:
+            with open(CORE.config_path.replace(".yaml","") + ".html", 'w') as f:
                 f.truncate()
                 f.write(html_string)
                 f.close()
