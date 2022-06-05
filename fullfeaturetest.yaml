@@ -338,4 +338,4 @@ ehmtx:
 select:
   - platform: ehmtx
     id: ehmtx_screens
-    name: "$devicename Screens"
+    name: "$devicename screens"

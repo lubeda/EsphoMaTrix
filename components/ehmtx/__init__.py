@@ -23,9 +23,8 @@ ICONWIDTH = 8
 ICONHEIGHT = 8
 ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT
 ICONSIZE = [ICONWIDTH,ICONHEIGHT]
-SVG_START = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" width="80px" height="80px" viewBox="0 0 80 80">'
+SVG_START = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
 
-# SVG_START = '<svg xmlns="http://www.w3.org/2000/svg">'
 SVG_END = "</svg>"
 
 def rgb888_svg(x,y,r,g,b):
@@ -367,7 +366,11 @@ async def to_code(config):
 
     from PIL import Image
     var = cg.new_Pvariable(config[CONF_ID])
-    html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD><BODY>"
+    html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD>"
+    html_string += '''\
+    <STYLE>
+    </STYLE><BODY>\
+'''
 
     for conf in config[CONF_ICONS]:
                 
@@ -436,9 +439,9 @@ async def to_code(config):
         elif conf[CONF_TYPE] == "RGB24":
             data = [0 for _ in range(ICONBUFFERSIZE * 3 * frames)]
             pos = 0
-            
+            html_string += f"<DIV ID={conf[CONF_ID]} class=>"
             for frameIndex in range(frames):
-                html_string += "&nbsp" + SVG_START
+                html_string += SVG_START
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
                 pixels = list(frame.getdata())
@@ -459,9 +462,11 @@ async def to_code(config):
                     data[pos] = pix[2] & 248
                     pos += 1
                 html_string += SVG_END
+            html_string += f"</DIV>"
         elif conf[CONF_TYPE] == "RGB565":
             pos = 0 
             frameIndex = 0
+            html_string += f"<DIV ID={conf[CONF_ID]}>"
             if CONF_AWTRIXID in conf:
                 if "data" in awtrixdata:
                     frames = len(awtrixdata["data"])
@@ -474,7 +479,7 @@ async def to_code(config):
                                 f"Unexpected number of pixels in awtrix"
                             )
                         i = 0
-                        html_string += "&nbsp;" + SVG_START
+                        html_string += SVG_START
                         for pix in frame:
                             G = (pix & 0x07e0) >> 5
                             B =  pix & 0x1f  
@@ -514,7 +519,7 @@ async def to_code(config):
             else:
                 data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
                 for frameIndex in range(frames):
-                    html_string += "&nbsp;" + SVG_START
+                    html_string += SVG_START
                     image.seek(frameIndex)
                     frame = image.convert("RGB")
                     pixels = list(frame.getdata())
@@ -537,7 +542,7 @@ async def to_code(config):
                         data[pos] = rgb & 255
                         pos += 1
                     html_string += SVG_END
-        
+            html_string += f"</DIV>"
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
             data = [0 for _ in range((height * width8 // 8) * frames)]

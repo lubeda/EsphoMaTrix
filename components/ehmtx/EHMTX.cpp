@@ -242,6 +242,8 @@ namespace esphome
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
     ESP_LOGI(TAG, "status default duration: %d", this->duration);
+    ESP_LOGI(TAG, "status date format: %s", this->date_fmt);
+    ESP_LOGI(TAG, "status time format: %s", this->time_fmt);
     ESP_LOGI(TAG, "status text_color: RGB(%d,%d,%d)", this->text_color.r, this->text_color.g, this->text_color.b);
     ESP_LOGI(TAG, "status alarm_color: RGB(%d,%d,%d)", this->alarm_color.r, this->alarm_color.g, this->alarm_color.b);
     if (this->show_indicator)
