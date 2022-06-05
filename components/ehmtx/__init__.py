@@ -20,6 +20,16 @@ AUTO_LOAD = ["ehmtx"]
 MAXFRAMES = 20
 MAXICONS = 72
 ISIZE = 8
+SVG_START = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" width="80px" height="80px" viewBox="0 0 80 80">'
+
+# SVG_START = '<svg xmlns="http://www.w3.org/2000/svg">'
+SVG_END = "</svg>"
+
+def rgb888_svg(x,y,r,g,b):
+    return f"<rect style=\"fill:rgb({r},{g},{b});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
+
+def rgb565_svg(x,y,r,g,b):
+    return f"<rect style=\"fill:rgb({(r << 3) | (r >> 2)},{(g << 2) | (g >> 4)},{(b << 3) | (b >> 2)});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
 
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
@@ -355,13 +365,10 @@ async def to_code(config):
 
     from PIL import Image
     var = cg.new_Pvariable(config[CONF_ID])
-    html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD><STYLE> img {{ height: 40px; width: 40px; background: black;}} "
-    body_string = ""
+    html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD><BODY>"
+
     for conf in config[CONF_ICONS]:
-               
-        html_string += F".{conf[CONF_ID]} {{ width: 40px; height: 40px; margin: 12px;  position: relative; font-size: 6px; }} "
-        html_string += F".{conf[CONF_ID]}:after {{ content: \"\"; position: absolute; top: 0; left: 0;  width: 1em; height: 1em; box-shadow: "
-  
+                
         if CONF_FILE in conf:
             path = CORE.relative_config_path(conf[CONF_FILE])
             try:
@@ -387,7 +394,9 @@ async def to_code(config):
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_URL]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
+        
         width, height = image.size
+        
         if (width != ISIZE) or (height != ISIZE):
             image = image.resize([ISIZE, ISIZE])
             width, height = image.size
@@ -405,7 +414,7 @@ async def to_code(config):
         else:
             duration = conf[CONF_DURATION]
 
-        body_string += F"<B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<DIV CLASS=\"{conf[CONF_ID]}\" align=left></DIV>"
+        html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
         if conf[CONF_TYPE] == "GRAYSCALE":
             data = [0 for _ in range(ISIZE * ISIZE * frames)]
@@ -425,7 +434,9 @@ async def to_code(config):
         elif conf[CONF_TYPE] == "RGB24":
             data = [0 for _ in range(ISIZE * ISIZE * 3 * frames)]
             pos = 0
+            
             for frameIndex in range(frames):
+                html_string += "&nbsp" + SVG_START
                 image.seek(frameIndex)
                 frame = image.convert("RGB")
                 pixels = list(frame.getdata())
@@ -435,17 +446,17 @@ async def to_code(config):
                     )
                 i = 0
                 for pix in pixels:
-                    x = 1+ (i % ISIZE)
+                    x = (i % ISIZE)
                     y = i//ISIZE
                     i += 1
-                    html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
+                    html_string += rgb888_svg(x,y,r,g,b)
                     data[pos] = pix[0] & 248
                     pos += 1
                     data[pos] = pix[1] & 252
                     pos += 1
                     data[pos] = pix[2] & 248
                     pos += 1
-
+                html_string += SVG_END
         elif conf[CONF_TYPE] == "RGB565":
             pos = 0 
             frameIndex = 0
@@ -461,46 +472,48 @@ async def to_code(config):
                                 f"Unexpected number of pixels in awtrix"
                             )
                         i = 0
+                        html_string += "&nbsp;" + SVG_START
                         for pix in frame:
                             G = (pix & 0x07e0) >> 5
                             B =  pix & 0x1f  
                             R = (pix & 0xF800) >> 11                       
-                            r = (R << 3) | (R >> 2)
-                            g = (G << 2) | (G >> 4)
-                            b = (B << 3) | (B >> 2)
-                            x = 1 + (i % ISIZE)
+                            x = (i % ISIZE)
                             y = i//ISIZE
                             i += 1
                             rgb = pix  # (R << 11) | (G << 5) | B
-                            html_string += F"{x + (frameIndex*10)}em {y}em #{hex(r).replace('0x','').zfill(2)}{hex(g).replace('0x','').zfill(2)}{hex(b).replace('0x','').zfill(2)}, "
+                            html_string += rgb565_svg(x,y,R,G,B)
                             data[pos] = rgb >> 8
                             pos += 1               
                             data[pos] = rgb & 255
                             pos += 1
                         frameIndex += 1
+                        html_string += SVG_END
                 else:
                     frames = 1
                     i = 0
                     data = [0 for _ in range(ISIZE * ISIZE * 2)]
+                    html_string += SVG_START
                     for pix in awtrixdata:
-                        x = 1+ (i % ISIZE)
+                        x = (i % ISIZE) 
                         y = i//ISIZE
                         i +=1
                         rgb = pix  
                         G = (pix & 0x07e0) >> 5
                         B =  pix & 0x1f  
                         R = (pix & 0xF800) >> 11                       
-                        r = (R << 3) | (R >> 2)
-                        g = (G << 2) | (G >> 4)
-                        b = (B << 3) | (B >> 2)
-                        html_string += F"{x }em {y}em #{hex(r).replace('0x','').zfill(2)}{hex(g).replace('0x','').zfill(2)}{hex(b).replace('0x','').zfill(2)}, "
+                        
+                        html_string += rgb565_svg(x,y,R,G,B)
+                        
                         data[pos] = rgb >> 8
                         pos += 1               
                         data[pos] = rgb & 255
                         pos += 1              
+                    html_string += SVG_END                  
             else:
                 data = [0 for _ in range(ISIZE * ISIZE * 2 * frames)]
+
                 for frameIndex in range(frames):
+                    html_string += "&nbsp;" + SVG_START
                     image.seek(frameIndex)
                     frame = image.convert("RGB")
                     pixels = list(frame.getdata())
@@ -513,15 +526,16 @@ async def to_code(config):
                         R = pix[0] >> 3
                         G = pix[1] >> 2
                         B = pix[2] >> 3
-                        x = 1+ (i % ISIZE)
+                        x = (i % ISIZE)
                         y = i//ISIZE
                         i +=1
                         rgb = (R << 11) | (G << 5) | B
-                        html_string += F"{x + (frameIndex*10)}em {y}em #{hex(pix[0]).replace('0x','').zfill(2)}{hex(pix[1]).replace('0x','').zfill(2)}{hex(pix[2]).replace('0x','').zfill(2)}, "
+                        html_string += rgb565_svg(x,y,R,G,B)
                         data[pos] = rgb >> 8
                         pos += 1
                         data[pos] = rgb & 255
                         pos += 1
+                    html_string += SVG_END
         
         elif conf[CONF_TYPE] == "BINARY":
             width8 = ((width + 7) // 8) * 8
@@ -535,10 +549,8 @@ async def to_code(config):
                             continue
                         pos = x + y * width8 + (height * width8 * frameIndex)
                         data[pos // 8] |= 0x80 >> (pos % 8)
-
-        html_string =  html_string[:-2] + "; "
+       
         rhs = [HexInt(x) for x in data]
-        html_string += F"}} "
 
         prog_arr = cg.progmem_array(conf[CONF_RAW_DATA_ID], rhs)
 
@@ -555,7 +567,7 @@ async def to_code(config):
         )
 
         cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
-    html_string += "</STYLE><BODY>" + body_string
+
     html_string += "</BODY></HTML>"
     
     if config[CONF_HTML]:
