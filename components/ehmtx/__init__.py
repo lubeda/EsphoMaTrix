@@ -8,7 +8,7 @@ from esphome.components import display, font, time
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID, CONF_TYPE, CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
+from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID,  CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
 from .select import EHMTXSelect
@@ -17,6 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
+IMAGE_TYPE_RGB565 = 4
 MAXFRAMES = 20
 MAXICONS = 72
 ICONWIDTH = 8
@@ -36,10 +37,6 @@ def rgb565_svg(x,y,r,g,b):
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
 Icons_ = ehmtx_ns.class_("EHMTX_Icon")
-# Triggers
-NextScreenTrigger = ehmtx_ns.class_(
-    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
-)
 
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
@@ -126,15 +123,11 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.Optional(
                     CONF_PINGPONG, default=False
                 ): cv.boolean,
-                cv.Optional(CONF_TYPE, default="RGB565"): cv.enum(
-                    espImage.IMAGE_TYPE, upper=True
-                ),
                 cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
             }
         ),
         cv.Length(max=MAXICONS),
     )})
-
 
 CONFIG_SCHEMA = cv.All(font.validate_pillow_installed, EHMTX_SCHEMA)
 
@@ -146,6 +139,11 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
+)
+
+
+NextScreenTrigger = ehmtx_ns.class_(
+    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
 
 AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
@@ -269,7 +267,6 @@ async def ehmtx_set_today_color_action_to_code(config, action_id, template_arg, 
     cg.add(var.set_green(template_))
     template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
     cg.add(var.set_blue(template_))
-
     return var
 
 SetWeekdayColorAction = ehmtx_ns.class_("SetWeekdayColor", automation.Action)
@@ -277,6 +274,7 @@ SetWeekdayColorAction = ehmtx_ns.class_("SetWeekdayColor", automation.Action)
 @automation.register_action(
     "ehmtx.weekday.color", SetWeekdayColorAction, SET_COLOR_ACTION_SCHEMA
 )
+
 async def ehmtx_set_week_color_action_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
 
@@ -421,25 +419,60 @@ async def to_code(config):
 
         html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
-        if conf[CONF_TYPE] == "GRAYSCALE":
-            data = [0 for _ in range(ICONBUFFERSIZE * frames)]
-            pos = 0
-            for frameIndex in range(frames):
-                image.seek(frameIndex)
-                frame = image.convert("L", dither=Image.NONE)
-                pixels = list(frame.getdata())
-                if len(pixels) != ICONBUFFERSIZE:
-                    raise core.EsphomeError(
-                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                    )
-                for pix in pixels:
-                    data[pos] = pix
-                    pos += 1
-
-        elif conf[CONF_TYPE] == "RGB24":
-            data = [0 for _ in range(ICONBUFFERSIZE * 3 * frames)]
-            pos = 0
-            html_string += f"<DIV ID={conf[CONF_ID]} class=>"
+        pos = 0 
+        frameIndex = 0
+        html_string += f"<DIV ID={conf[CONF_ID]}>"
+        if CONF_AWTRIXID in conf:
+            if "data" in awtrixdata:
+                frames = len(awtrixdata["data"])
+                frameIndex = 0
+                data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
+                duration = awtrixdata["tick"]
+                for frame in awtrixdata["data"]:
+                    if len(frame) != ICONBUFFERSIZE:
+                        raise core.EsphomeError(
+                            f"Unexpected number of pixels in awtrix"
+                        )
+                    i = 0
+                    html_string += SVG_START
+                    for pix in frame:
+                        G = (pix & 0x07e0) >> 5
+                        B =  pix & 0x1f  
+                        R = (pix & 0xF800) >> 11                       
+                        x = (i % ICONWIDTH)
+                        y = i//ICONHEIGHT
+                        i += 1
+                        rgb = pix  # (R << 11) | (G << 5) | B
+                        html_string += rgb565_svg(x,y,R,G,B)
+                        data[pos] = rgb >> 8
+                        pos += 1               
+                        data[pos] = rgb & 255
+                        pos += 1
+                    frameIndex += 1
+                    html_string += SVG_END
+            else:
+                frames = 1
+                i = 0
+                data = [0 for _ in range(ICONBUFFERSIZE * 2)]
+                html_string += SVG_START
+                for pix in awtrixdata:
+                    x = (i % ICONWIDTH) 
+                    y = i//ICONHEIGHT
+                    i +=1
+                    rgb = pix  
+                    G = (pix & 0x07e0) >> 5
+                    B =  pix & 0x1f  
+                    R = (pix & 0xF800) >> 11                       
+                    
+                    html_string += rgb565_svg(x,y,R,G,B)
+                    
+                    data[pos] = rgb >> 8
+                    pos += 1               
+                    data[pos] = rgb & 255
+                    pos += 1              
+                html_string += SVG_END                  
+        else:
+            data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
             for frameIndex in range(frames):
                 html_string += SVG_START
                 image.seek(frameIndex)
@@ -451,110 +484,20 @@ async def to_code(config):
                     )
                 i = 0
                 for pix in pixels:
+                    R = pix[0] >> 3
+                    G = pix[1] >> 2
+                    B = pix[2] >> 3
                     x = (i % ICONWIDTH)
                     y = i//ICONHEIGHT
-                    i += 1
-                    html_string += rgb888_svg(x,y,r,g,b)
-                    data[pos] = pix[0] & 248
+                    i +=1
+                    rgb = (R << 11) | (G << 5) | B
+                    html_string += rgb565_svg(x,y,R,G,B)
+                    data[pos] = rgb >> 8
                     pos += 1
-                    data[pos] = pix[1] & 252
-                    pos += 1
-                    data[pos] = pix[2] & 248
+                    data[pos] = rgb & 255
                     pos += 1
                 html_string += SVG_END
-            html_string += f"</DIV>"
-        elif conf[CONF_TYPE] == "RGB565":
-            pos = 0 
-            frameIndex = 0
-            html_string += f"<DIV ID={conf[CONF_ID]}>"
-            if CONF_AWTRIXID in conf:
-                if "data" in awtrixdata:
-                    frames = len(awtrixdata["data"])
-                    frameIndex = 0
-                    data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
-                    duration = awtrixdata["tick"]
-                    for frame in awtrixdata["data"]:
-                        if len(frame) != ICONBUFFERSIZE:
-                            raise core.EsphomeError(
-                                f"Unexpected number of pixels in awtrix"
-                            )
-                        i = 0
-                        html_string += SVG_START
-                        for pix in frame:
-                            G = (pix & 0x07e0) >> 5
-                            B =  pix & 0x1f  
-                            R = (pix & 0xF800) >> 11                       
-                            x = (i % ICONWIDTH)
-                            y = i//ICONHEIGHT
-                            i += 1
-                            rgb = pix  # (R << 11) | (G << 5) | B
-                            html_string += rgb565_svg(x,y,R,G,B)
-                            data[pos] = rgb >> 8
-                            pos += 1               
-                            data[pos] = rgb & 255
-                            pos += 1
-                        frameIndex += 1
-                        html_string += SVG_END
-                else:
-                    frames = 1
-                    i = 0
-                    data = [0 for _ in range(ICONBUFFERSIZE * 2)]
-                    html_string += SVG_START
-                    for pix in awtrixdata:
-                        x = (i % ICONWIDTH) 
-                        y = i//ICONHEIGHT
-                        i +=1
-                        rgb = pix  
-                        G = (pix & 0x07e0) >> 5
-                        B =  pix & 0x1f  
-                        R = (pix & 0xF800) >> 11                       
-                        
-                        html_string += rgb565_svg(x,y,R,G,B)
-                        
-                        data[pos] = rgb >> 8
-                        pos += 1               
-                        data[pos] = rgb & 255
-                        pos += 1              
-                    html_string += SVG_END                  
-            else:
-                data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
-                for frameIndex in range(frames):
-                    html_string += SVG_START
-                    image.seek(frameIndex)
-                    frame = image.convert("RGB")
-                    pixels = list(frame.getdata())
-                    if len(pixels) != ICONBUFFERSIZE:
-                        raise core.EsphomeError(
-                            f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                        )
-                    i = 0
-                    for pix in pixels:
-                        R = pix[0] >> 3
-                        G = pix[1] >> 2
-                        B = pix[2] >> 3
-                        x = (i % ICONWIDTH)
-                        y = i//ICONHEIGHT
-                        i +=1
-                        rgb = (R << 11) | (G << 5) | B
-                        html_string += rgb565_svg(x,y,R,G,B)
-                        data[pos] = rgb >> 8
-                        pos += 1
-                        data[pos] = rgb & 255
-                        pos += 1
-                    html_string += SVG_END
-            html_string += f"</DIV>"
-        elif conf[CONF_TYPE] == "BINARY":
-            width8 = ((width + 7) // 8) * 8
-            data = [0 for _ in range((height * width8 // 8) * frames)]
-            for frameIndex in range(frames):
-                image.seek(frameIndex)
-                frame = image.convert("1", dither=Image.NONE)
-                for y in range(height):
-                    for x in range(width):
-                        if frame.getpixel((x, y)):
-                            continue
-                        pos = x + y * width8 + (height * width8 * frameIndex)
-                        data[pos // 8] |= 0x80 >> (pos % 8)
+        html_string += f"</DIV>"
        
         rhs = [HexInt(x) for x in data]
 
@@ -566,7 +509,7 @@ async def to_code(config):
             width,
             height,
             frames,
-            espImage.IMAGE_TYPE[conf[CONF_TYPE]],
+            espImage.IMAGE_TYPE["RGB565"],
             str(conf[CONF_ID]),
             conf[CONF_PINGPONG],
             duration,
