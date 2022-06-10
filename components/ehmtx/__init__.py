@@ -38,6 +38,10 @@ ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
 Icons_ = ehmtx_ns.class_("EHMTX_Icon")
 
+NextScreenTrigger = ehmtx_ns.class_(
+    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
+)
+
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
@@ -139,11 +143,6 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
-)
-
-
-NextScreenTrigger = ehmtx_ns.class_(
-    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
 
 AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
@@ -369,7 +368,6 @@ async def to_code(config):
     <STYLE>
     </STYLE><BODY>\
 '''
-
     for conf in config[CONF_ICONS]:
                 
         if CONF_FILE in conf:
