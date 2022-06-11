@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32-8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2022.6.1";
+static const char *const EHMTX_VERSION = "Version: 2022.6.2";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -282,6 +282,22 @@ template <typename... Ts>
     void play(Ts... x) override
     {
       this->parent_->set_today_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+template <typename... Ts>
+  class SetShowDate : public Action<Ts...>
+  {
+  public:
+    SetShowDate(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, flag)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_show_date(this->flag_.value(x...));
     }
 
   protected:

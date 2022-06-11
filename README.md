@@ -267,6 +267,15 @@ ehmtx:
 
 For local automations you can use actions. This is the normal way of automations. The ```id(rgb8x32)->``` style will also work.
 
+#### show date
+
+You can dynamically enable or disable the display of the date see parameter `show_date`.
+
+```
+    - ehmtx.show.date:
+        id: rgb8x32
+        flag: !lambda return true;
+```
 #### Force screen
 
 Force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the value/text.

@@ -46,6 +46,7 @@ CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
+CONF_FLAG = "flag"
 CONF_LAMEID = "lameid"
 CONF_AWTRIXID = "awtrixid"
 CONF_ICONS = "icons"
@@ -262,6 +263,27 @@ async def ehmtx_set_alarm_color_action_to_code(config, action_id, template_arg, 
     template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
     cg.add(var.set_blue(template_))
 
+    return var
+
+SET_FLAG_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_), 
+        cv.Optional(CONF_FLAG,default=True): cv.templatable(cv.boolean),
+    }
+)
+
+SetShowDateAction = ehmtx_ns.class_("SetShowDate", automation.Action)
+
+@automation.register_action(
+    "ehmtx.show.date", SetShowDateAction, SET_FLAG_ACTION_SCHEMA
+)
+async def ehmtx_show_date_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_FLAG], args, cg.bool_)
+    cg.add(var.set_flag(template_))
+    
     return var
 
 SetTodayColorAction = ehmtx_ns.class_("SetTodayColor", automation.Action)
