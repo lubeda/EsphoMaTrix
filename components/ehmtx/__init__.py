@@ -37,10 +37,13 @@ def rgb565_svg(x,y,r,g,b):
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
 Icons_ = ehmtx_ns.class_("EHMTX_Icon")
+<<<<<<< HEAD
 
 NextScreenTrigger = ehmtx_ns.class_(
     "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
+=======
+>>>>>>> 85152a28c02d90dbf221b929c906bf6fbb024cf4
 
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
@@ -147,6 +150,11 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
+)
+
+
+NextScreenTrigger = ehmtx_ns.class_(
+    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
 
 AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
