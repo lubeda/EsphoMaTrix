@@ -43,6 +43,7 @@ namespace esphome
     bool show_screen;
     bool show_indicator;
     bool show_gauge;
+    bool show_date;
     uint8_t gauge_value;
     bool show_icons;
     void force_screen(std::string name);
@@ -79,6 +80,7 @@ namespace esphome
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
     void set_show_day_of_week(bool b);
+    void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
     void set_clock_time(uint16_t t);
     void set_week_start(bool b);

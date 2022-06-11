@@ -37,13 +37,10 @@ def rgb565_svg(x,y,r,g,b):
 ehmtx_ns = cg.esphome_ns.namespace("esphome")
 EHMTX_ = ehmtx_ns.class_("EHMTX", cg.Component)
 Icons_ = ehmtx_ns.class_("EHMTX_Icon")
-<<<<<<< HEAD
 
 NextScreenTrigger = ehmtx_ns.class_(
     "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
-=======
->>>>>>> 85152a28c02d90dbf221b929c906bf6fbb024cf4
 
 CONF_SHOWCLOCK = "show_clock"
 CONF_SHOWSCREEN = "show_screen"
@@ -53,6 +50,7 @@ CONF_LAMEID = "lameid"
 CONF_AWTRIXID = "awtrixid"
 CONF_ICONS = "icons"
 CONF_SHOWDOW = "dayofweek"
+CONF_SHOWDATE = "show_date"
 CONF_DISPLAY = "display8x32"
 CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
@@ -86,6 +84,9 @@ EHMTX_SCHEMA = cv.Schema({
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
         CONF_HTML, default=False
+    ): cv.boolean,
+    cv.Optional(
+        CONF_SHOWDATE, default=True
     ): cv.boolean,
     cv.Optional(
         CONF_WEEK_ON_MONDAY, default=True
@@ -548,6 +549,7 @@ async def to_code(config):
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))
     cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
+    cg.add(var.set_show_date(config[CONF_SHOWDATE]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])
