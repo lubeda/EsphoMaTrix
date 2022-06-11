@@ -128,7 +128,7 @@ namespace esphome
   void EHMTX::draw_clock()
   {
     if (this->clock->timestamp_now() > 6000){ // 
-      if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
+      if (!this->show_date or ((this->clock->now().timestamp - this->next_action_time) < this->clock_time))
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
                                 this->clock->now());
@@ -142,7 +142,7 @@ namespace esphome
     }
     else
     {
-      this->display->print(this->xoffset + 15, this->yoffset, this->font, this->alarm_color, display::TextAlign::BASELINE_CENTER ,"!time!");
+      this->display->print(this->xoffset + 15, this->yoffset, this->font, this->alarm_color, display::TextAlign::BASELINE_CENTER ,"!t!");
     }
   }
 
@@ -310,6 +310,16 @@ namespace esphome
     this->brightness_ = b;
   }
 
+  void EHMTX::set_show_date(bool b)
+  {
+    this->show_date = b;
+    if (b){
+      ESP_LOGI(TAG, "show date");
+    } else {
+      ESP_LOGI(TAG, "don't show date");
+    } 
+  }
+
   void EHMTX::set_show_day_of_week(bool b)
   {
     this->show_day_of_week = b;
@@ -399,6 +409,9 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
     if (this->show_day_of_week){
       ESP_LOGCONFIG(TAG, "show day of week");
+    }
+    if (this->show_date){
+      ESP_LOGCONFIG(TAG, "show date");
     }
     if (this->week_starts_monday){
       ESP_LOGCONFIG(TAG, "weekstart: monday");

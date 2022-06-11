@@ -195,7 +195,7 @@ _Configuration variables:_
 
 **dayofweek (Optional, bool):** draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
 
-**time (required, ID):** ID of the time component. the display shows `!time!` until the time source is valid.
+**time (required, ID):** ID of the time component. the display shows `!t!` until the time source is valid.
 
 **font (required, ID):** ID of the font component
 
