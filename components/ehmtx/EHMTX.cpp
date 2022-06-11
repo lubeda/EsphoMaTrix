@@ -127,7 +127,7 @@ namespace esphome
 
   void EHMTX::draw_clock()
   {
-    if (this->clock->timestamp_now() > 6000){ // 
+    if (this->clock->now().timestamp > 6000){ // valid time
       if (!this->show_date or ((this->clock->now().timestamp - this->next_action_time) < this->clock_time))
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
@@ -158,12 +158,12 @@ namespace esphome
 #endif
   }
 
-  void EHMTX::update()
+  void EHMTX::update() // called from polling component
   {
     time_t ts = this->clock->now().timestamp;
-    if ((this->next_action_time + 15) < ts)
+    if ((this->next_action_time +15) < ts)
     {
-      this->next_action_time = ts + 3;
+      this->next_action_time = ts + 2;
       this->last_clock_time = ts;
     }
   }
@@ -205,11 +205,13 @@ namespace esphome
         }
         if (this->show_screen == false)
         {
+          ESP_LOGD(TAG, "next action: show clock");
           this->last_clock_time = this->clock->now().timestamp;
           this->next_action_time = ts + this->screen_time;
         }
         else
         {
+           ESP_LOGD(TAG, "next action: show screen");
           this->next_action_time = ts + (int)this->store->current()->display_duration;
           for (auto *t : on_next_screen_triggers_)
           {

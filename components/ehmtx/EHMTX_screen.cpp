@@ -117,10 +117,6 @@ namespace esphome
     this->display_duration = (dd > this->config_->screen_time) ? dd : this->config_->screen_time;
     ESP_LOGD(TAG, "display length text: %s t: %.2f default: %d", text.c_str(), this->display_duration, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
-    if (this->alarm)
-    {
-      this->endtime += 2 * 60;
-    }
-    this->icon = icon;
+     this->icon = icon;
   }
 }
