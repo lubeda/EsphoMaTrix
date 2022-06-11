@@ -25,6 +25,7 @@ namespace esphome
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
     bool week_starts_monday;
+    bool show_day_of_week;
     std::string time_fmt;
     std::string date_fmt;
     Color indicator_color;
@@ -77,6 +78,7 @@ namespace esphome
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
+    void set_show_day_of_week(bool b);
     void set_font_offset(int8_t x, int8_t y);
     void set_clock_time(uint16_t t);
     void set_week_start(bool b);
