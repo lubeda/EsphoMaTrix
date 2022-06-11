@@ -5,7 +5,7 @@
 const uint8_t MAXQUEUE = 24;
 const uint8_t MAXICONS = 64;
 const uint8_t TEXTSCROLLSTART = 8;
-const uint8_t TEXTSTARTOFFSET = (32-8);
+const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
 static const char *const EHMTX_VERSION = "Version: 2022.6.2";
@@ -38,7 +38,7 @@ namespace esphome
 
   public:
     EHMTX();
-    Color text_color, alarm_color,gauge_color;
+    Color text_color, alarm_color, gauge_color;
     void dump_config();
     bool show_screen;
     bool show_indicator;
@@ -203,9 +203,12 @@ namespace esphome
       auto duration = this->duration_.value(x...);
       auto alarm = this->alarm_.value(x...);
 
-      if(duration) {
+      if (duration)
+      {
         this->parent_->add_screen(icon, text, duration, alarm);
-      } else {
+      }
+      else
+      {
         this->parent_->add_screen(icon, text, this->parent_->duration, alarm);
       }
     }
@@ -233,7 +236,7 @@ namespace esphome
     EHMTX *parent_;
   };
 
-template <typename... Ts>
+  template <typename... Ts>
   class SetClockColor : public Action<Ts...>
   {
   public:
@@ -251,8 +254,7 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-
-template <typename... Ts>
+  template <typename... Ts>
   class SetAlarmColor : public Action<Ts...>
   {
   public:
@@ -270,7 +272,7 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-template <typename... Ts>
+  template <typename... Ts>
   class SetTodayColor : public Action<Ts...>
   {
   public:
@@ -288,7 +290,7 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-template <typename... Ts>
+  template <typename... Ts>
   class SetShowDate : public Action<Ts...>
   {
   public:
@@ -304,7 +306,7 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-template <typename... Ts>
+  template <typename... Ts>
   class SetShowDayOfWeek : public Action<Ts...>
   {
   public:
@@ -320,8 +322,7 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-
-template <typename... Ts>
+  template <typename... Ts>
   class SetTextColor : public Action<Ts...>
   {
   public:
@@ -339,7 +340,7 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-template <typename... Ts>
+  template <typename... Ts>
   class SetWeekdayColor : public Action<Ts...>
   {
   public:

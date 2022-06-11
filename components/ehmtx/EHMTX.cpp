@@ -17,7 +17,7 @@ namespace esphome
     this->gauge_value = 0;
     this->icon_count = 0;
     this->last_clock_time = 0;
-    
+
 #ifdef USE_EHMTX_SELECT
     this->select = NULL;
 #endif
@@ -120,14 +120,15 @@ namespace esphome
     if ((val > 0) && (val <= 100))
     {
       this->show_gauge = true;
-      this->gauge_value = (uint8_t)(100-val) * 7 / 100;
+      this->gauge_value = (uint8_t)(100 - val) * 7 / 100;
       ESP_LOGD(TAG, "gauge value: %d", this->gauge_value);
     }
   }
 
   void EHMTX::draw_clock()
   {
-    if (this->clock->now().timestamp > 6000){ // valid time
+    if (this->clock->now().timestamp > 6000)
+    { // valid time
       if (!this->show_date or ((this->clock->now().timestamp - this->next_action_time) < this->clock_time))
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
@@ -136,13 +137,13 @@ namespace esphome
       else
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->date_fmt.c_str(),
-                              this->clock->now());
+                                this->clock->now());
       }
       this->draw_day_of_week();
     }
     else
     {
-      this->display->print(this->xoffset + 15, this->yoffset, this->font, this->alarm_color, display::TextAlign::BASELINE_CENTER ,"!t!");
+      this->display->print(this->xoffset + 15, this->yoffset, this->font, this->alarm_color, display::TextAlign::BASELINE_CENTER, "!t!");
     }
   }
 
@@ -161,7 +162,7 @@ namespace esphome
   void EHMTX::update() // called from polling component
   {
     time_t ts = this->clock->now().timestamp;
-    if ((this->next_action_time +15) < ts)
+    if ((this->next_action_time + 15) < ts)
     {
       this->next_action_time = ts + 2;
       this->last_clock_time = ts;
@@ -211,7 +212,7 @@ namespace esphome
         }
         else
         {
-           ESP_LOGD(TAG, "next action: show screen");
+          ESP_LOGD(TAG, "next action: show screen");
           this->next_action_time = ts + (int)this->store->current()->display_duration;
           for (auto *t : on_next_screen_triggers_)
           {
@@ -315,31 +316,40 @@ namespace esphome
   void EHMTX::set_show_date(bool b)
   {
     this->show_date = b;
-    if (b){
+    if (b)
+    {
       ESP_LOGI(TAG, "show date");
-    } else {
+    }
+    else
+    {
       ESP_LOGI(TAG, "don't show date");
-    } 
+    }
   }
 
   void EHMTX::set_show_day_of_week(bool b)
   {
     this->show_day_of_week = b;
-    if (b){
+    if (b)
+    {
       ESP_LOGI(TAG, "show day of week");
-    } else {
+    }
+    else
+    {
       ESP_LOGI(TAG, "don't show day of week");
-    } 
+    }
   }
 
   void EHMTX::set_week_start(bool b)
   {
     this->week_starts_monday = b;
-    if (b){
+    if (b)
+    {
       ESP_LOGI(TAG, "weekstart: monday");
-    } else {
+    }
+    else
+    {
       ESP_LOGI(TAG, "weekstart: sunday");
-    } 
+    }
   }
 
   void EHMTX::set_brightness(uint8_t b)
@@ -378,12 +388,13 @@ namespace esphome
 
   void EHMTX::draw_day_of_week()
   {
-    if (this->show_day_of_week){
+    if (this->show_day_of_week)
+    {
       auto dow = this->clock->now().day_of_week - 1; // SUN = 0
       for (uint8_t i = 0; i <= 6; i++)
       {
-        if ( ((!this->week_starts_monday) && (dow == i)) || 
-             ((this->week_starts_monday) && ((dow == (i+1)) || ((dow==0 && i == 6)) )))
+        if (((!this->week_starts_monday) && (dow == i)) ||
+            ((this->week_starts_monday) && ((dow == (i + 1)) || ((dow == 0 && i == 6)))))
         {
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->today_color);
         }
@@ -392,7 +403,7 @@ namespace esphome
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->weekday_color);
         }
       }
-    }  
+    }
   };
 
   void EHMTX::set_font_offset(int8_t x, int8_t y)
@@ -409,17 +420,22 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
-    if (this->show_day_of_week){
+    if (this->show_day_of_week)
+    {
       ESP_LOGCONFIG(TAG, "show day of week");
     }
-    if (this->show_date){
+    if (this->show_date)
+    {
       ESP_LOGCONFIG(TAG, "show date");
     }
-    if (this->week_starts_monday){
+    if (this->week_starts_monday)
+    {
       ESP_LOGCONFIG(TAG, "weekstart: monday");
-    } else {
+    }
+    else
+    {
       ESP_LOGCONFIG(TAG, "weekstart: sunday");
-    } 
+    }
   }
 
 #ifdef USE_EHMTX_SELECT
@@ -466,7 +482,7 @@ namespace esphome
         this->draw_clock();
       }
     }
-    
+
     if (this->show_indicator)
     {
       this->display->line(31, 5, 29, 7, this->indicator_color);
