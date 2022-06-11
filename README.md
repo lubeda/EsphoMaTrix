@@ -175,7 +175,7 @@ ehmtx:
 _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
-**show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen"
+**show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
@@ -195,7 +195,7 @@ _Configuration variables:_
 
 **dayofweek (Optional, bool):** draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
 
-**show_date (Optional, bool):** if true, show the date for `show_screen - show_clock` seconds otherwise only shows the clock for `show_clock` seconds, defaults to true. 
+**show_date (Optional, bool):** if true, show the date for `show_screen - show_clock` seconds otherwise only shows the clock for `show_screen` seconds, defaults to true. 
 
 **time (required, ID):** ID of the time component. the display shows `!t!` until the time source is valid.
 

@@ -171,12 +171,12 @@ namespace esphome
 
   void EHMTX::tick()
   {
-    time_t ts = this->clock->now().timestamp;
-    if ((ts - this->next_action_time) > this->screen_time)
+    time_t ts1 = this->clock->now().timestamp;
+    if ((ts1 - this->next_action_time) > this->screen_time)
     {
-      this->next_action_time = ts + this->screen_time;
       if (this->show_icons)
       {
+        this->next_action_time = ts1 + this->screen_time;
         uint8_t i = this->icon_screen->icon;
         ++i;
         if (i < this->icon_count)
@@ -195,8 +195,8 @@ namespace esphome
       else
       {
         this->show_screen = false;
-
-        if (!(ts - this->last_clock_time > 60))
+        
+        if (!(ts1 - this->last_clock_time > 60))
         {
           bool has_next_screen = this->store->move_next();
           if (has_next_screen)
@@ -206,14 +206,16 @@ namespace esphome
         }
         if (this->show_screen == false)
         {
-          ESP_LOGD(TAG, "next action: show clock");
+          ESP_LOGD(TAG, "next action: show clock for %d sec",this->screen_time);
           this->last_clock_time = this->clock->now().timestamp;
-          this->next_action_time = ts + this->screen_time;
+          this->next_action_time = ts1 + this->screen_time;
         }
         else
         {
-          ESP_LOGD(TAG, "next action: show screen");
-          this->next_action_time = ts + (int)this->store->current()->display_duration;
+          ESP_LOGD(TAG, "next action: %d", this->next_action_time);
+          ESP_LOGD(TAG, "next action: show screen for %d sec", this->store->current()->display_duration);
+          this->next_action_time = ts1 + this->store->current()->display_duration;
+          ESP_LOGD(TAG, "next action: %d", this->next_action_time);
           for (auto *t : on_next_screen_triggers_)
           {
             t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);

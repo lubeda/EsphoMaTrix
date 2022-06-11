@@ -142,7 +142,7 @@ namespace esphome
     EHMTX *config_;
 
   public:
-    float display_duration;
+    uint16_t display_duration;
     bool alarm;
     time_t endtime;
     uint8_t icon;
