@@ -305,6 +305,23 @@ template <typename... Ts>
   };
 
 template <typename... Ts>
+  class SetShowDayOfWeek : public Action<Ts...>
+  {
+  public:
+    SetShowDayOfWeek(EHMTX *parent) : parent_(parent) {}
+    TEMPLATABLE_VALUE(uint8_t, flag)
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_show_day_of_week(this->flag_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+
+template <typename... Ts>
   class SetTextColor : public Action<Ts...>
   {
   public:

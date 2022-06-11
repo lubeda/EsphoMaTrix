@@ -276,6 +276,17 @@ You can dynamically enable or disable the display of the date see parameter `sho
         id: rgb8x32
         flag: !lambda return true;
 ```
+
+#### show day of week
+
+You can dynamically enable or disable the display of the day of week, see parameter `day_of_week`.
+
+```
+    - ehmtx.show.dayofweek:
+        id: rgb8x32
+        flag: !lambda return true;
+```
+
 #### Force screen
 
 Force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the value/text.

@@ -286,6 +286,21 @@ async def ehmtx_show_date_action_to_code(config, action_id, template_arg, args):
     
     return var
 
+SetShowDayOfWeekAction = ehmtx_ns.class_("SetShowDayOfWeek", automation.Action)
+
+@automation.register_action(
+    "ehmtx.show.dayofweek", SetShowDayOfWeekAction, SET_FLAG_ACTION_SCHEMA
+)
+
+async def ehmtx_show_dayofweek_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_FLAG], args, cg.bool_)
+    cg.add(var.set_flag(template_))
+    
+    return var
+
 SetTodayColorAction = ehmtx_ns.class_("SetTodayColor", automation.Action)
 
 @automation.register_action(
