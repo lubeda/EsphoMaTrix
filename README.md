@@ -193,6 +193,8 @@ _Configuration variables:_
 
 **display8x32 (required, ID):** ID of the addressable display
 
+**dayofweek (Optional, bool):** draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
+
 **time (required, ID):** ID of the time component. the display shows `!time!` until the time source is valid.
 
 **font (required, ID):** ID of the font component

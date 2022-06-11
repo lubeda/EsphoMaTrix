@@ -49,6 +49,7 @@ CONF_URL = "url"
 CONF_LAMEID = "lameid"
 CONF_AWTRIXID = "awtrixid"
 CONF_ICONS = "icons"
+CONF_SHOWDOW = "dayofweek"
 CONF_DISPLAY = "display8x32"
 CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
@@ -85,6 +86,9 @@ EHMTX_SCHEMA = cv.Schema({
     ): cv.boolean,
     cv.Optional(
         CONF_WEEK_ON_MONDAY, default=True
+    ): cv.boolean,
+    cv.Optional(
+        CONF_SHOWDOW, default=True
     ): cv.boolean,
     cv.Optional(
         CONF_TIME_FORMAT, default="%H:%M"
@@ -535,6 +539,7 @@ async def to_code(config):
     cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))
+    cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])

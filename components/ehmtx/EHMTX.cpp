@@ -310,6 +310,16 @@ namespace esphome
     this->brightness_ = b;
   }
 
+  void EHMTX::set_show_day_of_week(bool b)
+  {
+    this->show_day_of_week = b;
+    if (b){
+      ESP_LOGI(TAG, "show day of week");
+    } else {
+      ESP_LOGI(TAG, "don't show day of week");
+    } 
+  }
+
   void EHMTX::set_week_start(bool b)
   {
     this->week_starts_monday = b;
@@ -356,7 +366,8 @@ namespace esphome
 
   void EHMTX::draw_day_of_week()
   {
-    auto dow = this->clock->now().day_of_week - 1; // SUN = 0
+    if (this->show_day_of_week){
+      auto dow = this->clock->now().day_of_week - 1; // SUN = 0
       for (uint8_t i = 0; i <= 6; i++)
       {
         if ( ((!this->week_starts_monday) && (dow == i)) || 
@@ -369,7 +380,7 @@ namespace esphome
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->weekday_color);
         }
       }
-    
+    }  
   };
 
   void EHMTX::set_font_offset(int8_t x, int8_t y)
@@ -386,7 +397,9 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
-    
+    if (this->show_day_of_week){
+      ESP_LOGCONFIG(TAG, "show day of week");
+    }
     if (this->week_starts_monday){
       ESP_LOGCONFIG(TAG, "weekstart: monday");
     } else {
