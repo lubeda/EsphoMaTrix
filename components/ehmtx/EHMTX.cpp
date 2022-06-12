@@ -52,35 +52,37 @@ namespace esphome
   void EHMTX::set_today_color(int r, int g, int b)
   {
     this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Today r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD("EHMTX", "today color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_weekday_color(int r, int g, int b)
   {
     this->weekday_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Weekday r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD("EHMTX", "weekday color: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_clock_color(int r, int g, int b)
   {
     this->clock_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD("EHMTX", "clock color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_gauge_color(int r, int g, int b)
   {
     this->gauge_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD(TAG, "gauge r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD(TAG, "gauge color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_alarm_color(int r, int g, int b)
   {
     this->alarm_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD(TAG, "alarm color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_text_color(int r, int g, int b)
   {
     this->text_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD(TAG, "text color r: %d g: %d b: %d", r, g, b);
   }
 
   uint8_t EHMTX::find_icon(std::string name)
@@ -121,7 +123,7 @@ namespace esphome
     {
       this->show_gauge = true;
       this->gauge_value = (uint8_t)(100 - val) * 7 / 100;
-      ESP_LOGD(TAG, "gauge value: %d", this->gauge_value);
+      ESP_LOGD(TAG, "gauge value: %d => %d",val,  this->gauge_value);
     }
   }
 
@@ -152,7 +154,7 @@ namespace esphome
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
     {
-      ESP_LOGD(TAG, "use select_component");
+      ESP_LOGD(TAG, "select_component activated");
       this->select->traits.set_options(this->select_options);
       this->select->parent = this;
     }
@@ -207,10 +209,8 @@ namespace esphome
         }
         else
         {
-          ESP_LOGD(TAG, "next action: %d", this->next_action_time);
           ESP_LOGD(TAG, "next action: show screen for %d sec", this->store->current()->display_duration);
           this->next_action_time = ts + this->store->current()->display_duration;
-          ESP_LOGD(TAG, "next action: %d",  this->next_action_time);
           for (auto *t : on_next_screen_triggers_)
           {
             t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
@@ -445,7 +445,7 @@ namespace esphome
   void EHMTX::add_icon(EHMTX_Icon *icon)
   {
     this->icons[this->icon_count] = icon;
-    ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, icon->name.c_str(), icon->frame_duration);
+    ESP_LOGD(TAG, "add_icon no.: %d name: %s frame_duration: %d ms", this->icon_count, icon->name.c_str(), icon->frame_duration);
     this->icon_count++;
 
 #ifdef USE_EHMTX_SELECT
