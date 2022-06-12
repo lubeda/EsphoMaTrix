@@ -63,13 +63,13 @@ namespace esphome
     uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
-    uint16_t clock_time;       // ms display of clock/date 0.5 clock then 0.5 date
-    uint16_t screen_time;      // ms display of screen
+    uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
+    uint16_t screen_time;      // seconds display of screen
     uint8_t icon_count;        // max iconnumber -1
     unsigned long last_scroll_time;
     unsigned long last_anim_time;
     time_t last_clock_time = 0;  // starttime clock display
-    time_t next_action_time = 0; // when is the nextscreenchange
+    time_t next_action_time = 0; // when is the next screen change
     void draw_day_of_week();
     void show_all_icons();
     void tick();
@@ -79,10 +79,10 @@ namespace esphome
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
+    void set_clock_time(uint16_t t);
     void set_show_day_of_week(bool b);
     void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
-    void set_clock_time(uint16_t t);
     void set_week_start(bool b);
     void set_default_brightness(uint8_t b);
     void set_brightness(uint8_t b);

@@ -127,8 +127,8 @@ namespace esphome
 
   void EHMTX::draw_clock()
   {
-    if (this->clock->now().timestamp > 6000)
-    { // valid time
+    if (this->clock->now().timestamp > 6000) // valid time
+    { 
       if (!this->show_date or ((this->clock->now().timestamp - this->next_action_time) < this->clock_time))
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
@@ -161,22 +161,17 @@ namespace esphome
 
   void EHMTX::update() // called from polling component
   {
-    time_t ts = this->clock->now().timestamp;
-    if ((this->next_action_time + 15) < ts)
-    {
-      this->next_action_time = ts + 2;
-      this->last_clock_time = ts;
-    }
   }
 
   void EHMTX::tick()
   {
-    time_t ts1 = this->clock->now().timestamp;
-    if ((ts1 - this->next_action_time) > this->screen_time)
+    time_t ts = this->clock->now().timestamp;
+    
+    if (ts > this->next_action_time)
     {
       if (this->show_icons)
       {
-        this->next_action_time = ts1 + this->screen_time;
+        this->next_action_time = ts + this->screen_time;
         uint8_t i = this->icon_screen->icon;
         ++i;
         if (i < this->icon_count)
@@ -196,7 +191,7 @@ namespace esphome
       {
         this->show_screen = false;
         
-        if (!(ts1 - this->last_clock_time > 60))
+        if (!(ts - this->last_clock_time > 60)) // force clock if last time more the 60s old
         {
           bool has_next_screen = this->store->move_next();
           if (has_next_screen)
@@ -208,14 +203,14 @@ namespace esphome
         {
           ESP_LOGD(TAG, "next action: show clock for %d sec",this->screen_time);
           this->last_clock_time = this->clock->now().timestamp;
-          this->next_action_time = ts1 + this->screen_time;
+          this->next_action_time = ts + this->screen_time;
         }
         else
         {
           ESP_LOGD(TAG, "next action: %d", this->next_action_time);
           ESP_LOGD(TAG, "next action: show screen for %d sec", this->store->current()->display_duration);
-          this->next_action_time = ts1 + this->store->current()->display_duration;
-          ESP_LOGD(TAG, "next action: %d", this->next_action_time);
+          this->next_action_time = ts + this->store->current()->display_duration;
+          ESP_LOGD(TAG, "next action: %d",  this->next_action_time);
           for (auto *t : on_next_screen_triggers_)
           {
             t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
