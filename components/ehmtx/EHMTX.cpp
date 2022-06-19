@@ -209,7 +209,7 @@ namespace esphome
         }
         else
         {
-          ESP_LOGD(TAG, "next action: show screen for %d sec", this->store->current()->display_duration);
+          ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str() ,this->store->current()->display_duration);
           this->next_action_time = ts + this->store->current()->display_duration;
           for (auto *t : on_next_screen_triggers_)
           {
@@ -238,8 +238,8 @@ namespace esphome
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
     ESP_LOGI(TAG, "status default duration: %d", this->duration);
-    ESP_LOGI(TAG, "status date format: %s", this->date_fmt);
-    ESP_LOGI(TAG, "status time format: %s", this->time_fmt);
+    ESP_LOGI(TAG, "status date format: %s", this->date_fmt.c_str());
+    ESP_LOGI(TAG, "status time format: %s", this->time_fmt.c_str());
     ESP_LOGI(TAG, "status text_color: RGB(%d,%d,%d)", this->text_color.r, this->text_color.g, this->text_color.b);
     ESP_LOGI(TAG, "status alarm_color: RGB(%d,%d,%d)", this->alarm_color.r, this->alarm_color.g, this->alarm_color.b);
     if (this->show_indicator)
@@ -415,6 +415,8 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Icons: %d of %d", this->icon_count, MAXICONS);
     ESP_LOGCONFIG(TAG, "Font offset: x=%d y=%d", this->xoffset, this->yoffset);
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
+    ESP_LOGCONFIG(TAG, "Date format: %s", this->date_fmt.c_str());
+    ESP_LOGCONFIG(TAG, "Time format: %s", this->time_fmt.c_str());
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
     if (this->show_day_of_week)
