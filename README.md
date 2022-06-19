@@ -62,6 +62,8 @@ emhtx:
       id: garage
     - url: https://github.com/home-assistant/assets/raw/master/logo/logo-small.png
       id: homeassistant
+    - awtrixid: 1945
+      id: wled
 ```
 
 ### Parameter
@@ -77,6 +79,8 @@ The id of the icons is used later to configure the screens to display. So you sh
 
 **file (Exlusive, filename):** a local filename
 **url (Exclusive, url):** a url to download an icon
+**awtrixid (Exclusive, number):** the number of the icon from the [Awtrix icon database](https://awtrix.blueforcer.de/icons.html)
+
 
 ### preview helper
 
@@ -171,11 +175,17 @@ ehmtx:
 _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
-**show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen"
+**show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
+![timing](./images/timing.png)
+
 **duration (Optional, minutes):** lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
+
+**date_format (Optional, string):** formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
+
+**time_format (Optional, string):** formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%m"` (use `"%I:%M%p"` for the US)
 
 **yoffset (Optional, pixel):** yoffset the text is aligned BASELINE_LEFT, the baseline defaults to 6 
 
@@ -183,7 +193,11 @@ _Configuration variables:_
 
 **display8x32 (required, ID):** ID of the addressable display
 
-**time (required, ID):** ID of the time component
+**dayofweek (Optional, bool):** draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
+
+**show_date (Optional, bool):** if true, show the date for `show_screen - show_clock` seconds otherwise only shows the clock for `show_screen` seconds, defaults to true. 
+
+**time (required, ID):** ID of the time component. the display shows `!t!` until the time source is valid.
 
 **font (required, ID):** ID of the font component
 
@@ -253,6 +267,26 @@ ehmtx:
 
 For local automations you can use actions. This is the normal way of automations. The ```id(rgb8x32)->``` style will also work.
 
+#### show date
+
+You can dynamically enable or disable the display of the date see parameter `show_date`.
+
+```
+    - ehmtx.show.date:
+        id: rgb8x32
+        flag: !lambda return true;
+```
+
+#### show day of week
+
+You can dynamically enable or disable the display of the day of week, see parameter `day_of_week`.
+
+```
+    - ehmtx.show.dayofweek:
+        id: rgb8x32
+        flag: !lambda return true;
+```
+
 #### Force screen
 
 Force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the value/text.
@@ -287,7 +321,7 @@ valid elements:
 
 ##### sample:
 
-````
+```
 esphome:
   name: $devicename
   on_boot:
@@ -347,7 +381,8 @@ You have to use use id of your ehmtx component, e.g. ```rgb8x32```
             alarm: false
 ```
 
-Parameters:
+parameters:
+
 **id (required, ID):** ID of the ehmtx component
 
 **text (required, string):** the text to display
@@ -597,6 +632,8 @@ sensor:
 
 There is a optional [notifier component](https://github.com/lubeda/EHMTX_custom_component) you can install with hacs. It is compareable to the **_screen** service but more streamlined.
 
+# breaking changes
+2022.6.1 removed image types only `rgb565` is valid!
 
 # Usage
 
@@ -608,3 +645,4 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 # Thanks
 
 **[jd1](https://github.com/jd1)** for his contributions
+**[ofirsnb](https://github.com/ofirsnb)** for his contributions

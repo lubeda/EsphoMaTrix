@@ -1,0 +1,341 @@
+# esphome config file with all features
+substitutions:
+  devicename: ehmtx8266
+  mypin: GPIO02
+  board: d1_mini
+  loglevel: DEBUG
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/lubeda/EsphoMaTrix
+
+esphome:
+  name: $devicename
+  on_boot:
+    priority: -100
+    then: 
+      - ehmtx.text.color:
+          id: rgb8x32
+          red: !lambda return 200;
+          green: !lambda return 100;
+          blue: !lambda return 50;
+      - ehmtx.clock.color:
+          id: rgb8x32
+          red: !lambda return 150;
+          green: !lambda return 0;
+          blue: !lambda return 100;
+      - ehmtx.today.color:
+          id: rgb8x32
+          red: !lambda return 0;
+          green: !lambda return 100;
+          blue: !lambda return 0;
+      - ehmtx.weekday.color:
+          id: rgb8x32
+          red: !lambda return 0;
+          green: !lambda return 0;
+          blue: !lambda return 100;
+      - ehmtx.alarm.color:
+          id: rgb8x32
+          red: !lambda return 200;
+          green: !lambda return 150;
+          blue: !lambda return 30;
+      - lambda: !lambda |-
+          id(rgb8x32)->show_all_icons();
+
+web_server:
+  port: 80
+
+esp8266:
+  board: $board
+
+font:
+  - file: monobit.ttf
+    id: ehmtx_font
+    size: 16
+    glyphs:  |
+      !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@<>/
+
+logger:
+ level: $loglevel
+  
+api:
+  services:
+    - service: a_screen # action
+      variables:
+        icon_name: string
+        text: string
+        duration: int
+      then:
+        - ehmtx.add.screen:
+            id: rgb8x32
+            text: !lambda return text;
+            icon_name: !lambda return icon_name;
+            duration: !lambda return duration;
+            alarm: false
+  
+    - service: f_screen # function
+      variables:
+        icon_name: string
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen(icon_name,text,7,true);
+          id(rgb8x32)->force_screen(icon_name);
+    
+    - service: a_force_screen # action
+      variables:
+        icon_name: string
+      then:
+        - ehmtx.force.screen:
+            icon_name: !lambda return icon_name;
+    
+    - service: f_force_screen # function
+      variables:
+        icon_name: string
+      then:
+        - lambda: |-
+            id(rgb8x32)->force_screen(icon_name);
+    
+    - service: f_brightness
+      variables:
+        brightness: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_brightness(brightness);
+
+    - service: a_brightness
+      variables:
+        brightness: int
+      then:
+        - ehmtx.set.brightness:
+            brightness: !lambda return brightness;
+
+    - service: gauge
+      variables:
+        val: int
+      then:
+        lambda: |-
+          id(rgb8x32).set_gauge_value(val);
+    
+    - service: alarm
+      variables:
+        icon_name: string
+        text: string
+      then:
+        lambda: |-
+          id(rgb8x32)->add_screen(icon_name,text,7,true);
+          id(rgb8x32)->force_screen(icon_name);
+    
+    - service: screen
+      variables:
+        icon_name: string
+        text: string
+        duration: int
+      then:
+        - ehmtx.add.screen:
+            id: rgb8x32
+            text: !lambda return text;
+            icon_name: !lambda return icon_name;
+            duration: !lambda return duration;
+            alarm: false
+    
+    - service: brightness
+      variables:
+        brightness: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_brightness(brightness);
+    
+    - service: status
+      then:
+        lambda: |-
+          id(rgb8x32)->get_status();
+    
+    - service: a_del_screen
+      variables:
+        icon_name: string
+      then:
+        - ehmtx.delete.screen:
+            id: rgb8x32
+            icon_name: !lambda return icon_name;
+    
+    - service: indicator_on 
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        - ehmtx.indicator.on:
+            id: rgb8x32
+            red: !lambda return r;
+            green: !lambda return g;
+            blue: !lambda return b;
+    
+    - service: force_screen
+      variables:
+        icon_name: string
+      then:
+        - ehmtx.force.screen:
+            id: rgb8x32
+            icon_name: !lambda return icon_name;
+
+    - service: f_text_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_text_color(r,g,b);
+    
+    - service: clock_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_clock_color(r,g,b);
+    
+    - service: alarm_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_alarm_color(r,g,b);
+    
+    - service: weekday_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_weekday_color(r,g,b);
+    
+    - service: today_color
+      variables:
+        r: int
+        g: int
+        b: int
+      then:
+        lambda: |-
+          id(rgb8x32)->set_today_color(r,g,b);
+
+    - service: indicator_off
+      then:
+        - ehmtx.indicator.off:
+            id: rgb8x32
+
+number:
+  - platform: template
+    name: "$devicename brightness"
+    min_value: 0
+    max_value: 255
+    step: 1
+    lambda: |-
+      return id(rgb8x32)->get_brightness();
+    set_action:
+      lambda: |-
+        id(rgb8x32)->set_brightness(x);
+
+ota:
+  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+light:
+  - platform: neopixelbus
+    id: ehmtx_light
+    type: GRB
+    variant: WS2812
+    pin: $mypin
+    num_leds: 256
+    color_correct: [30%, 30%, 30%]
+    name: "$devicename Light"
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      lambda: |-
+         id(ehmtx_display)->set_enabled(false);
+    on_turn_off:
+       lambda: |-
+         id(ehmtx_display)->set_enabled(true);
+
+time:
+  - platform: homeassistant
+    id: ehmtx_time
+
+display:
+  - platform: addressable_light
+    id: ehmtx_display
+    addressable_light_id: ehmtx_light
+    width: 32
+    height: 8
+    pixel_mapper: |-
+      if (x % 2 == 0) {
+        return (x * 8) + y;
+      }
+      return (x * 8) + (7 - y);
+    rotation: 0°
+    update_interval: 16ms
+    auto_clear_enabled: true
+    lambda: |-
+      id(rgb8x32)->tick();
+      id(rgb8x32)->draw();
+
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+
+ehmtx:
+  id: rgb8x32
+  show_clock: 2
+  show_screen: 10
+  display8x32: ehmtx_display
+  time: ehmtx_time
+  html: true
+  time_format: "%I:%M%p"
+  week_start_monday: true
+  duration: 7
+  font_id: ehmtx_font
+  ehmtxselect: ehmtx_screens
+  on_next_screen: # trigger on screen change 
+    lambda: |-
+        ESP_LOGD("TriggerTest","Iconname: %s",x.c_str());
+        ESP_LOGI("TriggerTest","Text: %s",y.c_str());
+  icons: 
+    - file: _icons/Precipitation Probability_12184.png
+      id: lsta
+    - file: _icons/Car_8589.gif
+      id: lani
+    - url: https://developer.lametric.com/content/apps/icon_thumbs/37472
+      id: wani
+    - url: https://developer.lametric.com/content/apps/icon_thumbs/66
+      id: wsta
+    - id: aani
+      awtrixid: 1896
+    - id: asta
+      awtrixid: 1888
+    - id: xani
+      lameid: 6075
+    - id: xsta
+      lameid: 11236
+    - url: https://developer.lametric.com/content/apps/icon_thumbs/48720.gif
+      pingpong: true
+      id: pipo
+    - lameid: 5965
+      duration: 180
+      id: d180
+    - lameid: 5965
+      duration: 80
+      id: d080
+  
+select:
+  - platform: ehmtx
+    id: ehmtx_screens
+    name: "$devicename screens"

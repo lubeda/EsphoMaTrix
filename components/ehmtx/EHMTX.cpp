@@ -5,18 +5,19 @@ namespace esphome
   EHMTX::EHMTX() : PollingComponent(TICKINTERVAL)
   {
     this->store = new EHMTX_store(this);
+    this->icon_screen = new EHMTX_screen(this);
     this->show_screen = false;
     this->show_gauge = false;
-    this->gauge_value = 0;
-    this->icon_count = 0;
     this->text_color = Color(240, 240, 240);
     this->today_color = Color(240, 240, 240);
     this->weekday_color = Color(100, 100, 100);
     this->clock_color = Color(240, 240, 240);
     this->alarm_color = Color(200, 50, 50);
     this->gauge_color = Color(100, 100, 200);
+    this->gauge_value = 0;
+    this->icon_count = 0;
     this->last_clock_time = 0;
-    this->icon_screen = new EHMTX_screen(this);
+
 #ifdef USE_EHMTX_SELECT
     this->select = NULL;
 #endif
@@ -32,6 +33,16 @@ namespace esphome
     }
   }
 
+  void EHMTX::set_time_format(std::string s)
+  {
+    this->time_fmt = s;
+  }
+
+  void EHMTX::set_date_format(std::string s)
+  {
+    this->date_fmt = s;
+  }
+
   void EHMTX::set_indicator_color(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
@@ -41,26 +52,37 @@ namespace esphome
   void EHMTX::set_today_color(int r, int g, int b)
   {
     this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Today r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD("EHMTX", "today color r: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_weekday_color(int r, int g, int b)
   {
     this->weekday_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "Weekday r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD("EHMTX", "weekday color: %d g: %d b: %d", r, g, b);
   }
 
   void EHMTX::set_clock_color(int r, int g, int b)
   {
     this->clock_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD("EHMTX", "clock r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD("EHMTX", "clock color r: %d g: %d b: %d", r, g, b);
   }
-
 
   void EHMTX::set_gauge_color(int r, int g, int b)
   {
     this->gauge_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-    ESP_LOGD(TAG, "gauge r: %d g: %d b: %d", r, g, b);
+    ESP_LOGD(TAG, "gauge color r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_alarm_color(int r, int g, int b)
+  {
+    this->alarm_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD(TAG, "alarm color r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_text_color(int r, int g, int b)
+  {
+    this->text_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    ESP_LOGD(TAG, "text color r: %d g: %d b: %d", r, g, b);
   }
 
   uint8_t EHMTX::find_icon(std::string name)
@@ -77,21 +99,12 @@ namespace esphome
     return MAXICONS;
   }
 
-  void EHMTX::set_alarm_color(int r, int g, int b)
-  {
-    this->alarm_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-  }
-
-  void EHMTX::set_text_color(int r, int g, int b)
-  {
-    this->text_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
-  }
-
   void EHMTX::set_indicator_off()
   {
     this->show_indicator = false;
     ESP_LOGD(TAG, "indicator off");
   }
+
   void EHMTX::set_indicator_on()
   {
     this->show_indicator = true;
@@ -109,24 +122,31 @@ namespace esphome
     if ((val > 0) && (val <= 100))
     {
       this->show_gauge = true;
-      this->gauge_value = (uint8_t)(100-val) * 7 / 100;
-      ESP_LOGD(TAG, "gauge value: %d", this->gauge_value);
+      this->gauge_value = (uint8_t)(100 - val) * 7 / 100;
+      ESP_LOGD(TAG, "gauge value: %d => %d",val,  this->gauge_value);
     }
   }
 
   void EHMTX::draw_clock()
   {
-    if ((this->clock->now().timestamp - this->next_action_time) < this->clock_time)
-    {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%H:%M",
-                              this->clock->now());
+    if (this->clock->now().timestamp > 6000) // valid time
+    { 
+      if (!this->show_date or ((this->clock->now().timestamp - this->next_action_time) < this->clock_time))
+      {
+        this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
+                                this->clock->now());
+      }
+      else
+      {
+        this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->date_fmt.c_str(),
+                                this->clock->now());
+      }
+      this->draw_day_of_week();
     }
     else
     {
-      this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, "%d.%m.",
-                              this->clock->now());
+      this->display->print(this->xoffset + 15, this->yoffset, this->font, this->alarm_color, display::TextAlign::BASELINE_CENTER, "!t!");
     }
-    this->draw_day_of_week();
   }
 
   void EHMTX::setup()
@@ -134,36 +154,26 @@ namespace esphome
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
     {
-      ESP_LOGD(TAG, "use select_component");
+      ESP_LOGD(TAG, "select_component activated");
       this->select->traits.set_options(this->select_options);
       this->select->parent = this;
     }
 #endif
   }
 
-  void EHMTX::update()
+  void EHMTX::update() // called from polling component
   {
-    time_t ts = this->clock->now().timestamp;
-    if ((this->next_action_time + 15) < ts)
-    {
-      this->next_action_time = ts + 3;
-      this->last_clock_time = ts;
-    }
-  }
-  void EHMTX::skip_screen()
-  {
-    this->next_action_time = 1;
   }
 
   void EHMTX::tick()
   {
-
     time_t ts = this->clock->now().timestamp;
-    if ((ts - this->next_action_time) > this->screen_time)
+    
+    if (ts > this->next_action_time)
     {
-      this->next_action_time = ts + this->screen_time;
       if (this->show_icons)
       {
+        this->next_action_time = ts + this->screen_time;
         uint8_t i = this->icon_screen->icon;
         ++i;
         if (i < this->icon_count)
@@ -182,8 +192,8 @@ namespace esphome
       else
       {
         this->show_screen = false;
-
-        if (!(ts - this->last_clock_time > 60))
+        
+        if (!(ts - this->last_clock_time > 60)) // force clock if last time more the 60s old
         {
           bool has_next_screen = this->store->move_next();
           if (has_next_screen)
@@ -193,12 +203,14 @@ namespace esphome
         }
         if (this->show_screen == false)
         {
+          ESP_LOGD(TAG, "next action: show clock for %d sec",this->screen_time);
           this->last_clock_time = this->clock->now().timestamp;
           this->next_action_time = ts + this->screen_time;
         }
         else
         {
-          this->next_action_time = ts + (int)this->store->current()->display_duration;
+          ESP_LOGD(TAG, "next action: show screen for %d sec", this->store->current()->display_duration);
+          this->next_action_time = ts + this->store->current()->display_duration;
           for (auto *t : on_next_screen_triggers_)
           {
             t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
@@ -226,6 +238,8 @@ namespace esphome
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
     ESP_LOGI(TAG, "status default duration: %d", this->duration);
+    ESP_LOGI(TAG, "status date format: %s", this->date_fmt);
+    ESP_LOGI(TAG, "status time format: %s", this->time_fmt);
     ESP_LOGI(TAG, "status text_color: RGB(%d,%d,%d)", this->text_color.r, this->text_color.g, this->text_color.b);
     ESP_LOGI(TAG, "status alarm_color: RGB(%d,%d,%d)", this->alarm_color.r, this->alarm_color.g, this->alarm_color.b);
     if (this->show_indicator)
@@ -296,14 +310,43 @@ namespace esphome
     this->brightness_ = b;
   }
 
+  void EHMTX::set_show_date(bool b)
+  {
+    this->show_date = b;
+    if (b)
+    {
+      ESP_LOGI(TAG, "show date");
+    }
+    else
+    {
+      ESP_LOGI(TAG, "don't show date");
+    }
+  }
+
+  void EHMTX::set_show_day_of_week(bool b)
+  {
+    this->show_day_of_week = b;
+    if (b)
+    {
+      ESP_LOGI(TAG, "show day of week");
+    }
+    else
+    {
+      ESP_LOGI(TAG, "don't show day of week");
+    }
+  }
+
   void EHMTX::set_week_start(bool b)
   {
     this->week_starts_monday = b;
-    if (b){
+    if (b)
+    {
       ESP_LOGI(TAG, "weekstart: monday");
-    } else {
+    }
+    else
+    {
       ESP_LOGI(TAG, "weekstart: sunday");
-    } 
+    }
   }
 
   void EHMTX::set_brightness(uint8_t b)
@@ -342,11 +385,13 @@ namespace esphome
 
   void EHMTX::draw_day_of_week()
   {
-    auto dow = this->clock->now().day_of_week - 1; // SUN = 0
+    if (this->show_day_of_week)
+    {
+      auto dow = this->clock->now().day_of_week - 1; // SUN = 0
       for (uint8_t i = 0; i <= 6; i++)
       {
-        if ( ((!this->week_starts_monday) && (dow == i)) || 
-             ((this->week_starts_monday) && ((dow == (i+1)) || ((dow==0 && i == 6)) )))
+        if (((!this->week_starts_monday) && (dow == i)) ||
+            ((this->week_starts_monday) && ((dow == (i + 1)) || ((dow == 0 && i == 6)))))
         {
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->today_color);
         }
@@ -355,7 +400,7 @@ namespace esphome
           this->display->line(2 + i * 4, 7, i * 4 + 4, 7, this->weekday_color);
         }
       }
-    
+    }
   };
 
   void EHMTX::set_font_offset(int8_t x, int8_t y)
@@ -372,11 +417,22 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
-    if (this->week_starts_monday){
+    if (this->show_day_of_week)
+    {
+      ESP_LOGCONFIG(TAG, "show day of week");
+    }
+    if (this->show_date)
+    {
+      ESP_LOGCONFIG(TAG, "show date");
+    }
+    if (this->week_starts_monday)
+    {
       ESP_LOGCONFIG(TAG, "weekstart: monday");
-    } else {
+    }
+    else
+    {
       ESP_LOGCONFIG(TAG, "weekstart: sunday");
-    } 
+    }
   }
 
 #ifdef USE_EHMTX_SELECT
@@ -389,7 +445,7 @@ namespace esphome
   void EHMTX::add_icon(EHMTX_Icon *icon)
   {
     this->icons[this->icon_count] = icon;
-    ESP_LOGD(TAG, "add_icon no.: %d name: %s duration: %d ", this->icon_count, icon->name.c_str(), icon->frame_duration);
+    ESP_LOGD(TAG, "add_icon no.: %d name: %s frame_duration: %d ms", this->icon_count, icon->name.c_str(), icon->frame_duration);
     this->icon_count++;
 
 #ifdef USE_EHMTX_SELECT
@@ -414,7 +470,6 @@ namespace esphome
     }
     else
     {
-
       if (this->show_screen)
       {
         this->store->current()->draw();
@@ -424,7 +479,7 @@ namespace esphome
         this->draw_clock();
       }
     }
-    
+
     if (this->show_indicator)
     {
       this->display->line(31, 5, 29, 7, this->indicator_color);
@@ -433,8 +488,6 @@ namespace esphome
       this->display->draw_pixel_at(31, 7, this->indicator_color);
     }
   }
-
-  /* Trigger */
 
   void EHMTXNextScreenTrigger::process(std::string iconname, std::string text)
   {
