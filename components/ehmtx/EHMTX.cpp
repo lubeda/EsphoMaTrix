@@ -131,7 +131,8 @@ namespace esphome
   {
     if (this->clock->now().timestamp > 6000) // valid time
     { 
-      if (!this->show_date or ((this->clock->now().timestamp - this->next_action_time) < this->clock_time))
+      time_t ts = this->clock->now().timestamp;
+      if (!this->show_date or ((this->next_action_time - ts) < this->clock_time))
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
                                 this->clock->now());
@@ -203,8 +204,8 @@ namespace esphome
         }
         if (this->show_screen == false)
         {
-          ESP_LOGD(TAG, "next action: show clock for %d sec",this->screen_time);
-          this->last_clock_time = this->clock->now().timestamp;
+          ESP_LOGD(TAG, "next action: show clock/date for %d/%d sec",this->clock_time, this->screen_time-this->clock_time);
+          this->last_clock_time = ts;
           this->next_action_time = ts + this->screen_time;
         }
         else
