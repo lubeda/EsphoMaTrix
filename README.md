@@ -78,7 +78,9 @@ All other solutions provide ready made icons, especialy lametric has a big datab
 The id of the icons is used later to configure the screens to display. So you should name them clever.
 
 **file (Exlusive, filename):** a local filename
+
 **url (Exclusive, url):** a url to download an icon
+
 **awtrixid (Exclusive, number):** the number of the icon from the [Awtrix icon database](https://awtrix.blueforcer.de/icons.html)
 
 
