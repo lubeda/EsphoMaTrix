@@ -11,6 +11,8 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant. Targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration!
 
+See this german tutorial video with all informations on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A)
+
 ## State
 
 **First release!**
