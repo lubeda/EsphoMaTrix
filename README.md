@@ -483,7 +483,7 @@ parameters:
 
 Service **del_screen**
 
-Removes a screen from the display by icon name.
+Removes a screen from the display by icon name. If this screen is actually display while sending this command the screen will be displayed until its "show_screen"-time has ended.
 
 parameters:
 - ```icon_name``` The name of the icons as in the yaml (see installation)
