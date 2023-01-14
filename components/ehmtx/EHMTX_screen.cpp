@@ -17,7 +17,6 @@ namespace esphome
     if (this->icon == _icon)
     {
       this->endtime = 0;
-      this->icon = 0;
       ESP_LOGD(TAG, "delete screen icon: %d", _icon);
       return true;
     }
