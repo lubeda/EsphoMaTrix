@@ -48,7 +48,6 @@ CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_FLAG = "flag"
 CONF_LAMEID = "lameid"
-CONF_AWTRIXID = "awtrixid"
 CONF_ICONS = "icons"
 CONF_SHOWDOW = "dayofweek"
 CONF_SHOWDATE = "show_date"
@@ -129,7 +128,6 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.Exclusive(CONF_FILE,"uri"): cv.file_,
                 cv.Exclusive(CONF_URL,"uri"): cv.url,
                 cv.Exclusive(CONF_LAMEID,"uri"): cv.string,
-                cv.Exclusive(CONF_AWTRIXID,"uri"): cv.string,
                 cv.Optional(
                     CONF_DURATION, default="0"
                 ): cv.templatable(cv.positive_int),
@@ -431,15 +429,6 @@ async def to_code(config):
             if r.status_code != requests.codes.ok:
                 raise core.EsphomeError(f" ICONS: Could not download image file {conf[CONF_LAMEID]}: {conf[CONF_ID]}")
             image = Image.open(io.BytesIO(r.content))
-        elif CONF_AWTRIXID in conf:
-            r = requests.post("https://awtrix.blueforcer.de/icon",json={"reqType":"getIcon","ID":"" + conf[CONF_AWTRIXID] + ""}  , timeout=4.0)
-            if r.status_code != requests.codes.ok:
-                raise core.EsphomeError(f" ICONS: Could not download awtrix data {conf[CONF_AWTRIXID]}: {conf[CONF_ID]}")
-            awtrixdata = r.json()
-            r = requests.get("https://awtrix.blueforcer.de/icons/"+conf[CONF_AWTRIXID], timeout=4.0)
-            if r.status_code != requests.codes.ok:
-                raise core.EsphomeError(f" ICONS: Could not download awtrix icon {conf[CONF_URL]}: {conf[CONF_ID]}")
-            image = Image.open(io.BytesIO(r.content))         
         elif CONF_URL in conf:
             r = requests.get(conf[CONF_URL], timeout=4.0)
             if r.status_code != requests.codes.ok:
@@ -470,81 +459,31 @@ async def to_code(config):
         pos = 0 
         frameIndex = 0
         html_string += f"<DIV ID={conf[CONF_ID]}>"
-        if CONF_AWTRIXID in conf:
-            if "data" in awtrixdata:
-                frames = len(awtrixdata["data"])
-                frameIndex = 0
-                data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
-                duration = awtrixdata["tick"]
-                for frame in awtrixdata["data"]:
-                    if len(frame) != ICONBUFFERSIZE:
-                        raise core.EsphomeError(
-                            f"Unexpected number of pixels in awtrix"
-                        )
-                    i = 0
-                    html_string += SVG_START
-                    for pix in frame:
-                        G = (pix & 0x07e0) >> 5
-                        B =  pix & 0x1f  
-                        R = (pix & 0xF800) >> 11                       
-                        x = (i % ICONWIDTH)
-                        y = i//ICONHEIGHT
-                        i += 1
-                        rgb = pix  # (R << 11) | (G << 5) | B
-                        html_string += rgb565_svg(x,y,R,G,B)
-                        data[pos] = rgb >> 8
-                        pos += 1               
-                        data[pos] = rgb & 255
-                        pos += 1
-                    frameIndex += 1
-                    html_string += SVG_END
-            else:
-                frames = 1
-                i = 0
-                data = [0 for _ in range(ICONBUFFERSIZE * 2)]
-                html_string += SVG_START
-                for pix in awtrixdata:
-                    x = (i % ICONWIDTH) 
-                    y = i//ICONHEIGHT
-                    i +=1
-                    rgb = pix  
-                    G = (pix & 0x07e0) >> 5
-                    B =  pix & 0x1f  
-                    R = (pix & 0xF800) >> 11                       
-                    
-                    html_string += rgb565_svg(x,y,R,G,B)
-                    
-                    data[pos] = rgb >> 8
-                    pos += 1               
-                    data[pos] = rgb & 255
-                    pos += 1              
-                html_string += SVG_END                  
-        else:
-            data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
-            for frameIndex in range(frames):
-                html_string += SVG_START
-                image.seek(frameIndex)
-                frame = image.convert("RGB")
-                pixels = list(frame.getdata())
-                if len(pixels) != ICONBUFFERSIZE:
-                    raise core.EsphomeError(
-                        f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                    )
-                i = 0
-                for pix in pixels:
-                    R = pix[0] >> 3
-                    G = pix[1] >> 2
-                    B = pix[2] >> 3
-                    x = (i % ICONWIDTH)
-                    y = i//ICONHEIGHT
-                    i +=1
-                    rgb = (R << 11) | (G << 5) | B
-                    html_string += rgb565_svg(x,y,R,G,B)
-                    data[pos] = rgb >> 8
-                    pos += 1
-                    data[pos] = rgb & 255
-                    pos += 1
-                html_string += SVG_END
+        data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
+        for frameIndex in range(frames):
+            html_string += SVG_START
+            image.seek(frameIndex)
+            frame = image.convert("RGB")
+            pixels = list(frame.getdata())
+            if len(pixels) != ICONBUFFERSIZE:
+                raise core.EsphomeError(
+                    f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                )
+            i = 0
+            for pix in pixels:
+                R = pix[0] >> 3
+                G = pix[1] >> 2
+                B = pix[2] >> 3
+                x = (i % ICONWIDTH)
+                y = i//ICONHEIGHT
+                i +=1
+                rgb = (R << 11) | (G << 5) | B
+                html_string += rgb565_svg(x,y,R,G,B)
+                data[pos] = rgb >> 8
+                pos += 1
+                data[pos] = rgb & 255
+                pos += 1
+            html_string += SVG_END
         html_string += f"</DIV>"
        
         rhs = [HexInt(x) for x in data]

@@ -317,10 +317,6 @@ ehmtx:
       id: wani
     - url: https://developer.lametric.com/content/apps/icon_thumbs/66
       id: wsta
-    - id: aani
-      awtrixid: 1896
-    - id: asta
-      awtrixid: 1888
     - id: xani
       lameid: 6075
     - id: xsta
