@@ -636,7 +636,8 @@ sensor:
 There is a optional [notifier component](https://github.com/lubeda/EHMTX_custom_component) you can install with hacs. It is compareable to the **_screen** service but more streamlined.
 
 # breaking changes
-2022.6.1 removed image types only `rgb565` is valid!
+- 2022.6.1 removed image types only `rgb565` is valid!
+- 2023.2.0 removed atrix image support
 
 # Usage
 
