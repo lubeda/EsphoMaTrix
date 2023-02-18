@@ -1,15 +1,19 @@
 # EspHoMaTriX (ehmtx)
 A simple DIY status display, build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 
+
 # Introduction
 
 There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good d.i.y.-alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
+- [Ulanzi TC001](https://de.aliexpress.com/item/1005005008682055.html) commercial ~ 50€
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/)
 - [PixelIt](https://docs.bastelbunker.de/pixelit/)
 
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant. Targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration! 
+
+There is a little hype around the **Ulanzi TC001** for streamer. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C as starting Point you can use the ``UlanziTC001.yaml``. Yet the LDR and battery sensor are not perfectly supported.
 
 See this german tutorial video with all informations on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A)
 
