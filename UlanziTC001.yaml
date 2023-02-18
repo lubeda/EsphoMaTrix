@@ -2,6 +2,16 @@ substitutions:
   devicename: ulanzi
   ledpin: GPIO32 
   buzzerpin: GPIO15
+  # Pin definition from https://github.com/aptonline/PixelIt_Ulanzi 
+  batt_pin: GPIO36 
+  ldr_pin: GPIO35 
+  matrix_pin: GPIO32 
+  left_button_pin: GPIO26 
+  mid_button_pin: GPIO27 
+  right_button_pin: GPIO14 
+  buzzer_pin: GPIO15 
+  scl_pin: GPIO22 
+  sda_pin: GPIO21 
 
 external_components:
   - source:
