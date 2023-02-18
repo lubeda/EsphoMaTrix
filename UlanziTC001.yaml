@@ -26,15 +26,21 @@ binary_sensor:
   - platform: status
     name: "$devicename Status"
   - platform: gpio
-    pin: 26
-    id: left
-  # middle button isnt working
+    pin:
+      number: $left_button_pin
+      inverted: true
+    name: "$devicename left button"
   - platform: gpio
-    pin: 27
-    id: middle
+    pin: 
+      inverted: true
+      number: $mid_button_pin
+      mode: INPUT_PULLUP
+    name: "$devicename middle button"
   - platform: gpio
-    pin: 14
-    id: right  
+    pin: 
+      number: $right_button_pin
+      inverted: true
+    name: "$devicename right button"
 
 logger:
   level: INFO
