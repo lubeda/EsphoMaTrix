@@ -31,6 +31,7 @@ esp32:
   board: esp32dev
 
 font: 
+  # adapt the filename to your local settings
   - file: monobit.ttf
     id: ehmtx_font
     size: 16
@@ -250,4 +251,8 @@ ehmtx:
   time: ehmtx_time
   duration: 7
   font_id: ehmtx_font
-  icons: !include ehmtx_icons.yaml
+  icons: 
+    - id: ha
+      url: https://github.com/home-assistant/assets/raw/master/logo/logo-small.png
+    - id: adguard
+      url: https://github.com/walkxcode/dashboard-icons/blob/529fd23b82927773e54b0197cfa3c8f78864b701/png/adguard-home.png?raw=true
