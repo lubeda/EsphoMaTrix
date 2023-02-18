@@ -30,7 +30,12 @@ esphome:
 esp32:
   board: esp32dev
 
-font: !include ehmtx_font.yaml
+font: 
+  - file: monobit.ttf
+    id: ehmtx_font
+    size: 16
+    glyphs:  |
+      !?"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnÖÄÜöäüopqrstuvwxyz€@<>/
 
 binary_sensor:
   - platform: status
