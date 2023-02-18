@@ -647,8 +647,6 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 # Thanks
 
-**[jd1](https://github.com/jd1)** for his contributions
-
-**[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
-
-**[ofirsnb](https://github.com/ofirsnb)** for his contributions
+- **[jd1](https://github.com/jd1)** for his contributions
+- **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
+- **[ofirsnb](https://github.com/ofirsnb)** for his contributions
