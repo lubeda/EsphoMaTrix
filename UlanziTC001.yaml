@@ -164,16 +164,16 @@ sensor:
       name: "$devicename Relative Humidity"
     update_interval: 60s
   - platform: adc
-    pin: 36
+    pin: $batt_pin
     # not really working
     name: "$devicename Battery"
     update_interval: 60s
-
   - platform: adc
     id: source_sensor
     # not really working
     name: "$devicename LDR"
-    pin: A7
+    pin: $ldr_pin
+    update_interval: 10s
 
 ota:
   password: !secret ota_password
