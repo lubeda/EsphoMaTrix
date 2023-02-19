@@ -37,6 +37,57 @@ The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx826
 
 # Installation
 
+## Matrix Types
+There are some different matrices-tapes on the market, to adapt them to **EspHoMaTriX** you have to find the proper pixelmapper. Here are the most common types for flexible 8x32 matrices:
+
+### Type 1 
+
+under the display tag specify this pixelmapper:
+
+```yaml
+display:
+  - platform: addressable_light
+    .....
+    pixel_mapper: |-
+      if (x % 2 == 0) {
+        return (x * 8) + y;
+      }
+      return (x * 8) + (7 - y);
+    .....
+```
+
+### Type 1 
+
+under the display tag specify this pixelmapper:
+
+```yaml
+display:
+  - platform: addressable_light
+    .....
+    pixel_mapper: |-
+      if (x % 2 == 0) {
+        return (x * 8) + y;
+      }
+      return (x * 8) + (7 - y);
+    .....
+```
+
+### Type 2 (e.g. Ulanzi TC001)
+
+Under the display tag specify this pixelmapper:
+
+```yaml
+display:
+  - platform: addressable_light
+    .....
+    pixel_mapper: |-
+      if (y % 2 == 0) {
+        return (y * 32) + x;
+      }
+      return (y * 32) + (31 - x);
+    .....
+```
+
 ## Font
 Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright i can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. 
 
