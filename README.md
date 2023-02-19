@@ -13,7 +13,7 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant. Targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration! 
 
-There is a little hype around the **Ulanzi TC001** for streamer. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C as starting Point you can use the ``UlanziTC001.yaml``. Yet the LDR and battery sensor are not perfectly supported.
+There is a little hype around the **Ulanzi TC001** for streamer. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C as starting Point you can use the ``UlanziTC001.yaml``. Yet the LDR and battery sensor are not perfectly supported. For another use of the hardware as see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi).
 
 See this german tutorial video with all informations on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A)
 
@@ -699,4 +699,5 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
+- **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
