@@ -194,7 +194,7 @@ namespace esphome
       {
         this->show_screen = false;
         
-        if (!(ts - this->last_clock_time > 60)) // force clock if last time more the 60s old
+        if (!(ts - this->last_clock_time > this->clock_interval)) // force clock if last time more the 60s old
         {
           bool has_next_screen = this->store->move_next();
           if (has_next_screen)

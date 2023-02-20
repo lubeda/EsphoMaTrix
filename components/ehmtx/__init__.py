@@ -43,6 +43,7 @@ NextScreenTrigger = ehmtx_ns.class_(
 )
 
 CONF_SHOWCLOCK = "show_clock"
+CONF_CLOCKINTERVAL = "clock_interval"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
@@ -75,6 +76,9 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_FONT_ID): cv.use_id(font),
     cv.Optional(
         CONF_SHOWCLOCK, default="5"
+    ): cv.templatable(cv.positive_int),
+    cv.Optional(
+        CONF_CLOCK_INTERVAL, default="60"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
         CONF_SELECT, 
@@ -516,6 +520,7 @@ async def to_code(config):
             print("Error writing HTML file")    
     
     cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
+    cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
     cg.add(var.set_duration(config[CONF_DURATION]))

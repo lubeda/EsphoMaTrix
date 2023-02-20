@@ -64,6 +64,7 @@ namespace esphome
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
+    uint16_t clock_interval;       // seconds display of screen_time - clock_time = date_time
     uint16_t screen_time;      // seconds display of screen
     uint8_t icon_count;        // max iconnumber -1
     unsigned long last_scroll_time;
@@ -80,6 +81,7 @@ namespace esphome
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
     void set_clock_time(uint16_t t);
+    void set_clock_intervall(uint16_t t);
     void set_show_day_of_week(bool b);
     void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
