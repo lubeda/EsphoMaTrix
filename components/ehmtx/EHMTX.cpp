@@ -373,6 +373,11 @@ namespace esphome
     this->clock_time = t;
   }
 
+void EHMTX::set_clock_interval(uint16_t t)
+  {
+    this->clock_interval = t;
+  }
+
   void EHMTX::set_display(addressable_light::AddressableLightDisplay *disp)
   {
     this->display = disp;
