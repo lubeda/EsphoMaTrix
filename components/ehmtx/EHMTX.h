@@ -157,6 +157,7 @@ namespace esphome
     void draw();
     void draw_();
     bool isfree();
+    void reset_shiftx();
     bool update_slot(uint8_t _icon);
     void update_screen();
     bool del_slot(uint8_t _icon);
