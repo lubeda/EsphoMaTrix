@@ -231,7 +231,7 @@ _Configuration variables:_
 
 **show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
 
-**clock_interval (Optional, seconds):** show the clock at least each x seconds
+**clock_interval (Optional, seconds):** show the clock at least each x seconds, (default=60)
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
