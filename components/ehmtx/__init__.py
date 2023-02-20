@@ -43,7 +43,7 @@ NextScreenTrigger = ehmtx_ns.class_(
 )
 
 CONF_SHOWCLOCK = "show_clock"
-CONF_CLOCKINTERVAL = "clock_interval"
+CONF_CLOCK_INTERVAL = "clock_interval"
 CONF_SHOWSCREEN = "show_screen"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
