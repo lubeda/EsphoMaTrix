@@ -101,7 +101,8 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
+Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. But this doesn't work well for gif's!
+You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 
 ```
 emhtx:
