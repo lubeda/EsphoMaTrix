@@ -3,7 +3,7 @@ substitutions:
   ledpin: GPIO32 
   buzzerpin: GPIO15
   # Pin definition from https://github.com/aptonline/PixelIt_Ulanzi 
-  batt_pin: GPIO36 
+  batt_pin: GPIO34
   ldr_pin: GPIO35 
   matrix_pin: GPIO32 
   left_button_pin: GPIO26 
