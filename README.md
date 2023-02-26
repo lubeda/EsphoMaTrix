@@ -555,6 +555,28 @@ Service **indicator_off**
 
 removes the indicator
 
+Service **display_on** / **display_off**
+
+turns the display on or off
+
+There's an easier way in using a switch component:
+
+```
+switch:
+  - platform: template
+    name: "$devicename Display"
+    icon: "mdi:power"
+    restore_mode: ALWAYS_ON
+    lambda: |-
+      return id(rgb8x32)->show_display;
+    turn_on_action:
+      lambda: |-
+        id(rgb8x32)->set_display_on();
+    turn_off_action:
+      lambda: |-
+        id(rgb8x32)->set_display_off();
+```
+
 Service **skip**
 
 skips to the next screen
@@ -622,6 +644,24 @@ number:
     set_action:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
+```
+
+#### display switch
+
+```
+switch:
+  - platform: template
+    name: "$devicename Display"
+    icon: "mdi:power"
+    restore_mode: ALWAYS_ON
+    lambda: |-
+      return id(rgb8x32)->show_display;
+    turn_on_action:
+      lambda: |-
+        id(rgb8x32)->set_display_on();
+    turn_off_action:
+      lambda: |-
+        id(rgb8x32)->set_display_off();
 ```
 
 #### force screen

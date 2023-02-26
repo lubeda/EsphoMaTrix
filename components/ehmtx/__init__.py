@@ -405,6 +405,39 @@ async def ehmtx_set_indicator_off_action_to_code(config, action_id, template_arg
 
     return var
 
+SetDisplayOnAction = ehmtx_ns.class_("SetDisplayOn", automation.Action)
+
+DISPLAY_ON_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+    }
+)
+
+@automation.register_action(
+    "ehmtx.display.on", SetDisplayOnAction, DISPLAY_ON_ACTION_SCHEMA
+)
+async def ehmtx_set_display_on_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+
+    return var
+
+SetDisplayOffAction = ehmtx_ns.class_("SetDisplayOff", automation.Action)
+
+DISPLAY_OFF_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_),
+    }
+)
+@automation.register_action(
+    "ehmtx.display.off", SetDisplayOffAction, DISPLAY_OFF_ACTION_SCHEMA
+)
+async def ehmtx_set_display_off_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+
+    return var
+
 CODEOWNERS = ["@lubeda"]
 
 async def to_code(config):
