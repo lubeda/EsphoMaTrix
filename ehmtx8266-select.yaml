@@ -108,6 +108,14 @@ api:
       then:
         - ehmtx.indicator.off:
             id: rgb8x32
+    - service: display_on
+      then:
+        - ehmtx.display.on:
+            id: rgb8x32
+    - service: display_off
+      then:
+        - ehmtx.display.off:
+            id: rgb8x32
 
 number:
   - platform: template
@@ -121,6 +129,20 @@ number:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
 
+switch:
+  - platform: template
+    name: "$devicename Display"
+    icon: "mdi:power"
+    restore_mode: ALWAYS_ON
+    lambda: |-
+      return id(rgb8x32)->show_display;
+    turn_on_action:
+      lambda: |-
+        id(rgb8x32)->set_display_on();
+    turn_off_action:
+      lambda: |-
+        id(rgb8x32)->set_display_off();
+        
 ota:
   password: !secret ota_password
 

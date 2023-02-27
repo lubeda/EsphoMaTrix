@@ -50,6 +50,7 @@ namespace esphome
     EHMTX_Icon *icons[MAXICONS];
     EHMTX_screen *icon_screen;
     void add_icon(EHMTX_Icon *icon);
+    bool show_display;
 #ifdef USE_EHMTX_SELECT
     std::vector<std::string> select_options;
     esphome::EhmtxSelect *select;
@@ -114,6 +115,8 @@ namespace esphome
     void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
     void setup();
     void update();
+    void set_display_on();
+    void set_display_off();
   };
 
   class EHMTX_store
@@ -370,6 +373,36 @@ namespace esphome
     void play(Ts... x) override
     {
       this->parent_->set_indicator_off();
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+   template <typename... Ts>
+  class SetDisplayOn : public Action<Ts...>
+  {
+  public:
+    SetDisplayOn(EHMTX *parent) : parent_(parent) {}
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_display_on();
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+   template <typename... Ts>
+  class SetDisplayOff : public Action<Ts...>
+  {
+  public:
+    SetDisplayOff(EHMTX *parent) : parent_(parent) {}
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_display_off();
     }
 
   protected:

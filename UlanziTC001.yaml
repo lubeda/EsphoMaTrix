@@ -3,7 +3,7 @@ substitutions:
   ledpin: GPIO32 
   buzzerpin: GPIO15
   # Pin definition from https://github.com/aptonline/PixelIt_Ulanzi 
-  batt_pin: GPIO34
+  batt_pin: GPIO34 
   ldr_pin: GPIO35 
   matrix_pin: GPIO32 
   left_button_pin: GPIO26 
@@ -143,7 +143,15 @@ api:
       then:
         - ehmtx.indicator.off:
             id: rgb8x32
-
+    - service: display_on
+      then:
+        - ehmtx.display.on:
+            id: rgb8x32
+    - service: display_off
+      then:
+        - ehmtx.display.off:
+            id: rgb8x32
+            
 number:
   - platform: template
     name: "$devicename brightness"
@@ -155,6 +163,20 @@ number:
     set_action:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
+
+switch:
+  - platform: template
+    name: "$devicename Display"
+    icon: "mdi:power"
+    restore_mode: ALWAYS_ON
+    lambda: |-
+      return id(rgb8x32)->show_display;
+    turn_on_action:
+      lambda: |-
+        id(rgb8x32)->set_display_on();
+    turn_off_action:
+      lambda: |-
+        id(rgb8x32)->set_display_off();
 
 sensor:
   - platform: sht3xd

@@ -20,3 +20,4 @@ components/ehmtx/EHMTX_icons._cpp
 ehmtx8266-select.yaml
 svganimtest.html
 servicetest
+.DS_Store
