@@ -739,7 +739,7 @@ The integration works with the homeassistant api so, after boot of the device, i
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 # Thanks
-
+- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off)
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
