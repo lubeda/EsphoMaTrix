@@ -206,7 +206,7 @@ namespace esphome
       {
         this->show_screen = false;
         
-        if (!(ts - this->last_clock_time > 60)) // force clock if last time more the 60s old
+        if (!(ts - this->last_clock_time > this->clock_interval)) // force clock if last time more the 60s old
         {
           bool has_next_screen = this->store->move_next();
           if (has_next_screen)
@@ -391,6 +391,11 @@ namespace esphome
   void EHMTX::set_clock_time(uint16_t t)
   {
     this->clock_time = t;
+  }
+
+void EHMTX::set_clock_interval(uint16_t t)
+  {
+    this->clock_interval = t;
   }
 
   void EHMTX::set_display(addressable_light::AddressableLightDisplay *disp)

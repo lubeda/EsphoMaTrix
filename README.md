@@ -101,7 +101,8 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
+Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. But this doesn't work well for gif's!
+You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 
 ```
 emhtx:
@@ -230,6 +231,8 @@ _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
 **show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
+
+**clock_interval (Optional, seconds):** show the clock at least each x seconds, (default=60)
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
