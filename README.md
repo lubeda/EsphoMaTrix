@@ -101,7 +101,8 @@ font:
 ```
 
 ## icons/animations
-Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
+Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. But this doesn't work well for gif's!
+You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 
 ```
 emhtx:
@@ -230,6 +231,8 @@ _Configuration variables:_
 **id (Required, ID):** Manually specify the ID used for code generation and in service definitions.
 
 **show_clock (Optional, seconds):** duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
+
+**clock_interval (Optional, seconds):** show the clock at least each x seconds, (default=60)
 
 **show_screen (Optional, seconds):** duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
@@ -555,6 +558,28 @@ Service **indicator_off**
 
 removes the indicator
 
+Service **display_on** / **display_off**
+
+turns the display on or off
+
+There's an easier way in using a switch component:
+
+```
+switch:
+  - platform: template
+    name: "$devicename Display"
+    icon: "mdi:power"
+    restore_mode: ALWAYS_ON
+    lambda: |-
+      return id(rgb8x32)->show_display;
+    turn_on_action:
+      lambda: |-
+        id(rgb8x32)->set_display_on();
+    turn_off_action:
+      lambda: |-
+        id(rgb8x32)->set_display_off();
+```
+
 Service **skip**
 
 skips to the next screen
@@ -622,6 +647,24 @@ number:
     set_action:
       lambda: |-
         id(rgb8x32)->set_brightness(x);
+```
+
+#### display switch
+
+```
+switch:
+  - platform: template
+    name: "$devicename Display"
+    icon: "mdi:power"
+    restore_mode: ALWAYS_ON
+    lambda: |-
+      return id(rgb8x32)->show_display;
+    turn_on_action:
+      lambda: |-
+        id(rgb8x32)->set_display_on();
+    turn_off_action:
+      lambda: |-
+        id(rgb8x32)->set_display_off();
 ```
 
 #### force screen
@@ -696,7 +739,7 @@ The integration works with the homeassistant api so, after boot of the device, i
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 # Thanks
-
+- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off)
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware

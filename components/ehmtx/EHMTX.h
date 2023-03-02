@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.2.0";
+static const char *const EHMTX_VERSION = "Version: 2023.3.0";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -50,6 +50,7 @@ namespace esphome
     EHMTX_Icon *icons[MAXICONS];
     EHMTX_screen *icon_screen;
     void add_icon(EHMTX_Icon *icon);
+    bool show_display;
 #ifdef USE_EHMTX_SELECT
     std::vector<std::string> select_options;
     esphome::EhmtxSelect *select;
@@ -64,6 +65,7 @@ namespace esphome
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
+    uint16_t clock_interval;       // seconds display of screen_time - clock_time = date_time
     uint16_t screen_time;      // seconds display of screen
     uint8_t icon_count;        // max iconnumber -1
     unsigned long last_scroll_time;
@@ -80,6 +82,7 @@ namespace esphome
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
     void set_clock_time(uint16_t t);
+    void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
     void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
@@ -112,6 +115,8 @@ namespace esphome
     void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
     void setup();
     void update();
+    void set_display_on();
+    void set_display_off();
   };
 
   class EHMTX_store
@@ -155,6 +160,7 @@ namespace esphome
     void draw();
     void draw_();
     bool isfree();
+    void reset_shiftx();
     bool update_slot(uint8_t _icon);
     void update_screen();
     bool del_slot(uint8_t _icon);
@@ -367,6 +373,36 @@ namespace esphome
     void play(Ts... x) override
     {
       this->parent_->set_indicator_off();
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+   template <typename... Ts>
+  class SetDisplayOn : public Action<Ts...>
+  {
+  public:
+    SetDisplayOn(EHMTX *parent) : parent_(parent) {}
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_display_on();
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
+   template <typename... Ts>
+  class SetDisplayOff : public Action<Ts...>
+  {
+  public:
+    SetDisplayOff(EHMTX *parent) : parent_(parent) {}
+
+    void play(Ts... x) override
+    {
+      this->parent_->set_display_off();
     }
 
   protected:

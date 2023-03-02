@@ -23,6 +23,12 @@ namespace esphome
     return false;
   }
 
+ void EHMTX_screen::reset_shiftx()
+  {
+    this->shiftx_ = 0;
+  }
+
+
   void EHMTX_screen::update_screen()
   {
     if (millis() - this->config_->last_scroll_time >= this->config_->scroll_intervall && this->pixels_ > TEXTSTARTOFFSET)
