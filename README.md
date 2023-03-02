@@ -19,8 +19,6 @@ See this german tutorial video with all informations on setting up your display 
 
 ## State
 
-**First release!**
-
 It is a working solution with core functionality coded. Advanced features, like automatic brightness control can be done with esphome actions and automations. 
 
 See it in action [youtube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles)
@@ -39,22 +37,6 @@ The file ehmtx32.yaml uses the function ehmtx provides, the sample file ehmtx826
 
 ## Matrix Types
 There are some different matrices-tapes on the market, to adapt them to **EspHoMaTriX** you have to find the proper pixelmapper. Here are the most common types for flexible 8x32 matrices:
-
-### Type 1 
-
-under the display tag specify this pixelmapper:
-
-```yaml
-display:
-  - platform: addressable_light
-    .....
-    pixel_mapper: |-
-      if (x % 2 == 0) {
-        return (x * 8) + y;
-      }
-      return (x * 8) + (7 - y);
-    .....
-```
 
 ### Type 1 
 
