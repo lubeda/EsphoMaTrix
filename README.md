@@ -586,6 +586,9 @@ This service displays the running queue and a list of icons in the logs
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
 
+## display precision after home assistant 2023.3.0
+See [templating](https://www.home-assistant.io/docs/configuration/templating/#states) for possibilities to optimize the output e.g. {{ states(sensor.solarpower, rounded=True) }} kWh
+
 ### use in automations from homeassistant
 
 The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have an icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
