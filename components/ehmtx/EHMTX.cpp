@@ -181,7 +181,8 @@ namespace esphome
   void EHMTX::tick()
   {
     time_t ts = this->clock->now().timestamp;
-    
+    bool has_next_screen = false;
+
     if (ts > this->next_action_time)
     {
       if (this->show_icons)
@@ -204,16 +205,23 @@ namespace esphome
       }
       else
       {
-        this->show_screen = false;
-        
-        if (!(ts - this->last_clock_time > this->clock_interval)) // force clock if last time more the 60s old
-        {
-          bool has_next_screen = this->store->move_next();
-          if (has_next_screen)
+        if (this->clock_time == 0) {
+          has_next_screen = this->store->move_next();
+          this->show_screen = true;  
+        }
+        else {
+          this->show_screen = false;
+          
+          if (!(ts - this->last_clock_time > 60)) // force clock if last time more the 60s old
           {
-            this->show_screen = true;
+            has_next_screen = this->store->move_next();
+            if (has_next_screen)
+            {
+              this->show_screen = true;
+            }
           }
         }
+
         if (this->show_screen == false)
         {
           ESP_LOGD(TAG, "next action: show clock/date for %d/%d sec",this->clock_time, this->screen_time-this->clock_time);
@@ -222,11 +230,17 @@ namespace esphome
         }
         else
         {
-          ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str() ,this->store->current()->display_duration);
-          this->next_action_time = ts + this->store->current()->display_duration;
-          for (auto *t : on_next_screen_triggers_)
-          {
-            t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
+          if (has_next_screen) {
+            ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str() ,this->store->current()->display_duration);
+            this->next_action_time = ts + this->store->current()->display_duration;
+            for (auto *t : on_next_screen_triggers_)
+            {
+              t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
+            }
+          }
+          else {
+            ESP_LOGD(TAG, "nothing to show");
+            this->next_action_time = ts + this->screen_time;
           }
         }
       }
