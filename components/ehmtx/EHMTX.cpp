@@ -85,6 +85,15 @@ namespace esphome
     ESP_LOGD(TAG, "text color r: %d g: %d b: %d", r, g, b);
   }
 
+  bool EHMTX::string_has_ending(std::string const &fullString, std::string const &ending) 
+  {
+      if (fullString.length() >= ending.length()) {
+          return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+      } else {
+          return false;
+      }
+  }
+
   uint8_t EHMTX::find_icon(std::string name)
   {
     for (uint8_t i = 0; i < this->icon_count; i++)
@@ -300,8 +309,25 @@ namespace esphome
 
   void EHMTX::del_screen(std::string iname)
   {
-    uint8_t icon = this->find_icon(iname.c_str());
-    this->store->delete_screen(icon);
+    // if has ending of *
+    if (this->string_has_ending(iname, "*")) {
+      // remove the *
+      std::string comparename = iname.substr(0, iname.length()-1);
+
+      // iterate through the icons, comparing start only
+      for (uint8_t i = 0; i < this->icon_count; i++)
+      {
+        std::string iconname = this->icons[i]->name.c_str();
+        if (iconname.rfind(comparename, 0) == 0)
+        {
+          this->store->delete_screen(i);
+        }
+      }
+    }
+    else {
+      uint8_t icon = this->find_icon(iname.c_str());
+      this->store->delete_screen(icon);
+    }
   }
 
   void EHMTX::add_screen(std::string iconname, std::string text, uint16_t duration, bool alarm)
