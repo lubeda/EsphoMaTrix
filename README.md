@@ -611,6 +611,12 @@ mode: queued
 max: 10
 ```
 
+### display precision after home assistant 2023.3.0
+
+See [templating](https://www.home-assistant.io/docs/configuration/templating/#states) for possibilities to optimize the output
+e.g.
+```{{ states(sensor.solarpower, rounded=True) }} kWh```
+
 ### integrate in home assistant ui
 
 you can add some entities to home assistant to your ui for interactive control of your display
