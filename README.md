@@ -7,8 +7,8 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Ulanzi TC001](https://de.aliexpress.com/item/1005005008682055.html) commercial ~ 50€
-- [Awtrix](https://awtrixdocs.blueforcer.de/#/)
-- [PixelIt](https://docs.bastelbunker.de/pixelit/)
+- [Awtrix](https://awtrixdocs.blueforcer.de/#/) (project has been discontinued after more than 4 years now in August 2022)
+- [PixelIt](https://docs.bastelbunker.de/pixelit/) (project is under active development)
 
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant. Targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration! 
 
