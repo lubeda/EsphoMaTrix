@@ -316,7 +316,7 @@ namespace esphome
 
       // iterate through the icons, comparing start only
       for (uint8_t i = 0; i < this->icon_count; i++)
-      {`
+      {
         std::string iconname = this->icons[i]->name.c_str();
         if (iconname.rfind(comparename, 0) == 0)
         {
