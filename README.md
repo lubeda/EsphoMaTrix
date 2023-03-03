@@ -524,8 +524,12 @@ Service **del_screen**
 
 Removes a screen from the display by icon name. If this screen is actually display while sending this command the screen will be displayed until its "show_screen"-time has ended.
 
+Optionally you can suffix a * to the icon name to perform a wildcard delete which will delete all screens beginning with the icon_name specified.
+
+For example if you have multiple icons named weather_sunny, weather_rain & weather_cloudy, you can issue a del_screen weather_* to remove whichever screen is currently in a slot and replace it with a new weather screen.
+
 parameters:
-- ```icon_name``` The name of the icons as in the yaml (see installation)
+- ```icon_name``` The name of the icon as in the yaml (see installation)
 
 Service **indicator_on**
 

@@ -61,6 +61,7 @@ namespace esphome
     display::Font *font;
     int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
+    bool string_has_ending(std::string const &fullString, std::string const &ending);
     uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
