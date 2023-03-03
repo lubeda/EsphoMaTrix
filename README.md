@@ -1,7 +1,6 @@
 # EspHoMaTriX (ehmtx)
 A simple DIY status display, build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 
-
 # Introduction
 
 There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good d.i.y.-alternatives. 
@@ -730,3 +729,5 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
+
+# Special thanks to all sponsor's
