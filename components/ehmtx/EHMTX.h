@@ -3,7 +3,7 @@
 #include "esphome.h"
 
 const uint8_t MAXQUEUE = 24;
-const uint8_t MAXICONS = 64;
+const uint8_t MAXICONS = 75;
 const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
