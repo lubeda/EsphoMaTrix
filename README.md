@@ -617,6 +617,12 @@ mode: queued
 max: 10
 ```
 
+### display precision after home assistant 2023.3.0
+
+See [templating](https://www.home-assistant.io/docs/configuration/templating/#states) for possibilities to optimize the output
+e.g.
+```{{ states(sensor.solarpower, rounded=True) }} kWh```
+
 ### specific icons per e.g. weather condition
 
 Add an icon per weathercondition to the ehmtx component
