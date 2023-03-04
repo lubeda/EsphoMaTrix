@@ -655,6 +655,40 @@ action:
       text: >-
         {{ states("sensor.external_actual_temperature") }}°C
 ```
+or another sample automation for the trashcan type
+
+```
+alias: "EHMTX Müllanzeige"
+description: Anzeige welche Tonne raus muss. iconnamen gekürzt
+trigger:
+  - platform: time
+    at:
+      - "06:30"
+      - "08:30"
+      - "10:30"
+      - "15:00"
+      - "17:00"
+      - "19:00"
+condition:
+  - condition: numeric_state
+    entity_id: sensor.mulltrigger
+    below: "3"
+action:
+  - service: esphome.ulanzi_del_screen
+    data:
+      icon_name: trash_*
+  - data:
+      icon_name: >-
+        trash_{{ states("sensor.mulldetails") | replace("Biotonne",   "brow")|
+        replace("Papiertonne","blue")| replace("Restmüll",   "grey")|
+        replace("gelbe Tonne","yell|") | truncate(4,true,"")  }}     
+      text: >-
+        {{ states("sensor.mulldetails")|replace(" in","")|replace(" days","
+        Tagen") | replace ("0 Tagen","heute") | replace ("1 Tagen","morgen")}}
+      duration: 120
+    service: esphome.ulanzi_screen
+mode: single
+```
 
 Prerequisites: This works since 2023.3.1 thanx to @andrew-codechimp fpr the new del_screen
 
