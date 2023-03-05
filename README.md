@@ -827,7 +827,7 @@ The integration works with the Home Assistant api so, after boot of the device, 
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 ## Thanks
-
+- **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md)
 - **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*")
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
