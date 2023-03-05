@@ -4,6 +4,7 @@
 
 const uint8_t MAXQUEUE = 24;
 const uint8_t MAXICONS = 80;
+const uint8_t HOLDTIME = 20;
 const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 

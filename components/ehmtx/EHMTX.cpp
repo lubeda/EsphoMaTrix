@@ -260,7 +260,8 @@ namespace esphome
 
   void EHMTX::hold_screen()
   {
-    this->store->hold_current(10);
+    this->next_action_time+=HOLDTIME;
+    this->store->hold_current(HOLDTIME);
   }
   
   void EHMTX::get_status()

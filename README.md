@@ -565,7 +565,7 @@ switch:
         id(rgb8x32)->set_display_off();
 ```
 
-Service **skip**
+Service **skip_screen**
 
 if there are more than on screens in the queue this skips to the next screen.
 
@@ -581,6 +581,24 @@ binary_sensor:
       lambda:
         id(rgb8x32)->skip_screen();
 ```
+
+Service **hold_screen**
+
+displays the current screen for 20 seconds longer.
+
+e.g. on the Ulanzi TC001
+
+```
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $right_button_pin
+      inverted: true
+    on_press:
+      lambda:
+        id(rgb8x32)->hold_screen();
+```
+
 
 Service **status**
 

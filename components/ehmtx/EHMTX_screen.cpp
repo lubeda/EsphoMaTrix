@@ -115,6 +115,7 @@ namespace esphome
   void EHMTX_screen::hold_slot(uint8_t _sec)
   {
     this->endtime += _sec; 
+    ESP_LOGD(TAG, "hold for %d secs", _sec);
   }
 
   void EHMTX_screen::set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et)
