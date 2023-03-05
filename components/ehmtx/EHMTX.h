@@ -3,12 +3,12 @@
 #include "esphome.h"
 
 const uint8_t MAXQUEUE = 24;
-const uint8_t MAXICONS = 64;
+const uint8_t MAXICONS = 80;
 const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.0";
+static const char *const EHMTX_VERSION = "Version: 2023.3.1";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -61,6 +61,7 @@ namespace esphome
     display::Font *font;
     int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
+    bool string_has_ending(std::string const &fullString, std::string const &ending);
     uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()

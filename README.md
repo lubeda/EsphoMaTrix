@@ -1,15 +1,14 @@
 # EspHoMaTriX (ehmtx)
 A simple DIY status display, build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 
-
 # Introduction
 
 There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good d.i.y.-alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Ulanzi TC001](https://de.aliexpress.com/item/1005005008682055.html) commercial ~ 50€
-- [Awtrix](https://awtrixdocs.blueforcer.de/#/)
-- [PixelIt](https://docs.bastelbunker.de/pixelit/)
+- [Awtrix](https://awtrixdocs.blueforcer.de/#/) (project has been discontinued after more than 4 years now in August 2022)
+- [PixelIt](https://docs.bastelbunker.de/pixelit/) (project is under active development)
 
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (after my opinion) that i started an esphome.io variant. Targeted to an optimized homeassistant integration. The main reason, for me is the homeassistant integration! 
 
@@ -85,7 +84,7 @@ font:
 ## icons/animations
 Download and install all needed icons (.jpg/.png)/animations (.gif) under the "ehmtx"-key. All icons are automagically scaled to 8x8 on compile-time. But this doesn't work well for gif's!
 You can also specify an url to directly download an image file. The urls will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
-
+There are maximun 80 icons possible.
 ```
 emhtx:
   icons: 
@@ -524,8 +523,12 @@ Service **del_screen**
 
 Removes a screen from the display by icon name. If this screen is actually display while sending this command the screen will be displayed until its "show_screen"-time has ended.
 
+Optionally you can suffix a * to the icon name to perform a wildcard delete which will delete all screens beginning with the icon_name specified.
+
+For example if you have multiple icons named weather_sunny, weather_rain & weather_cloudy, you can issue a del_screen weather_* to remove whichever screen is currently in a slot and replace it with a new weather screen.
+
 parameters:
-- ```icon_name``` The name of the icons as in the yaml (see installation)
+- ```icon_name``` The name of the icon as in the yaml (see installation)
 
 Service **indicator_on**
 
@@ -564,7 +567,20 @@ switch:
 
 Service **skip**
 
-skips to the next screen
+if there are more than on screens in the queue this skips to the next screen.
+
+e.g. on the Ulanzi TC001
+
+```
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $left_button_pin
+      inverted: true
+    on_press:
+      lambda:
+        id(rgb8x32)->skip_screen();
+```
 
 Service **status**
 
@@ -582,6 +598,9 @@ This service displays the running queue and a list of icons in the logs
 [13:10:10][I][EHMTX:186]: status icon: 3 name: wind
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
+
+## display precision after home assistant 2023.3.0
+See [templating](https://www.home-assistant.io/docs/configuration/templating/#states) for possibilities to optimize the output e.g. {{ states(sensor.solarpower, rounded=True) }} kWh
 
 ### use in automations from homeassistant
 
@@ -610,6 +629,82 @@ action:
 mode: queued
 max: 10
 ```
+
+### display precision after home assistant 2023.3.0
+
+See [templating](https://www.home-assistant.io/docs/configuration/templating/#states) for possibilities to optimize the output
+e.g.
+```{{ states(sensor.solarpower, rounded=True) }} kWh```
+
+### specific icons per e.g. weather condition
+
+Add an icon per weathercondition to the ehmtx component
+
+```
+  - id: weather_clear_night
+      lameid: 52163
+    - id: weather_cloudy
+      lameid: 25991
+    - id: weather_fog
+      lameid: 52167
+    ......
+```
+
+Sample automation to show the weather with local temperature
+
+```
+alias: EHMTX weather
+description: weather with icon per condition
+trigger:
+  - platform: state
+    entity_id: weather.metno
+action:
+  - service: esphome.ulanzi_del_screen
+    data:
+      icon_name: weather_*
+  - service: esphome.ulanzi_screen
+    data:
+      icon_name: weather_{{ trigger.to_state.state }}
+      text: >-
+        {{ states("sensor.external_actual_temperature") }}°C
+```
+or another sample automation for the trashcan type
+
+```
+alias: "EHMTX Müllanzeige"
+description: Anzeige welche Tonne raus muss. iconnamen gekürzt
+trigger:
+  - platform: time
+    at:
+      - "06:30"
+      - "08:30"
+      - "10:30"
+      - "15:00"
+      - "17:00"
+      - "19:00"
+condition:
+  - condition: numeric_state
+    entity_id: sensor.mulltrigger
+    below: "3"
+action:
+  - service: esphome.ulanzi_del_screen
+    data:
+      icon_name: trash_*
+  - data:
+      icon_name: >-
+        trash_{{ states("sensor.mulldetails") | replace("Biotonne",   "brow")|
+        replace("Papiertonne","blue")| replace("Restmüll",   "grey")|
+        replace("gelbe Tonne","yell|") | truncate(4,true,"")  }}     
+      text: >-
+        {{ states("sensor.mulldetails")|replace(" in","")|replace(" days","
+        Tagen") | replace ("0 Tagen","heute") | replace ("1 Tagen","morgen")}}
+      duration: 120
+    service: esphome.ulanzi_screen
+mode: single
+```
+
+Prerequisites: This works since 2023.3.1 thanx to @andrew-codechimp fpr the new del_screen
+
 
 ### integrate in home assistant ui
 
@@ -721,8 +816,10 @@ The integration works with the homeassistant api so, after boot of the device, i
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 # Thanks
-- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off)
+- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*")
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
+
+# Special thanks to all sponsor's
