@@ -252,6 +252,11 @@ namespace esphome
     this->duration = t;
   }
 
+  void EHMTX::skip_screen()
+  {
+    this->store->move_next();
+  }
+
   void EHMTX::get_status()
   {
     time_t ts = this->clock->now().timestamp;
