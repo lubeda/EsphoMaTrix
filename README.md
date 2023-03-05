@@ -705,6 +705,7 @@ mode: single
 
 Prerequisites: This works since 2023.3.1 thanx to @andrew-codechimp fpr the new del_screen
 
+
 ### integrate in home assistant ui
 
 you can add some entities to home assistant to your ui for interactive control of your display
