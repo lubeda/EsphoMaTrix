@@ -567,7 +567,20 @@ switch:
 
 Service **skip**
 
-skips to the next screen
+if there are more than on screens in the queue this skips to the next screen.
+
+e.g. on the Ulanzi TC001
+
+```
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $left_button_pin
+      inverted: true
+    on_press:
+      lambda:
+        id(rgb8x32)->skip_screen();
+```
 
 Service **status**
 
