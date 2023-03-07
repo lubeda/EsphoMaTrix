@@ -17,6 +17,8 @@ There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be
 
 See this German tutorial video with information on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A)
 
+See this nice article about EsphoMaTrix on a Ulanzi TC001 from blakadder [Link](https://blakadder.com/esphome-pixel-clock/)
+
 ### State
 
 It is a working solution with core functionality coded. Advanced features, like automatic brightness control can be done with esphome actions and automations.
@@ -69,7 +71,8 @@ display:
 ```
 
 ### Font
-Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display.
+Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/)
+
 
 ```yaml
 font:
@@ -827,7 +830,7 @@ The integration works with the Home Assistant api so, after boot of the device, 
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 ## Thanks
-- **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md)
+- **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md,fixed sample)
 - **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*")
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
