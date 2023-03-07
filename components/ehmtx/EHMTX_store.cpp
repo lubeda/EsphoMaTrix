@@ -115,6 +115,11 @@ namespace esphome
         return this->slots[this->active_slot];
     }
 
+    void EHMTX_store::hold_current(uint _sec)
+    {
+        this->slots[this->active_slot]->hold_slot(_sec);
+    }
+
     uint8_t EHMTX_store::count_active_screens()
     {
         uint8_t count = 0;
