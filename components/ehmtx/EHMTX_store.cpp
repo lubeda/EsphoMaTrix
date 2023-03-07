@@ -48,6 +48,7 @@ namespace esphome
         if (icon_id < MAXICONS)
         {
             this->force_screen = icon_id;
+            this->move_next();
         }
     }
 
