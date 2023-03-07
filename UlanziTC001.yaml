@@ -31,7 +31,7 @@ esp32:
 font: 
   # adapt the filename to your local settings
   # public domain font https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993
-  - file: DMDsmall.ttf
+  - file: DMDSmall.ttf
     id: ehmtx_font
     size: 16
     glyphs:  |
