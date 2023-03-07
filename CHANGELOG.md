@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023.3.3
+
+fixed: force_screen skips imediatly to the selected screen
+
+
 ## 2023.3.2
 
 added: hold_screen for 20 additional seconds
