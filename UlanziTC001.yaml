@@ -1,9 +1,7 @@
 substitutions:
   devicename: ulanzi
-  ledpin: GPIO32 
-  buzzerpin: GPIO15
   # Pin definition from https://github.com/aptonline/PixelIt_Ulanzi 
-  batt_pin: GPIO34 
+  battery_pin: GPIO34 
   ldr_pin: GPIO35 
   matrix_pin: GPIO32 
   left_button_pin: GPIO26 
@@ -21,7 +19,7 @@ external_components:
     components: [ ehmtx ]   
 
 esphome:
-  comment: "Ulanzi Work in Progress"
+  comment: "Ulanzi TC001 Pixel Clock"
   name: $devicename 
   on_boot:
     then:
@@ -32,7 +30,8 @@ esp32:
 
 font: 
   # adapt the filename to your local settings
-  - file: monobit.ttf
+  # public domain font https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993
+  - file: DMDSmall.ttf
     id: ehmtx_font
     size: 16
     glyphs:  |
@@ -186,16 +185,33 @@ sensor:
       name: "$devicename Relative Humidity"
     update_interval: 60s
   - platform: adc
-    pin: $batt_pin
-    # not really working
+    pin: $battery_pin
     name: "$devicename Battery"
-    update_interval: 60s
+    id: battery_voltage
+    update_interval: 10s
+    device_class: battery
+    accuracy_decimals: 0
+    attenuation: auto
+    filters:
+      - sliding_window_moving_average:
+          window_size: 15
+          send_every: 15
+          send_first_at: 1
+      - multiply: 1.6
+      - lambda: |-
+          return ((x - 3) / 0.69 * 100.00);
+    unit_of_measurement: '%'
   - platform: adc
-    id: source_sensor
-    # not really working
-    name: "$devicename LDR"
+    id: light_sensor
+    name: "$devicename Illuminance"
     pin: $ldr_pin
     update_interval: 10s
+    attenuation: auto
+    unit_of_measurement: lx
+    accuracy_decimals: 0
+    filters:
+      - lambda: |-
+          return (x / 10000.0) * 2000000.0 - 15 ;
 
 ota:
   password: !secret ota_password
