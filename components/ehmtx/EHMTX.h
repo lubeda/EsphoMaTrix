@@ -51,6 +51,7 @@ namespace esphome
     EHMTX_screen *icon_screen;
     void add_icon(EHMTX_Icon *icon);
     bool show_display;
+    bool has_active_screen;
 #ifdef USE_EHMTX_SELECT
     std::vector<std::string> select_options;
     esphome::EhmtxSelect *select;

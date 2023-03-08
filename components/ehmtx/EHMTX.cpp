@@ -190,7 +190,6 @@ namespace esphome
   void EHMTX::tick()
   {
     time_t ts = this->clock->now().timestamp;
-    bool has_next_screen = false;
 
     if (ts > this->next_action_time)
     {
@@ -215,16 +214,16 @@ namespace esphome
       else
       {
         if (this->clock_time == 0) {
-          has_next_screen = this->store->move_next();
+          this->has_active_screen = this->store->move_next();
           this->show_screen = true;  
         }
         else {
           this->show_screen = false;
           
-          if (!(ts - this->last_clock_time > 60)) // force clock if last time more the 60s old
+          if (!(ts - this->last_clock_time > this->clock_interval)) // force clock if last time more the 60s old
           {
-            has_next_screen = this->store->move_next();
-            if (has_next_screen)
+            this->has_active_screen = this->store->move_next();
+            if (this->has_active_screen)
             {
               this->show_screen = true;
             }
@@ -239,7 +238,7 @@ namespace esphome
         }
         else
         {
-          if (has_next_screen) {
+          if (this->has_active_screen) {
             ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str() ,this->store->current()->display_duration);
             this->next_action_time = ts + this->store->current()->display_duration;
             for (auto *t : on_next_screen_triggers_)
@@ -248,8 +247,8 @@ namespace esphome
             }
           }
           else {
-            ESP_LOGD(TAG, "nothing to show");
-            this->next_action_time = ts + this->screen_time;
+            // Try again immediately, we don't have a screen so want to display it immediately when the first one is sent
+            this->next_action_time = ts;
           }
         }
       }
@@ -546,7 +545,10 @@ void EHMTX::set_clock_interval(uint16_t t)
       {
         if (this->show_screen)
         {
-          this->store->current()->draw();
+          if (this->has_active_screen)
+          {
+            this->store->current()->draw();
+          }
         }
         else
         {

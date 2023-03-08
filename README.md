@@ -219,7 +219,7 @@ _Configuration variables:_
 
 **id** (Required, ID): Manually specify the ID used for code generation and in service definitions.
 
-**show_clock** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
+**show_clock** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen! Setting show_clock to 0 will not show the clock or date. If there are no screens the display will be blank until the next screen is sent.
 
 **clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
 
