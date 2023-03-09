@@ -48,6 +48,7 @@ namespace esphome
         if (icon_id < MAXICONS)
         {
             this->force_screen = icon_id;
+            this->move_next();
         }
     }
 
@@ -113,6 +114,11 @@ namespace esphome
     EHMTX_screen *EHMTX_store::current()
     {
         return this->slots[this->active_slot];
+    }
+
+    void EHMTX_store::hold_current(uint _sec)
+    {
+        this->slots[this->active_slot]->hold_slot(_sec);
     }
 
     uint8_t EHMTX_store::count_active_screens()

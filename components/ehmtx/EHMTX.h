@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.1";
+static const char *const EHMTX_VERSION = "Version: 2023.3.3";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -66,6 +66,7 @@ namespace esphome
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
+    uint16_t hold_time;       // seconds display of screen_time to extend 
     uint16_t clock_interval;       // seconds display of screen_time - clock_time = date_time
     uint16_t screen_time;      // seconds display of screen
     uint8_t icon_count;        // max iconnumber -1
@@ -79,10 +80,12 @@ namespace esphome
     void draw();
     void get_status();
     void skip_screen();
+    void hold_screen();
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
     void set_clock_time(uint16_t t);
+    void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
     void set_show_date(bool b);
@@ -135,6 +138,7 @@ namespace esphome
     EHMTX_screen *find_free_screen(uint8_t icon);
     void delete_screen(uint8_t icon);
     bool move_next();
+    void hold_current(uint _sec);
     EHMTX_screen *current();
     void log_status();
   };
@@ -165,6 +169,7 @@ namespace esphome
     bool update_slot(uint8_t _icon);
     void update_screen();
     bool del_slot(uint8_t _icon);
+    void hold_slot(uint8_t _sec);
     void set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et);
   };
 

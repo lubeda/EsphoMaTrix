@@ -17,6 +17,7 @@ namespace esphome
     this->gauge_value = 0;
     this->icon_count = 0;
     this->last_clock_time = 0;
+    this->show_icons = false;
 
 #ifdef USE_EHMTX_SELECT
     this->select = NULL;
@@ -257,6 +258,12 @@ namespace esphome
     this->store->move_next();
   }
 
+  void EHMTX::hold_screen()
+  {
+    this->next_action_time+=this->hold_time;
+    this->store->hold_current(this->hold_time);
+  }
+  
   void EHMTX::get_status()
   {
     time_t ts = this->clock->now().timestamp;
@@ -424,7 +431,12 @@ namespace esphome
     this->clock_time = t;
   }
 
-void EHMTX::set_clock_interval(uint16_t t)
+  void EHMTX::set_hold_time(uint16_t t)
+  {
+    this->hold_time = t;
+  }
+
+  void EHMTX::set_clock_interval(uint16_t t)
   {
     this->clock_interval = t;
   }

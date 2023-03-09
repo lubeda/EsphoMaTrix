@@ -52,6 +52,7 @@ CONF_LAMEID = "lameid"
 CONF_ICONS = "icons"
 CONF_SHOWDOW = "dayofweek"
 CONF_SHOWDATE = "show_date"
+CONF_HOLD_TIME = "hold_time"
 CONF_DISPLAY = "display8x32"
 CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
@@ -107,6 +108,9 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
         CONF_XOFFSET, default="1"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
+    cv.Optional(
+        CONF_HOLD_TIME, default="2"
+    ): cv.templatable(cv.int_range(min=0, max=3600)),
     cv.Optional(CONF_SCROLLINTERVALL, default="80"
                 ): cv.templatable(cv.positive_int),
     cv.Optional(
@@ -563,6 +567,7 @@ async def to_code(config):
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))
     cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
+    cg.add(var.set_hold_time(config[CONF_HOLD_TIME]))
     cg.add(var.set_show_date(config[CONF_SHOWDATE]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
 
