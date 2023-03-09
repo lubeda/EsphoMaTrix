@@ -221,6 +221,31 @@ _Configuration variables:_
 
 **show_clock** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen! Setting `show_clock` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
 
+You can set this value during runtime e.g. for a night mode
+
+```
+# sample for ulanzi tc001
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $left_button_pin
+      inverted: true
+    on_press:
+      - logger.log: "Clock on"
+      - lambda:
+          id(rgb8x32)->set_show_clock(6);
+    name: "clock on"
+  - platform: gpio
+    pin: 
+      number: $right_button_pin
+      inverted: true
+    name: "Clock off"
+    on_press:
+      - logger.log: "clock off"
+      - lambda:
+          id(rgb8x32)->set_show_clock(0);
+```
+
 **clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
 
 **show_screen** (Optional, seconds): duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
@@ -851,7 +876,7 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 ## Thanks
 - **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md,fixed sample)
-- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*")
+- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*" & show_clock with 0)
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware

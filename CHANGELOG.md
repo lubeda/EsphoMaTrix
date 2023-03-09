@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023.3.4
+
+added: option to not display clock/date #53
+added: dynamic set_show_clock
+
 ## 2023.3.3
 
 fixed: force_screen skips imediatly to the selected screen

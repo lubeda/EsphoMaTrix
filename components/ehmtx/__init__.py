@@ -556,7 +556,7 @@ async def to_code(config):
         except:
             print("Error writing HTML file")    
     
-    cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
+    cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))

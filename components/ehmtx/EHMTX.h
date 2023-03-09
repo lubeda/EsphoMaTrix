@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.3";
+static const char *const EHMTX_VERSION = "Version: 2023.3.4";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -85,7 +85,7 @@ namespace esphome
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
-    void set_clock_time(uint16_t t);
+    void set_show_clock(uint16_t t);
     void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);

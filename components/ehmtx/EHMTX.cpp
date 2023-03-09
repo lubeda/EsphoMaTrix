@@ -439,7 +439,7 @@ namespace esphome
     return this->icons[this->store->current()->icon]->name;
   }
 
-  void EHMTX::set_clock_time(uint16_t t)
+  void EHMTX::set_show_clock(uint16_t t)
   {
     this->clock_time = t;
   }
