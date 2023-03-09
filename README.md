@@ -322,6 +322,16 @@ ehmtx:
         ESP_LOGI("TriggerTest","Text: %s",y.c_str());
 ```
 
+##### Change the text color like crazy
+
+```yaml
+ehmtx:
+  ....
+  on_next_screen:
+    lambda: |-
+      id(rgb8x32)->set_text_color(rand() % 255, rand() % 255, rand() % 255);
+```
+
 ##### Send an event to Home Assistant
 
 To send data back to home assistant you can use events.
