@@ -3,7 +3,7 @@
 ## 2023.3.3
 
 fixed: force_screen skips imediatly to the selected screen
-
+added: hold_time configurable 
 
 ## 2023.3.2
 
