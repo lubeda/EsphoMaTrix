@@ -25,3 +25,4 @@ fixed: show_all_icons on boot
 ## 2023.3.0
 
 see README.md for features
+e.g. Service **display_on** / **display_off**

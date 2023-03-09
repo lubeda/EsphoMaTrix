@@ -199,7 +199,11 @@ sensor:
           send_first_at: 1
       - multiply: 1.6
       - lambda: |-
-          return ((x - 3) / 0.69 * 100.00);
+          auto r = ((x - 3) / 0.69 * 100.00);
+          if (r >= 100) return 100;
+          if (r > 0) return r;
+          if (r <= 0) return 1;
+          return 0;
     unit_of_measurement: '%'
   - platform: adc
     id: light_sensor
