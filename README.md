@@ -229,6 +229,8 @@ _Configuration variables:_
 
 **duration** (Optional, minutes): lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
+**hold_time** (Optional, seconds): extends the display time of the current screen in seconds (default=20)
+
 **date_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
 
 **time_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%M"` (use `"%I:%M%p"` for the US)
@@ -603,7 +605,7 @@ binary_sensor:
 
 Service **hold_screen**
 
-displays the current screen for 20 seconds longer.
+displays the current screen for configured ammount (see **hold_time**) (default=20) seconds longer.
 
 e.g. on the Ulanzi TC001
 

@@ -260,8 +260,8 @@ namespace esphome
 
   void EHMTX::hold_screen()
   {
-    this->next_action_time+=HOLDTIME;
-    this->store->hold_current(HOLDTIME);
+    this->next_action_time+=this->hold_time;
+    this->store->hold_current(this->hold_time);
   }
   
   void EHMTX::get_status()
@@ -431,7 +431,12 @@ namespace esphome
     this->clock_time = t;
   }
 
-void EHMTX::set_clock_interval(uint16_t t)
+  void EHMTX::set_hold_time(uint16_t t)
+  {
+    this->hold_time = t;
+  }
+
+  void EHMTX::set_clock_interval(uint16_t t)
   {
     this->clock_interval = t;
   }
