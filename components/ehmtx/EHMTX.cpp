@@ -234,6 +234,10 @@ namespace esphome
         if (this->show_screen == false)
         {
           ESP_LOGD(TAG, "next action: show clock/date for %d/%d sec",this->clock_time, this->screen_time-this->clock_time);
+          for (auto *t : on_next_clock_triggers_)
+          {
+            t->process();
+          }
           this->last_clock_time = ts;
           this->next_action_time = ts + this->screen_time;
         }
@@ -582,5 +586,11 @@ namespace esphome
   {
     this->trigger(iconname, text);
   }
+
+  void EHMTXNextClockTrigger::process()
+  {
+    this->trigger();
+  }
+
 
 }

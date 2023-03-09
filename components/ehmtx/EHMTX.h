@@ -18,6 +18,7 @@ namespace esphome
   class EhmtxSelect;
   class EHMTX_Icon;
   class EHMTXNextScreenTrigger;
+  class EHMTXNextClockTrigger;
 
   class EHMTX : public PollingComponent
   {
@@ -34,6 +35,7 @@ namespace esphome
     Color weekday_color;
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
+    std::vector<EHMTXNextClockTrigger *> on_next_clock_triggers_;
     void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
 
   public:
@@ -118,6 +120,7 @@ namespace esphome
     void set_icon_count(uint8_t ic);
     void draw_clock();
     void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
+    void add_on_next_clock_trigger(EHMTXNextClockTrigger *t) { this->on_next_clock_triggers_.push_back(t); }
     void setup();
     void update();
     void set_display_on();
@@ -179,6 +182,13 @@ namespace esphome
   public:
     explicit EHMTXNextScreenTrigger(EHMTX *parent) { parent->add_on_next_screen_trigger(this); }
     void process(std::string, std::string);
+  };
+
+  class EHMTXNextClockTrigger : public Trigger<>
+  {
+  public:
+    explicit EHMTXNextClockTrigger(EHMTX *parent) { parent->add_on_next_clock_trigger(this); }
+    void process();
   };
 
   template <typename... Ts>

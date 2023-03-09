@@ -303,6 +303,7 @@ Take care that the ```char text[30];``` has enough space to store the formated t
 
 ### Local trigger
 
+#### on_next_screen
 There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (it doesn't trigger on the clock/date display!!). In lambda's you can use two local string variables:
 
 **x** (Name of the icon, std::string): value to use in lambda
@@ -346,6 +347,23 @@ ehmtx:
           iconname: !lambda "return x.c_str();"
           text: !lambda "return y.c_str();"
 ```
+
+#### on_next_clock
+The trigger ```on_next_clock``` is triggered every time a new clock display circle starts.
+See the examples:
+
+##### Change Clock colors like crazy for each clock circle
+
+```yaml
+ehmtx:
+  ....
+  on_next_clock:
+    lambda: |-
+      id(rgb8x32)->set_clock_color(rand() % 255, rand() % 255, rand() % 255);
+      id(rgb8x32)->set_weekday_color(rand() % 255, rand() % 255, rand() % 255);
+      id(rgb8x32)->set_today_color(rand() % 255, rand() % 255, rand() % 255);
+```
+
 
 ### Actions
 
