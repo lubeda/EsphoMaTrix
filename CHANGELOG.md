@@ -4,6 +4,7 @@
 
 added: option to not display clock/date #53
 added: dynamic set_show_clock
+added: on_next_clock trigger
 
 ## 2023.3.3
 
