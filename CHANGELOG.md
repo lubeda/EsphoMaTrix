@@ -1,5 +1,11 @@
 # Changelog
 
+## 2023.3.4
+
+added: option to not display clock/date #53
+added: dynamic set_show_clock
+added: on_next_clock trigger
+
 ## 2023.3.3
 
 fixed: force_screen skips imediatly to the selected screen
@@ -19,3 +25,4 @@ fixed: show_all_icons on boot
 ## 2023.3.0
 
 see README.md for features
+e.g. Service **display_on** / **display_off**

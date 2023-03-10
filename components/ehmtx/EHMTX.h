@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.3";
+static const char *const EHMTX_VERSION = "Version: 2023.3.4";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -18,6 +18,7 @@ namespace esphome
   class EhmtxSelect;
   class EHMTX_Icon;
   class EHMTXNextScreenTrigger;
+  class EHMTXNextClockTrigger;
 
   class EHMTX : public PollingComponent
   {
@@ -34,6 +35,7 @@ namespace esphome
     Color weekday_color;
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
+    std::vector<EHMTXNextClockTrigger *> on_next_clock_triggers_;
     void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
 
   public:
@@ -51,6 +53,7 @@ namespace esphome
     EHMTX_screen *icon_screen;
     void add_icon(EHMTX_Icon *icon);
     bool show_display;
+    bool has_active_screen;
 #ifdef USE_EHMTX_SELECT
     std::vector<std::string> select_options;
     esphome::EhmtxSelect *select;
@@ -84,7 +87,7 @@ namespace esphome
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
-    void set_clock_time(uint16_t t);
+    void set_show_clock(uint16_t t);
     void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
@@ -117,6 +120,7 @@ namespace esphome
     void set_icon_count(uint8_t ic);
     void draw_clock();
     void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
+    void add_on_next_clock_trigger(EHMTXNextClockTrigger *t) { this->on_next_clock_triggers_.push_back(t); }
     void setup();
     void update();
     void set_display_on();
@@ -178,6 +182,13 @@ namespace esphome
   public:
     explicit EHMTXNextScreenTrigger(EHMTX *parent) { parent->add_on_next_screen_trigger(this); }
     void process(std::string, std::string);
+  };
+
+  class EHMTXNextClockTrigger : public Trigger<>
+  {
+  public:
+    explicit EHMTXNextClockTrigger(EHMTX *parent) { parent->add_on_next_clock_trigger(this); }
+    void process();
   };
 
   template <typename... Ts>

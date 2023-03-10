@@ -42,6 +42,10 @@ NextScreenTrigger = ehmtx_ns.class_(
     "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
 
+NextClockTrigger = ehmtx_ns.class_(
+    "EHMTXNextClockTrigger", automation.Trigger.template(cg.std_string)
+)
+
 CONF_SHOWCLOCK = "show_clock"
 CONF_CLOCK_INTERVAL = "clock_interval"
 CONF_SHOWSCREEN = "show_screen"
@@ -65,6 +69,7 @@ CONF_TIME_FORMAT = "time_format"
 CONF_DATE_FORMAT = "date_format"
 CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
+CONF_ON_NEXT_CLOCK = "on_next_clock"
 CONF_WEEK_ON_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
@@ -128,6 +133,11 @@ EHMTX_SCHEMA = cv.Schema({
             cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(NextScreenTrigger),
         }
     ),
+    cv.Optional(CONF_ON_NEXT_CLOCK): automation.validate_automation(
+        {
+            cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(NextClockTrigger),
+        }
+    ),
     cv.Required(CONF_ICONS): cv.All(
         cv.ensure_list(
             {
@@ -158,11 +168,6 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
-)
-
-
-NextScreenTrigger = ehmtx_ns.class_(
-    "EHMTXNextScreenTrigger", automation.Trigger.template(cg.std_string)
 )
 
 AddScreenAction = ehmtx_ns.class_("AddScreenAction", automation.Action)
@@ -556,7 +561,7 @@ async def to_code(config):
         except:
             print("Error writing HTML file")    
     
-    cg.add(var.set_clock_time(config[CONF_SHOWCLOCK]))
+    cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
@@ -587,5 +592,9 @@ async def to_code(config):
     for conf in config.get(CONF_ON_NEXT_SCREEN, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
         await automation.build_automation(trigger, [(cg.std_string, "x"), (cg.std_string, "y")], conf)
+
+    for conf in config.get(CONF_ON_NEXT_CLOCK, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+        await automation.build_automation(trigger, [], conf)
 
     await cg.register_component(var, config)

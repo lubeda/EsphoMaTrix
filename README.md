@@ -219,7 +219,32 @@ _Configuration variables:_
 
 **id** (Required, ID): Manually specify the ID used for code generation and in service definitions.
 
-**show_clock** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen!
+**show_clock** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen! Setting `show_clock` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
+
+You can set this value during runtime e.g. for a night mode
+
+```
+# sample for ulanzi tc001
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $left_button_pin
+      inverted: true
+    on_press:
+      - logger.log: "Clock on"
+      - lambda:
+          id(rgb8x32)->set_show_clock(6);
+    name: "clock on"
+  - platform: gpio
+    pin: 
+      number: $right_button_pin
+      inverted: true
+    name: "Clock off"
+    on_press:
+      - logger.log: "clock off"
+      - lambda:
+          id(rgb8x32)->set_show_clock(0);
+```
 
 **clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
 
@@ -278,6 +303,7 @@ Take care that the ```char text[30];``` has enough space to store the formated t
 
 ### Local trigger
 
+#### on_next_screen
 There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (it doesn't trigger on the clock/date display!!). In lambda's you can use two local string variables:
 
 **x** (Name of the icon, std::string): value to use in lambda
@@ -297,6 +323,16 @@ ehmtx:
         ESP_LOGI("TriggerTest","Text: %s",y.c_str());
 ```
 
+##### Change the text color like crazy
+
+```yaml
+ehmtx:
+  ....
+  on_next_screen:
+    lambda: |-
+      id(rgb8x32)->set_text_color(rand() % 255, rand() % 255, rand() % 255);
+```
+
 ##### Send an event to Home Assistant
 
 To send data back to home assistant you can use events.
@@ -311,6 +347,23 @@ ehmtx:
           iconname: !lambda "return x.c_str();"
           text: !lambda "return y.c_str();"
 ```
+
+#### on_next_clock
+The trigger ```on_next_clock``` is triggered every time a new clock display circle starts.
+See the examples:
+
+##### Change Clock colors like crazy for each clock circle
+
+```yaml
+ehmtx:
+  ....
+  on_next_clock:
+    lambda: |-
+      id(rgb8x32)->set_clock_color(rand() % 255, rand() % 255, rand() % 255);
+      id(rgb8x32)->set_weekday_color(rand() % 255, rand() % 255, rand() % 255);
+      id(rgb8x32)->set_today_color(rand() % 255, rand() % 255, rand() % 255);
+```
+
 
 ### Actions
 
@@ -851,7 +904,7 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 ## Thanks
 - **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md,fixed sample)
-- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*")
+- **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*" & show_clock with 0)
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
