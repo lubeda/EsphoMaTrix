@@ -15,19 +15,19 @@ The other d.i.y. solutions have their pros and cons. I tried both and used AwTri
 
 There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C. As a starting point you can use the [``UlanziTC001.yaml``](https://github.com/lubeda/EsphoMaTrix/blob/main/UlanziTC001.yaml). Yet the LDR and battery sensor are not perfectly supported. For another use of the hardware see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi) firmware.
 
-See this German tutorial video with information on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A)
+See this German tutorial video with information on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A).
 
-See this nice article about EsphoMaTrix on a Ulanzi TC001 from blakadder [Link](https://blakadder.com/esphome-pixel-clock/)
+See this [nice article](https://blakadder.com/esphome-pixel-clock/) about EsphoMaTrix on a Ulanzi TC001 from [blakadder](https://github.com/blakadder).
 
 ### State
 
 It is a working solution with core functionality coded. Advanced features, like automatic brightness control can be done with esphome actions and automations.
 
-See it in action on [YouTube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles)
+See it in action on [YouTube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles).
 
 ### Features
 
-Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 16 other screens provided by home assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed in its lifetime it will disappear.
+Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 16 other screens provided by Home Assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed in its lifetime it will disappear.
 
 You can use the [ehmtx32.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ehmtx32.yaml) as sample for an ESP32. As mentioned you have to edit to your needs. So check font, icons, board and the GPIO pins for your display.
 
@@ -71,7 +71,7 @@ display:
 ```
 
 ### Font
-Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/)
+Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/#fonts).
 
 
 ```yaml
@@ -100,7 +100,7 @@ emhtx:
     - id: temp 
       file: temperature.png
     - id: yoga
-      file: _icons/yoga-bridge.gif
+      file: icons/yoga-bridge.gif
       pingpong: true
     - id: garage
       file: garage.gif
@@ -113,7 +113,7 @@ The id of the icons is used later to configure the screens to display. So you sh
 
 First defined icon will be used as a fallback icon in case of an error, e.g. if you use a non-existing icon id.
 
-GIFs are limited to 16 frames to limit the flash space. The first icon in your list is the fallback .
+GIFs are limited to 16 frames to limit the flash space. The first icon in your list is the fallback.
 
 All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flash space and the RAM of your board.
 
@@ -198,7 +198,7 @@ _Example `ehmtx:` configuration_
 
 ```yaml
 ehmtx:
-  id: rgb328 # needed to reference the components in services and actions etc.
+  id: rgb8x32 # needed to reference the components in services and actions etc.
   show_clock: 6 
   show_screen: 8
   duration: 5
