@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.4";
+static const char *const EHMTX_VERSION = "Version: 2023.3.5";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -467,6 +467,7 @@ namespace esphome
     EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type, std::string icon_name, bool revers, uint16_t frame_duration);
     std::string name;
     uint16_t frame_duration;
+    bool fullscreen;
     void next_frame();
     bool reverse;
   };

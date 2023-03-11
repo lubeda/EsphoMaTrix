@@ -18,12 +18,11 @@ _LOGGER = logging.getLogger(__name__)
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 IMAGE_TYPE_RGB565 = 4
-MAXFRAMES = 20
-MAXICONS = 80
+MAXFRAMES = 100
+MAXICONS = 90
 ICONWIDTH = 8
 ICONHEIGHT = 8
-ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT
-ICONSIZE = [ICONWIDTH,ICONHEIGHT]
+ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT * 4
 SVG_START = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
 
 SVG_END = "</svg>"
@@ -455,7 +454,20 @@ CODEOWNERS = ["@lubeda"]
 
 async def to_code(config):
 
-    from PIL import Image
+    from PIL import Image, ImageSequence
+
+    def openImageFile(path):
+        try:
+            return Image.open(path)
+        except Exception as e:
+            raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
+
+    def thumbnails(frames):
+        for frame in frames:
+            thumbnail = frame.copy()
+            thumbnail.thumbnail((32,8), Image.ANTIALIAS)
+            yield thumbnail
+
     var = cg.new_Pvariable(config[CONF_ID])
     html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD>"
     html_string += '''\
@@ -467,7 +479,7 @@ async def to_code(config):
         if CONF_FILE in conf:
             path = CORE.relative_config_path(conf[CONF_FILE])
             try:
-                image = Image.open(path)
+                image = openImageFile(path)
             except Exception as e:
                 raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
         elif CONF_LAMEID in conf:
@@ -482,15 +494,15 @@ async def to_code(config):
             image = Image.open(io.BytesIO(r.content))
         
         width, height = image.size
-        
-        if !(((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT)):
-            raise core.EsphomeError(f" ICONS: wrong size valid 8x8 or 8x32 {conf[CONF_URL]}: {conf[CONF_ID]}")
 
         if hasattr(image, 'n_frames'):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
-            
+
+        if ((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT):
+            raise core.EsphomeError(f" ICONS: wrong size valid 8x8 or 8x32: {conf[CONF_ID]}")
+
         if (conf[CONF_DURATION] == 0):
             try:
                 duration =  image.info['duration']         
@@ -510,10 +522,10 @@ async def to_code(config):
             image.seek(frameIndex)
             frame = image.convert("RGB")
             pixels = list(frame.getdata())
-            if len(pixels) != ICONBUFFERSIZE:
-                raise core.EsphomeError(
-                    f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                )
+           # if len(pixels) != ICONBUFFERSIZE:
+           #     raise core.EsphomeError(
+           #         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+           #     )
             i = 0
             for pix in pixels:
                 R = pix[0] >> 3

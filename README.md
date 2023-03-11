@@ -85,7 +85,7 @@ font:
 
 ### Icons and Animations
 
-Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons are automagically scaled to 8x8 on compile-time. This doesn't work well for gif's, you will have to resize them beforehand!
+Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons have to be 8x8 or 8x32 piksels.
 
 You can also specify an URL to directly download the image file. The URLs will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 
@@ -894,6 +894,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 
 - 2022.6.1 removed image types only `rgb565` is valid!
 - 2023.2.0 removed awtrix icon `awtrixid` support
+- 2023.3.5 removed automatic scaling of images and animations
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.

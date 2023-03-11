@@ -23,11 +23,10 @@ namespace esphome
     return false;
   }
 
- void EHMTX_screen::reset_shiftx()
+  void EHMTX_screen::reset_shiftx()
   {
     this->shiftx_ = 0;
   }
-
 
   void EHMTX_screen::update_screen()
   {
@@ -73,17 +72,19 @@ namespace esphome
       extraoffset += 2;
     }
 
-    if (this->alarm)
+    if (!this->config_->icons[this->icon]->fullscreen)
     {
-      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color, esphome::display::TextAlign::BASELINE_LEFT,
-                                    this->text.c_str());
+      if (this->alarm)
+      {
+        this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color, esphome::display::TextAlign::BASELINE_LEFT,
+                                      this->text.c_str());
+      }
+      else
+      {
+        this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color, esphome::display::TextAlign::BASELINE_LEFT,
+                                      this->text.c_str());
+      }
     }
-    else
-    {
-      this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color, esphome::display::TextAlign::BASELINE_LEFT,
-                                    this->text.c_str());
-    }
-
     if (this->alarm)
     {
       this->config_->display->draw_pixel_at(30, 0, this->config_->alarm_color);
@@ -114,7 +115,7 @@ namespace esphome
 
   void EHMTX_screen::hold_slot(uint8_t _sec)
   {
-    this->endtime += _sec; 
+    this->endtime += _sec;
     ESP_LOGD(TAG, "hold for %d secs", _sec);
   }
 
@@ -125,7 +126,7 @@ namespace esphome
     this->shiftx_ = 0;
     float dd = ceil((2 * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_intervall) / 1000);
     this->display_duration = (dd > this->config_->screen_time) ? dd : this->config_->screen_time;
-    ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d default: %d", text.c_str(),pixel, this->display_duration, this->config_->screen_time);
+    ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d default: %d", text.c_str(), pixel, this->display_duration, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     this->icon = icon;
   }
