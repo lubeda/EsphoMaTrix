@@ -23,12 +23,10 @@ MAXICONS = 90
 ICONWIDTH = 8
 ICONHEIGHT = 8
 ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT * 4
-SVG_START = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
+SVG_ICONSTART = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
+SVG_FULLSCREENSTART = '<svg width="320px" height="80px" viewBox="0 0 320 80">'
 
 SVG_END = "</svg>"
-
-def rgb888_svg(x,y,r,g,b):
-    return f"<rect style=\"fill:rgb({r},{g},{b});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
 
 def rgb565_svg(x,y,r,g,b):
     return f"<rect style=\"fill:rgb({(r << 3) | (r >> 2)},{(g << 2) | (g >> 4)},{(b << 3) | (b >> 2)});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
@@ -518,21 +516,25 @@ async def to_code(config):
         html_string += f"<DIV ID={conf[CONF_ID]}>"
         data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
         for frameIndex in range(frames):
-            html_string += SVG_START
+            
             image.seek(frameIndex)
             frame = image.convert("RGB")
             pixels = list(frame.getdata())
-           # if len(pixels) != ICONBUFFERSIZE:
-           #     raise core.EsphomeError(
-           #         f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-           #     )
+            width, height = image.size
+            if width == 8:  
+                html_string += SVG_ICONSTART
+            else:
+                html_string += SVG_FULLSCREENSTART
             i = 0
+
+            print(f"ID: {conf[CONF_ID]} w: {width} h: {height}")
+
             for pix in pixels:
                 R = pix[0] >> 3
                 G = pix[1] >> 2
                 B = pix[2] >> 3
-                x = (i % ICONWIDTH)
-                y = i//ICONHEIGHT
+                x = (i % width)
+                y = i//width
                 i +=1
                 rgb = (R << 11) | (G << 5) | B
                 html_string += rgb565_svg(x,y,R,G,B)
