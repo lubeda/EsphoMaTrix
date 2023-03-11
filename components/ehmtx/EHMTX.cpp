@@ -15,6 +15,7 @@ namespace esphome
     this->alarm_color = Color(200, 50, 50);
     this->gauge_color = Color(100, 100, 200);
     this->gauge_value = 0;
+    this->show_indicator = false;
     this->icon_count = 0;
     this->last_clock_time = 0;
     this->show_icons = false;
