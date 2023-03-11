@@ -526,9 +526,6 @@ async def to_code(config):
             else:
                 html_string += SVG_FULLSCREENSTART
             i = 0
-
-            print(f"ID: {conf[CONF_ID]} w: {width} h: {height}")
-
             for pix in pixels:
                 R = pix[0] >> 3
                 G = pix[1] >> 2
