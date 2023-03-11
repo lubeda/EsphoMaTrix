@@ -1,5 +1,9 @@
 # Changelog
 
+## 2023.3.5
+breaking: removed automatic scaling of images
+new: support 8x32 icons without text
+
 ## 2023.3.4
 
 added: option to not display clock/date #53

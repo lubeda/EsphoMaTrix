@@ -483,9 +483,8 @@ async def to_code(config):
         
         width, height = image.size
         
-        if (width != ICONWIDTH) or (height != ICONHEIGHT):
-            image = image.resize(ICONSIZE)
-            width, height = image.size
+        if !(((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT)):
+            raise core.EsphomeError(f" ICONS: wrong size valid 8x8 or 8x32 {conf[CONF_URL]}: {conf[CONF_ID]}")
 
         if hasattr(image, 'n_frames'):
             frames = min(image.n_frames, MAXFRAMES)
