@@ -499,66 +499,66 @@ async def to_code(config):
             frames = 1
 
         if ((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT):
-            raise core.EsphomeError(f" ICONS: wrong size valid 8x8 or 8x32: {conf[CONF_ID]}")
-
-        if (conf[CONF_DURATION] == 0):
-            try:
-                duration =  image.info['duration']         
-            except:
-                duration = config[CONF_ANIMINTERVALL]
+            logging.warning(f" icon wrong size valid 8x8 or 8x32: {conf[CONF_ID]} skipped!")
         else:
-            duration = conf[CONF_DURATION]
-
-        html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
-
-        pos = 0 
-        frameIndex = 0
-        html_string += f"<DIV ID={conf[CONF_ID]}>"
-        data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
-        for frameIndex in range(frames):
-            
-            image.seek(frameIndex)
-            frame = image.convert("RGB")
-            pixels = list(frame.getdata())
-            width, height = image.size
-            if width == 8:  
-                html_string += SVG_ICONSTART
+            if (conf[CONF_DURATION] == 0):
+                try:
+                    duration =  image.info['duration']         
+                except:
+                    duration = config[CONF_ANIMINTERVALL]
             else:
-                html_string += SVG_FULLSCREENSTART
-            i = 0
-            for pix in pixels:
-                R = pix[0] >> 3
-                G = pix[1] >> 2
-                B = pix[2] >> 3
-                x = (i % width)
-                y = i//width
-                i +=1
-                rgb = (R << 11) | (G << 5) | B
-                html_string += rgb565_svg(x,y,R,G,B)
-                data[pos] = rgb >> 8
-                pos += 1
-                data[pos] = rgb & 255
-                pos += 1
-            html_string += SVG_END
-        html_string += f"</DIV>"
-       
-        rhs = [HexInt(x) for x in data]
+                duration = conf[CONF_DURATION]
 
-        prog_arr = cg.progmem_array(conf[CONF_RAW_DATA_ID], rhs)
+            html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
-        cg.new_Pvariable(
-            conf[CONF_ID],
-            prog_arr,
-            width,
-            height,
-            frames,
-            espImage.IMAGE_TYPE["RGB565"],
-            str(conf[CONF_ID]),
-            conf[CONF_PINGPONG],
-            duration,
-        )
+            pos = 0 
+            frameIndex = 0
+            html_string += f"<DIV ID={conf[CONF_ID]}>"
+            data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
+            for frameIndex in range(frames):
+                
+                image.seek(frameIndex)
+                frame = image.convert("RGB")
+                pixels = list(frame.getdata())
+                width, height = image.size
+                if width == 8:  
+                    html_string += SVG_ICONSTART
+                else:
+                    html_string += SVG_FULLSCREENSTART
+                i = 0
+                for pix in pixels:
+                    R = pix[0] >> 3
+                    G = pix[1] >> 2
+                    B = pix[2] >> 3
+                    x = (i % width)
+                    y = i//width
+                    i +=1
+                    rgb = (R << 11) | (G << 5) | B
+                    html_string += rgb565_svg(x,y,R,G,B)
+                    data[pos] = rgb >> 8
+                    pos += 1
+                    data[pos] = rgb & 255
+                    pos += 1
+                html_string += SVG_END
+            html_string += f"</DIV>"
+        
+            rhs = [HexInt(x) for x in data]
 
-        cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
+            prog_arr = cg.progmem_array(conf[CONF_RAW_DATA_ID], rhs)
+
+            cg.new_Pvariable(
+                conf[CONF_ID],
+                prog_arr,
+                width,
+                height,
+                frames,
+                espImage.IMAGE_TYPE["RGB565"],
+                str(conf[CONF_ID]),
+                conf[CONF_PINGPONG],
+                duration,
+            )
+
+            cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
 
     html_string += "</BODY></HTML>"
     
