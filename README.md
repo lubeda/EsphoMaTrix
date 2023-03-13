@@ -19,6 +19,13 @@ See this German tutorial video with information on setting up your display [RGB-
 
 See this [nice article](https://blakadder.com/esphome-pixel-clock/) about EsphoMaTrix on a Ulanzi TC001 from [blakadder](https://github.com/blakadder).
 
+See this english discussions
+[Share your projects](https://community.home-assistant.io/t/esphomatrix-a-simple-clock-status-display/425325)
+[ESPHOME](https://community.home-assistant.io/t/a-simple-diy-status-display-with-an-8x32-rgb-led/379051)
+
+Or in german
+[Showroom](https://community.simon42.com/t/8x32-pixel-uhr-mit-homeassistant-anbindung/1076)
+
 ### State
 
 It is a working solution with core functionality coded. Advanced features, like automatic brightness control can be done with esphome actions and automations.
