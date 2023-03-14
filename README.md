@@ -265,6 +265,8 @@ binary_sensor:
 
 **date_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
 
+**show_seconds** (Optional, boolean): toggle an indicator for seconds while the clock is displayed (default: false)) 
+
 **time_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%M"` (use `"%I:%M%p"` for the US)
 
 **yoffset** (Optional, pixel): yoffset the text is aligned BASELINE_LEFT, the baseline defaults to `6` 

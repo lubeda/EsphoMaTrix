@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2023.3.5
+new: show_seconds indicator top left corner
 breaking: removed automatic scaling of images
 new: support 8x32 icons without text
 

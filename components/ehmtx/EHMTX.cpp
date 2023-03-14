@@ -159,6 +159,9 @@ namespace esphome
       {
         this->display->strftime(this->xoffset + 15, this->yoffset, this->font, this->clock_color, display::TextAlign::BASELINE_CENTER, this->time_fmt.c_str(),
                                 this->clock->now());
+        if ((this->clock->now().second % 2 == 0) && this->show_seconds) {
+          this->display->draw_pixel_at(0, 0, this->clock_color);
+        }
       }
       else
       {
@@ -397,6 +400,19 @@ namespace esphome
     else
     {
       ESP_LOGI(TAG, "don't show date");
+    }
+  }
+
+  void EHMTX::set_show_seconds(bool b)
+  {
+    this->show_seconds = b;
+    if (b)
+    {
+      ESP_LOGI(TAG, "show seconds");
+    }
+    else
+    {
+      ESP_LOGI(TAG, "don't show seconds");
     }
   }
 

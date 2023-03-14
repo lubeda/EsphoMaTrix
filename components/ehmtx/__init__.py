@@ -67,6 +67,7 @@ CONF_DATE_FORMAT = "date_format"
 CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ON_NEXT_CLOCK = "on_next_clock"
+CONF_SHOW_SECONDS = "show_seconds"
 CONF_WEEK_ON_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
@@ -91,6 +92,9 @@ EHMTX_SCHEMA = cv.Schema({
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
         CONF_HTML, default=False
+    ): cv.boolean,
+    cv.Optional(
+        CONF_SHOW_SECONDS, default=False
     ): cv.boolean,
     cv.Optional(
         CONF_SHOWDATE, default=True
@@ -584,6 +588,7 @@ async def to_code(config):
     cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
     cg.add(var.set_hold_time(config[CONF_HOLD_TIME]))
     cg.add(var.set_show_date(config[CONF_SHOWDATE]))
+    cg.add(var.set_show_seconds(config[CONF_SHOW_SECONDS]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
 
     disp = await cg.get_variable(config[CONF_DISPLAY])

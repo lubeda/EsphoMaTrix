@@ -65,6 +65,7 @@ namespace esphome
     int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
     bool string_has_ending(std::string const &fullString, std::string const &ending);
+    bool show_seconds;
     uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
@@ -91,6 +92,7 @@ namespace esphome
     void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
+    void set_show_seconds(bool b);
     void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
     void set_week_start(bool b);
