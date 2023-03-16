@@ -4,6 +4,7 @@
 new: show_seconds indicator top left corner
 breaking: removed automatic scaling of images
 new: support 8x32 icons without text
+breaking: added status,display_on,display_off as default service => remove these from your yaml
 
 ## 2023.3.4
 

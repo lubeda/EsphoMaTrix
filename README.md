@@ -700,6 +700,10 @@ This service displays the running queue and a list of icons in the logs
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
 
+Service **display_on/off**
+
+Turn display on or off
+
 ### Use in Home Assistant automations
 
 The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have an icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
@@ -904,6 +908,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2022.6.1 removed image types only `rgb565` is valid!
 - 2023.2.0 removed awtrix icon `awtrixid` support
 - 2023.3.5 removed automatic scaling of images and animations
+- 2023.3.5 added status,display_on,display_off as default service => remove these from your yaml
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.

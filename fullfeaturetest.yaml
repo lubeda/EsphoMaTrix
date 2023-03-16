@@ -147,11 +147,6 @@ api:
         lambda: |-
           id(rgb8x32)->set_brightness(brightness);
     
-    - service: status
-      then:
-        lambda: |-
-          id(rgb8x32)->get_status();
-    
     - service: a_del_screen
       variables:
         icon_name: string

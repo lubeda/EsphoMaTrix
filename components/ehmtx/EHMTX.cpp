@@ -2,7 +2,7 @@
 
 namespace esphome
 {
-  EHMTX::EHMTX() : PollingComponent(TICKINTERVAL)
+  EHMTX::EHMTX() : PollingComponent(TICKINTERVAL) 
   {
     this->store = new EHMTX_store(this);
     this->icon_screen = new EHMTX_screen(this);
@@ -178,6 +178,9 @@ namespace esphome
 
   void EHMTX::setup()
   {
+    register_service(&EHMTX::get_status,"status");
+    register_service(&EHMTX::set_display_off,"display_on");
+    register_service(&EHMTX::set_display_off,"display_off");
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
     {

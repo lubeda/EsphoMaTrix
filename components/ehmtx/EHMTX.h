@@ -20,8 +20,7 @@ namespace esphome
   class EHMTXNextScreenTrigger;
   class EHMTXNextClockTrigger;
 
-  class EHMTX : public PollingComponent
-  {
+  class EHMTX : public PollingComponent, public api::CustomAPIDevice   {
   protected:
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
