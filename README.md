@@ -459,29 +459,6 @@ esphome:
           blue: !lambda return 30;
 ```
 
-##### Indicator on
-
-The indicator is a static colored corner on the display.
-
-You have to use use id of your ehmtx component, e.g. ```rgb8x32```
-
-```yaml
-     - ehmtx.indicator.on:
-        id: rgb8x32
-        red: !lambda return r;
-        green: !lambda return g;
-        blue: !lambda return b;
-```
-
-- ```red, green, blue```: the color components (0..255) (default=80)
-
-##### Indicator off 
-
-```yaml
-     - ehmtx.indicator.off:
-            id: rgb8x32
-```
-
 ##### Add screen to loop
 
 ```yaml
@@ -909,6 +886,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.2.0 removed awtrix icon `awtrixid` support
 - 2023.3.5 removed automatic scaling of images and animations
 - 2023.3.5 added status,display_on,display_off as default service => remove these from your yaml
+- 2023.3.5 breaking: added indicator_on/off as default service => remove these from your yaml
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.

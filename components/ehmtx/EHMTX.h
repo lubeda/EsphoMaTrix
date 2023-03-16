@@ -108,8 +108,7 @@ namespace esphome
     void set_indicator_off();
     void set_time_format(std::string s);
     void set_date_format(std::string s);
-    void set_indicator_on();
-    void set_indicator_color(int r, int g, int b);
+    void set_indicator_on(int r, int g, int b);
     void set_gauge_off();
     void set_gauge_value(uint8_t v);
     void set_gauge_color(int r, int g, int b);
@@ -252,8 +251,7 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      this->parent_->set_indicator_on();
-      this->parent_->set_indicator_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+      this->parent_->set_indicator_on(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
     }
 
   protected:

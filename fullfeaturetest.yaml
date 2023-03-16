@@ -155,19 +155,8 @@ api:
             id: rgb8x32
             icon_name: !lambda return icon_name;
     
-    - service: indicator_on 
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        - ehmtx.indicator.on:
-            id: rgb8x32
-            red: !lambda return r;
-            green: !lambda return g;
-            blue: !lambda return b;
-    
-    - service: force_screen
+ 
+   - service: force_screen
       variables:
         icon_name: string
       then:
@@ -220,20 +209,6 @@ api:
         lambda: |-
           id(rgb8x32)->set_today_color(r,g,b);
 
-    - service: indicator_off
-      then:
-        - ehmtx.indicator.off:
-            id: rgb8x32
-
-    - service: display_on
-      then:
-        - ehmtx.display.on:
-            id: rgb8x32
-            
-    - service: display_off
-      then:
-        - ehmtx.display.off:
-            id: rgb8x32
 
 number:
   - platform: template

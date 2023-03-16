@@ -45,9 +45,10 @@ namespace esphome
     this->date_fmt = s;
   }
 
-  void EHMTX::set_indicator_color(int r, int g, int b)
+  void EHMTX::set_indicator_on(int r, int g, int b)
   {
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
+    this->show_indicator = true;
     ESP_LOGD(TAG, "indicator r: %d g: %d b: %d", r, g, b);
   }
 
@@ -116,12 +117,6 @@ namespace esphome
     ESP_LOGD(TAG, "indicator off");
   }
 
-  void EHMTX::set_indicator_on()
-  {
-    this->show_indicator = true;
-    ESP_LOGD(TAG, "indicator on");
-  }
-
   void EHMTX::set_display_off()
   {
     this->show_display = false;
@@ -181,6 +176,9 @@ namespace esphome
     register_service(&EHMTX::get_status,"status");
     register_service(&EHMTX::set_display_off,"display_on");
     register_service(&EHMTX::set_display_off,"display_off");
+    register_service(&EHMTX::set_indicator_on,"indicator_on",{"r","g","b"});
+    register_service(&EHMTX::set_indicator_off,"indicator_off");
+    
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
     {
