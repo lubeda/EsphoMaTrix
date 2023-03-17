@@ -95,8 +95,7 @@ namespace esphome
     void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
     void set_week_start(bool b);
-    void set_default_brightness(uint8_t b);
-    void set_brightness(uint8_t b);
+    void set_brightness(int b); // int because of register_service!
     uint8_t get_brightness();
     void add_screen(std::string icon, std::string text, uint16_t duration, bool alarm);
     void del_screen(std::string iname);
@@ -110,7 +109,7 @@ namespace esphome
     void set_date_format(std::string s);
     void set_indicator_on(int r, int g, int b);
     void set_gauge_off();
-    void set_gauge_value(uint8_t v);
+    void set_gauge_value(int v); // int because of register_service
     void set_gauge_color(int r, int g, int b);
     void set_text_color(int r, int g, int b);
     void set_clock_color(int r, int g, int b);
@@ -119,6 +118,7 @@ namespace esphome
     void set_alarm_color(int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
+    void draw_gauge();
     void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
     void add_on_next_clock_trigger(EHMTXNextClockTrigger *t) { this->on_next_clock_triggers_.push_back(t); }
     void setup();

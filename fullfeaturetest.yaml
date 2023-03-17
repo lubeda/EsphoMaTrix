@@ -191,24 +191,6 @@ api:
         lambda: |-
           id(rgb8x32)->set_alarm_color(r,g,b);
     
-    - service: weekday_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_weekday_color(r,g,b);
-    
-    - service: today_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_today_color(r,g,b);
-
 
 number:
   - platform: template

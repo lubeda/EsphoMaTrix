@@ -134,14 +134,14 @@ namespace esphome
     this->show_gauge = false;
     ESP_LOGD(TAG, "gauge off");
   }
-  void EHMTX::set_gauge_value(uint8_t val)
+  void EHMTX::set_gauge_value(int percent)
   {
     this->show_gauge = false;
-    if ((val > 0) && (val <= 100))
+    if (percent <= 100)
     {
       this->show_gauge = true;
-      this->gauge_value = (uint8_t)(100 - val) * 7 / 100;
-      ESP_LOGD(TAG, "gauge value: %d => %d",val,  this->gauge_value);
+      this->gauge_value = (uint8_t)(100 - percent) * 7 / 100;
+      ESP_LOGD(TAG, "gauge value: %d => %d",percent,  this->gauge_value);
     }
   }
 
@@ -171,6 +171,15 @@ namespace esphome
     }
   }
 
+  void EHMTX::draw_gauge() {
+    if (this->show_gauge)
+    {
+      this->display->line(0, 7, 0, 0, esphome::display::COLOR_OFF);
+      this->display->line(0, 7, 0, this->gauge_value, this->gauge_color);
+      this->display->line(1, 7, 1, 0, esphome::display::COLOR_OFF);
+    }
+  }
+   
   void EHMTX::setup()
   {
     register_service(&EHMTX::get_status,"status");
@@ -178,9 +187,18 @@ namespace esphome
     register_service(&EHMTX::set_display_off,"display_off");
     register_service(&EHMTX::set_indicator_on,"indicator_on",{"r","g","b"});
     register_service(&EHMTX::set_indicator_off,"indicator_off");
+    register_service(&EHMTX::set_gauge_off,"gauge_off");
     register_service(&EHMTX::set_alarm_color,"alarm_color",{"r","g","b"});
     register_service(&EHMTX::set_text_color,"text_color",{"r","g","b"});
     register_service(&EHMTX::set_clock_color,"clock_color",{"r","g","b"});
+    register_service(&EHMTX::set_today_color,"today_color",{"r","g","b"});
+    register_service(&EHMTX::set_gauge_color,"gauge_color",{"r","g","b"});
+    register_service(&EHMTX::set_weekday_color,"weekday_color",{"r","g","b"});
+    
+    register_service(&EHMTX::force_screen,"force_screen",{"icon_name"});
+    register_service(&EHMTX::del_screen,"del_screen",{"icon_name"});
+    register_service(&EHMTX::set_gauge_value,"gauge_value",{"percent"});
+    register_service(&EHMTX::set_brightness,"brightness",{"value"});
     
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
@@ -344,12 +362,12 @@ namespace esphome
     this->scroll_intervall = si;
   }
 
-  void EHMTX::del_screen(std::string iname)
+  void EHMTX::del_screen(std::string icon_name)
   {
     // if has ending of *
-    if (this->string_has_ending(iname, "*")) {
+    if (this->string_has_ending(icon_name, "*")) {
       // remove the *
-      std::string comparename = iname.substr(0, iname.length()-1);
+      std::string comparename = icon_name.substr(0, icon_name.length()-1);
 
       // iterate through the icons, comparing start only
       for (uint8_t i = 0; i < this->icon_count; i++)
@@ -362,7 +380,7 @@ namespace esphome
       }
     }
     else {
-      uint8_t icon = this->find_icon(iname.c_str());
+      uint8_t icon = this->find_icon(icon_name.c_str());
       this->store->delete_screen(icon);
     }
   }
@@ -387,11 +405,6 @@ namespace esphome
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
     screen->set_text(text, icon, w, duration);
-  }
-
-  void EHMTX::set_default_brightness(uint8_t b)
-  {
-    this->brightness_ = b;
   }
 
   void EHMTX::set_show_date(bool b)
@@ -446,12 +459,14 @@ namespace esphome
     }
   }
 
-  void EHMTX::set_brightness(uint8_t b)
+  void EHMTX::set_brightness(int value)
   {
-    this->brightness_ = b;
-    float br = (float)b / (float)255;
-    ESP_LOGI(TAG, "set_brightness %d => %.2f %%", b, 100 * br);
-    this->display->get_light()->set_correction(br, br, br, br);
+    if (value > 256) {
+      this->brightness_ = value;
+      float br = (float)value / (float)255;
+      ESP_LOGI(TAG, "set_brightness %d => %.2f %%", value, 100 * br);
+      this->display->get_light()->set_correction(br, br, br, br);
+    }
   }
 
   uint8_t EHMTX::get_brightness()
@@ -590,6 +605,7 @@ namespace esphome
         else
         {
           this->draw_clock();
+          this->draw_gauge();
         }
       }
 

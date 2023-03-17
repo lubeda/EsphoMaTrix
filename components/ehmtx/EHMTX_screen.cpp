@@ -91,12 +91,10 @@ namespace esphome
       this->config_->display->draw_pixel_at(31, 1, this->config_->alarm_color);
       this->config_->display->draw_pixel_at(31, 0, this->config_->alarm_color);
     }
-
+  
     if (this->config_->show_gauge)
     {
-      this->config_->display->line(0, 7, 0, 0, esphome::display::COLOR_OFF);
-      this->config_->display->line(0, 7, 0, this->config_->gauge_value, this->config_->gauge_color);
-      this->config_->display->line(1, 7, 1, 0, esphome::display::COLOR_OFF);
+      this->config_->draw_gauge();
       this->config_->display->image(2, 0, this->config_->icons[this->icon]);
       this->config_->display->line(10, 0, 10, 7, esphome::display::COLOR_OFF);
     }

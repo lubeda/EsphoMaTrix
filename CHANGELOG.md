@@ -7,6 +7,7 @@
 - breaking: added status,display_on,display_off as default service => remove these from your yaml
 - breaking: added indicator_on/off as default service => remove these from your yaml
 - breaking: added alarm_color,text_color,clock_color as default service => remove these from your yaml
+- breaking: gauge is also schown while the clock is displayed but without moving the screen to the right
 
 ## 2023.3.4
 

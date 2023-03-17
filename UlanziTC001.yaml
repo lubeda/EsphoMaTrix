@@ -63,12 +63,6 @@ logger:
 # Enable Home Assistant API
 api:
   services:
-    - service: gauge
-      variables:
-        val: int
-      then:
-        lambda: |-
-          id(rgb8x32).set_gauge_value(val);
     - service: alarm
       variables:
         icon_name: string
@@ -100,29 +94,6 @@ api:
         - ehmtx.delete.screen:
             id: rgb8x32
             icon_name: !lambda return icon_name;
-    - service: force_screen
-      variables:
-        icon_name: string
-      then:
-        - ehmtx.force.screen:
-            id: rgb8x32
-            icon_name: !lambda return icon_name;
-    - service: text_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_text_color(r,g,b);
-    - service: alarm_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_alarm_color(r,g,b);
             
 number:
   - platform: template

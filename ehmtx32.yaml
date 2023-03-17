@@ -45,12 +45,6 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_screen(icon_name, text, 5, false);
-    - service: brightness
-      variables:
-        brightness: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_brightness(brightness);
     - service: del_screen
       variables:
         icon_name: string
