@@ -57,22 +57,6 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->del_screen(icon_name);
-    - service: text_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_text_color(r,g,b);
-    - service: alarm_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_alarm_color(r,g,b);
 
 ota:
   password: !secret ota_password

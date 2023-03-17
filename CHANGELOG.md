@@ -6,6 +6,7 @@
 - new: support 8x32 icons without text
 - breaking: added status,display_on,display_off as default service => remove these from your yaml
 - breaking: added indicator_on/off as default service => remove these from your yaml
+- breaking: added alarm_color,text_color,clock_color as default service => remove these from your yaml
 
 ## 2023.3.4
 

@@ -95,33 +95,7 @@ api:
         - ehmtx.force.screen:
             id: rgb8x32
             icon_name: !lambda return icon_name;
-    - service: text_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_text_color(r,g,b);
-    - service: clock_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        - ehmtx.clock.color:
-            id: rgb8x32
-            red: !lambda return r;
-            green: !lambda return g;
-            blue: !lambda return b;
-    - service: alarm_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_alarm_color(r,g,b);
+    
 
 ota:
   password: !secret ota_password

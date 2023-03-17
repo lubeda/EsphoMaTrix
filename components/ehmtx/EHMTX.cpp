@@ -178,6 +178,9 @@ namespace esphome
     register_service(&EHMTX::set_display_off,"display_off");
     register_service(&EHMTX::set_indicator_on,"indicator_on",{"r","g","b"});
     register_service(&EHMTX::set_indicator_off,"indicator_off");
+    register_service(&EHMTX::set_alarm_color,"alarm_color",{"r","g","b"});
+    register_service(&EHMTX::set_text_color,"text_color",{"r","g","b"});
+    register_service(&EHMTX::set_clock_color,"clock_color",{"r","g","b"});
     
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)

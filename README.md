@@ -599,6 +599,16 @@ _parameters:_
 - ```g``` green in 0..255
 - ```b``` blue in 0..255
 
+Service **text/clock/alarm_color**
+
+set the color of the named text-type
+
+_parameters:_
+
+- ```r``` red in 0..255
+- ```g``` green in 0..255
+- ```b``` blue in 0..255
+
 Service **indicator_off**
 
 removes the indicator
