@@ -201,7 +201,7 @@ web_server:
 
 output:
   - platform: ledc
-    pin: $buzzerpin
+    pin: $buzzer_pin
     id: rtttl_out
 
 rtttl:
@@ -218,7 +218,7 @@ light:
     id: ehmtx_light
     type: GRB
     variant: WS2812
-    pin: $ledpin
+    pin: $matrix_pin
     num_leds: 256
     color_correct: [30%, 30%, 30%]
     name: "$devicename Light"
