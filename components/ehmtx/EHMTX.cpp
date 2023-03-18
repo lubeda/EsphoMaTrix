@@ -31,6 +31,7 @@ namespace esphome
     if (icon_id < MAXICONS)
     {
       this->store->force_next_screen(icon_id);
+      this->next_action_time+= this->screen_time;
       ESP_LOGD(TAG, "force next screen: %s", name.c_str());
     }
   }
@@ -194,7 +195,7 @@ namespace esphome
     register_service(&EHMTX::set_today_color,"today_color",{"r","g","b"});
     register_service(&EHMTX::set_gauge_color,"gauge_color",{"r","g","b"});
     register_service(&EHMTX::set_weekday_color,"weekday_color",{"r","g","b"});
-    
+    register_service(&EHMTX::add_screen,"add_screen",{"icon_name","text","lifetime","alarm"});
     register_service(&EHMTX::force_screen,"force_screen",{"icon_name"});
     register_service(&EHMTX::del_screen,"del_screen",{"icon_name"});
     register_service(&EHMTX::set_gauge_value,"gauge_value",{"percent"});
@@ -385,7 +386,7 @@ namespace esphome
     }
   }
 
-  void EHMTX::add_screen(std::string iconname, std::string text, uint16_t duration, bool alarm)
+  void EHMTX::add_screen(std::string iconname, std::string text, int duration, bool alarm)
   {
     uint8_t icon = this->find_icon(iconname.c_str());
     this->internal_add_screen(icon, text, duration, alarm);

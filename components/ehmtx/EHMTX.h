@@ -97,7 +97,7 @@ namespace esphome
     void set_week_start(bool b);
     void set_brightness(int b); // int because of register_service!
     uint8_t get_brightness();
-    void add_screen(std::string icon, std::string text, uint16_t duration, bool alarm);
+    void add_screen(std::string icon, std::string text, int duration, bool alarm);
     void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);

@@ -81,20 +81,7 @@ api:
             text: !lambda return text;
             icon_name: !lambda return icon_name;
             alarm: false
-    - service: brightness
-      variables:
-        brightness: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_brightness(brightness);
-    - service: del_screen
-      variables:
-        icon_name: string
-      then:
-        - ehmtx.delete.screen:
-            id: rgb8x32
-            icon_name: !lambda return icon_name;
-            
+                        
 number:
   - platform: template
     name: "$devicename brightness"
