@@ -474,6 +474,7 @@ async def to_code(config):
     html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD>"
     html_string += '''\
     <STYLE>
+    svg { padding-top: 2x; padding-right: 2px; padding-bottom: 2px; padding-left: 2px; }
     </STYLE><BODY>\
 '''
     for conf in config[CONF_ICONS]:
