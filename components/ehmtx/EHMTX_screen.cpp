@@ -96,7 +96,9 @@ namespace esphome
     {
       this->config_->draw_gauge();
       this->config_->display->image(2, 0, this->config_->icons[this->icon]);
-      this->config_->display->line(10, 0, 10, 7, esphome::display::COLOR_OFF);
+      if (! this->config_->icons[this->icon]->fullscreen) {
+        this->config_->display->line(10, 0, 10, 7, esphome::display::COLOR_OFF);
+      }
     }
     else
     {
