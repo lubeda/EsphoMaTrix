@@ -221,6 +221,7 @@ namespace esphome
     register_service(&EHMTX::get_status, "status");
     register_service(&EHMTX::set_display_off, "display_on");
     register_service(&EHMTX::set_display_off, "display_off");
+    register_service(&EHMTX::show_all_icons, "show_icons");
     register_service(&EHMTX::set_indicator_on, "indicator_on", {"r", "g", "b"});
     register_service(&EHMTX::set_indicator_off, "indicator_off");
     register_service(&EHMTX::set_gauge_off, "gauge_off");
@@ -235,6 +236,8 @@ namespace esphome
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
     register_service(&EHMTX::set_brightness, "brightness", {"value"});
+    
+       
 
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
