@@ -643,7 +643,7 @@ binary_sensor:
 
 Service **hold_screen**
 
-displays the current screen for configured ammount (see **hold_time**) (default=20) seconds longer.
+Displays the current screen for configured ammount (see **hold_time**) (default=20) seconds longer.
 
 e.g. on the Ulanzi TC001
 
@@ -682,7 +682,7 @@ Turn display on or off
 
 Service **show_all_icons**
 
-Show all of your icons sequentially by ID.
+Display all of your icons sequentially by ID.
 
 Service **gauge_value** / **gauge_off**
 
@@ -900,7 +900,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.3.5 added status,display_on,display_off as default service => remove these from your yaml
 - 2023.3.5 added indicator_on/off as default services => remove these from your yaml
 - 2023.3.5 added *_color as default services => remove these from your yaml
-- 2023.3.5 added gauge_percent/gauge_off as default services => remove these from your yaml
+- 2023.3.5 added show_all_icons,gauge_percent/gauge_off as default services => remove these from your yaml
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.
