@@ -399,7 +399,7 @@ Force the selected screen ```icon_name``` to be displayed next. Afterwards the l
         icon_name: !lambda return icon_name;
 ```
 
-##### Set (text/alarm/clock/weekday/today) color action
+##### Set (alarm/clock/gauge/text/today/weekday) color action
 
 Sets the color of the select element
 
@@ -415,11 +415,12 @@ You have to use use id of your ehmtx component, e.g. `rgb8x32`
 
 valid elements:
 
-- `ehmtx.text.color:`
 - `ehmtx.alarm.color:`
 - `ehmtx.clock.color:`
-- `ehmtx.weekday.color:`
+- `ehmtx.gauge.color:`
+- `ehmtx.text.color:`
 - `ehmtx.today.color:`
+- `ehmtx.weekday.color:`
 - ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
 
 *Example*
