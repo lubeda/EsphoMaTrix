@@ -475,7 +475,7 @@ Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP
 
 ## Integration in Home Assistant
 
-To control your display it has to be integrated in Home Assistant. Then it provides at least three services, all prefixed with the configured `devicename` e.g. "ehmtx". See the [sample yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ehmtx32.yaml) for the default services, but you can add your own.
+To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own.
 
 ### Use the light component
 
@@ -498,7 +498,7 @@ light:
 
 ### Services
 
-All communication with Home Assistant use the homeasistant-api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
+All communication with Home Assistant use the homeasistant-api. The services can be provided by default or also defined additionally in the yaml. To define the additional services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
 
 *Example*
 
@@ -514,7 +514,7 @@ api:
           id(rgb8x32)->add_screen(icon_name, text, 7, true); // 7 Minutes alarm=true
 ```
 
-Service **brightness**
+**(D)** Service **brightness**
 
 Sets the overall brightness of the display (`0..255`)
 
@@ -568,7 +568,7 @@ _parameters:_
 - ```icon_name```: The name of the predefined icon id (see installation)
 - ```text```: The text to be displayed
 
-Service **del_screen**
+**(D)** Service **del_screen**
 
 Removes a screen from the display by icon name. If this screen is actually display while sending this command the screen will be displayed until its "show_screen"-time has ended.
 
@@ -580,7 +580,7 @@ _parameters:_
 
 - ```icon_name```: Icon `id` defined in the yaml (see installation)
 
-Service **indicator_on** / **indicator_off**
+**(D)** Service **indicator_on** / **indicator_off**
 
 Turns indicator on/off
 
@@ -592,7 +592,7 @@ _parameters:_
 - ```g``` green in 0..255
 - ```b``` blue in 0..255
 
-Service **alarm_color** / **clock_color** / **gauge_color** / **text_color** / **today_color** / **weekday_color**
+**(D)** Service **alarm_color** / **clock_color** / **gauge_color** / **text_color** / **today_color** / **weekday_color**
 
 Set the color of the named text-type
 
@@ -602,7 +602,7 @@ _parameters:_
 - ```g``` green in 0..255
 - ```b``` blue in 0..255
 
-Service **display_on** / **display_off**
+**(D)** Service **display_on** / **display_off**
 
 Turns the display on or off
 
@@ -659,7 +659,7 @@ binary_sensor:
 ```
 
 
-Service **status**
+**(D)** Service **status**
 
 This service displays the running queue and a list of icons in the logs
 
@@ -676,17 +676,13 @@ This service displays the running queue and a list of icons in the logs
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
 
-Service **display_on/off**
-
-Turn display on or off
-
-Service **show_all_icons**
+**(D)** Service **show_all_icons**
 
 Display all of your icons sequentially by ID.
 
 Service **gauge_value** / **gauge_off**
 
-Turns gauge on/off
+**(D)** Turns gauge on/off
 Displays a colored gauge. You can define the color by parameter.
 
 _parameters:_
