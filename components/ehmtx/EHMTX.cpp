@@ -32,7 +32,7 @@ namespace esphome
     {
       this->store->force_next_screen(icon_id);
       this->next_action_time = this->clock->now().timestamp + this->screen_time;
-      ESP_LOGD(TAG, "force next screen: %s", name.c_str());
+      ESP_LOGD(TAG, "force next screen: %s for %d sec", name.c_str(),this->screen_time);
     }
   }
 
