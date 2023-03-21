@@ -139,14 +139,7 @@ api:
             icon_name: !lambda return icon_name;
             duration: !lambda return duration;
             alarm: false
-    
-    - service: brightness
-      variables:
-        brightness: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_brightness(brightness);
-    
+       
     - service: a_del_screen
       variables:
         icon_name: string

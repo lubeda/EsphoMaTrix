@@ -506,7 +506,7 @@ namespace esphome
 
   void EHMTX::set_brightness(int value)
   {
-    if (value > 256)
+    if (value < 256)
     {
       this->brightness_ = value;
       float br = (float)value / (float)255;
