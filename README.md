@@ -13,11 +13,11 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 
 The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (in my opinion) that I started an esphome.io variant  targeted to an optimized Home Assistant integration. The main reason, for me is the Home Assistant integration!
 
-There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C. As a starting point you can use the [``UlanziTC001.yaml``](https://github.com/lubeda/EsphoMaTrix/blob/main/UlanziTC001.yaml). Yet the LDR and battery sensor are not perfectly supported. For another use of the hardware see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi) firmware.
+There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C. As a starting point you can use the [``UlanziTC001.yaml``](https://github.com/lubeda/EsphoMaTrix/blob/main/UlanziTC001.yaml). Yet the LDR and battery sensor are not perfectly supported. For another use of the hardware see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi) or [AWTRIX-LIGHT](https://github.com/Blueforcer/awtrix-light) firmwares.
 
 See this German tutorial video with information on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A).
 
-Another gemany tutorial video focused at the Ulanzi [Smarte Pixel Clock über Home Assistant steuern - Entitäten / Icons und mehr in der Ulanzi](https://www.youtube.com/watch?v=LgaT0mNbl34)
+Another german tutorial video focused at the Ulanzi [Smarte Pixel Clock über Home Assistant steuern - Entitäten / Icons und mehr in der Ulanzi](https://www.youtube.com/watch?v=LgaT0mNbl34)
 
 See this [nice article](https://blakadder.com/esphome-pixel-clock/) about EsphoMaTrix on a Ulanzi TC001 from [blakadder](https://github.com/blakadder).
 
@@ -124,7 +124,7 @@ First defined icon will be used as a fallback icon in case of an error, e.g. if 
 
 GIFs are limited to 16 frames to limit the flash space. The first icon in your list is the fallback.
 
-All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 64 in the code and also by the flash space and the RAM of your board.
+All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 80 in the code and also by the flash space and the RAM of your board.
 
 ***Parameters***
 
@@ -163,17 +163,6 @@ esphome:
     # ...
     then:
       - lambda: !lambda |-
-          id(rgb8x32)->show_all_icons();
-```
-
-Here you can show all of your icons via a service call:
-
-```yaml
-api:
-  services:
-    - service: icons
-      then:
-        lambda: |-
           id(rgb8x32)->show_all_icons();
 ```
 
@@ -410,7 +399,7 @@ Force the selected screen ```icon_name``` to be displayed next. Afterwards the l
         icon_name: !lambda return icon_name;
 ```
 
-##### Set (text/alarm/clock/weekday/today) color action
+##### Set (alarm/clock/gauge/text/today/weekday) color action
 
 Sets the color of the select element
 
@@ -426,11 +415,12 @@ You have to use use id of your ehmtx component, e.g. `rgb8x32`
 
 valid elements:
 
-- `ehmtx.text.color:`
 - `ehmtx.alarm.color:`
 - `ehmtx.clock.color:`
-- `ehmtx.weekday.color:`
+- `ehmtx.gauge.color:`
+- `ehmtx.text.color:`
 - `ehmtx.today.color:`
+- `ehmtx.weekday.color:`
 - ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
 
 *Example*
@@ -486,7 +476,7 @@ Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP
 
 ## Integration in Home Assistant
 
-To control your display it has to be integrated in Home Assistant. Then it provides at least three services, all prefixed with the configured `devicename` e.g. "ehmtx". See the [sample yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ehmtx32.yaml) for the default services, but you can add your own.
+To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own.
 
 ### Use the light component
 
@@ -509,7 +499,7 @@ light:
 
 ### Services
 
-All communication with Home Assistant use the homeasistant-api. The services are defined in the yaml. To define the services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
+All communication with Home Assistant use the homeasistant-api. The services can be provided by default or also defined additionally in the yaml. To define the additional services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
 
 *Example*
 
@@ -525,7 +515,7 @@ api:
           id(rgb8x32)->add_screen(icon_name, text, 7, true); // 7 Minutes alarm=true
 ```
 
-Service **_brightness**
+**(D)** Service **brightness**
 
 Sets the overall brightness of the display (`0..255`)
 
@@ -549,7 +539,7 @@ number:
         id(rgb8x32)->set_brightness(x);
 ```
 
-Service **_screen**
+Service **screen**
 
 Queues a screen with an icon/animation and a text. There can only be one text per icon id. If you need to show e.g. an indoor and an outdoor temperature you have to use different icon id's!
 
@@ -560,7 +550,7 @@ _parameters:_
 - ```icon_name```: The number of the predefined icons (see installation)
 - ```text```: The text to be displayed
 
-Service **_screen_t**
+Service **screen_t**
 
 Same as above with a special duration paremeter. E.g. to indicate someone's birthday you can use `24*60` for 1440 minutes.
 
@@ -570,7 +560,7 @@ _parameters:_
 - ```text```: The text to be displayed
 - ```duration```: The lifetime in minutes
 
-Service **_alarm**
+Service **alarm**
 
 Alarm is like a regular screen but it is displayed two minutes longer and has a red text color and a red marker in the upper right corner.
 
@@ -579,7 +569,7 @@ _parameters:_
 - ```icon_name```: The name of the predefined icon id (see installation)
 - ```text```: The text to be displayed
 
-Service **del_screen**
+**(D)** Service **del_screen**
 
 Removes a screen from the display by icon name. If this screen is actually display while sending this command the screen will be displayed until its "show_screen"-time has ended.
 
@@ -591,7 +581,9 @@ _parameters:_
 
 - ```icon_name```: Icon `id` defined in the yaml (see installation)
 
-Service **indicator_on**
+**(D)** Service **indicator_on** / **indicator_off**
+
+Turns indicator on/off
 
 Display a colored corner on all screens and the clock. You can define the color by parameter.
 
@@ -601,9 +593,9 @@ _parameters:_
 - ```g``` green in 0..255
 - ```b``` blue in 0..255
 
-Service **text/clock/alarm_color**
+**(D)** Service **alarm_color** / **clock_color** / **gauge_color** / **text_color** / **today_color** / **weekday_color**
 
-set the color of the named text-type
+Set the color of the named text-type
 
 _parameters:_
 
@@ -611,13 +603,9 @@ _parameters:_
 - ```g``` green in 0..255
 - ```b``` blue in 0..255
 
-Service **indicator_off**
+**(D)** Service **display_on** / **display_off**
 
-removes the indicator
-
-Service **display_on** / **display_off**
-
-turns the display on or off
+Turns the display on or off
 
 There's an easier way in using a switch component:
 
@@ -656,7 +644,7 @@ binary_sensor:
 
 Service **hold_screen**
 
-displays the current screen for configured ammount (see **hold_time**) (default=20) seconds longer.
+Displays the current screen for configured ammount (see **hold_time**) (default=20) seconds longer.
 
 e.g. on the Ulanzi TC001
 
@@ -672,7 +660,7 @@ binary_sensor:
 ```
 
 
-Service **status**
+**(D)** Service **status**
 
 This service displays the running queue and a list of icons in the logs
 
@@ -689,9 +677,18 @@ This service displays the running queue and a list of icons in the logs
 [13:10:10][I][EHMTX:186]: status icon: 4 name: rain
 ```
 
-Service **display_on/off**
+**(D)** Service **show_all_icons**
 
-Turn display on or off
+Display all of your icons sequentially by ID.
+
+Service **gauge_value** / **gauge_off**
+
+**(D)** Turns gauge on/off
+Displays a colored gauge. You can define the color by parameter.
+
+_parameters:_
+
+- ```percent``` gauge percentage
 
 ### Use in Home Assistant automations
 
@@ -898,7 +895,9 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.2.0 removed awtrix icon `awtrixid` support
 - 2023.3.5 removed automatic scaling of images and animations
 - 2023.3.5 added status,display_on,display_off as default service => remove these from your yaml
-- 2023.3.5 breaking: added indicator_on/off as default service => remove these from your yaml
+- 2023.3.5 added indicator_on/off as default services => remove these from your yaml
+- 2023.3.5 added *_color as default services => remove these from your yaml
+- 2023.3.5 added show_all_icons,gauge_percent/gauge_off as default services => remove these from your yaml
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.

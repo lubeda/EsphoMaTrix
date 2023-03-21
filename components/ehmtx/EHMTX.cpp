@@ -219,7 +219,7 @@ namespace esphome
   void EHMTX::setup()
   {
     register_service(&EHMTX::get_status, "status");
-    register_service(&EHMTX::set_display_off, "display_on");
+    register_service(&EHMTX::set_display_on, "display_on");
     register_service(&EHMTX::set_display_off, "display_off");
     register_service(&EHMTX::show_all_icons, "show_icons");
     register_service(&EHMTX::set_indicator_on, "indicator_on", {"r", "g", "b"});
