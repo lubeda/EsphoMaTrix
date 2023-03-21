@@ -31,7 +31,7 @@ namespace esphome
     if (icon_id < MAXICONS)
     {
       this->store->force_next_screen(icon_id);
-      this->next_action_time = this->screen_time;
+      this->next_action_time = this->clock->now().timestamp + this->screen_time;
       ESP_LOGD(TAG, "force next screen: %s", name.c_str());
     }
   }
