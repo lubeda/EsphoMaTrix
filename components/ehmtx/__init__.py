@@ -25,8 +25,18 @@ ICONHEIGHT = 8
 ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT * 4
 SVG_ICONSTART = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
 SVG_FULLSCREENSTART = '<svg width="320px" height="80px" viewBox="0 0 320 80">'
-
 SVG_END = "</svg>"
+
+logging.warning(f"")
+logging.warning(f"If you are upgrading EsphoMaTrix from an older version,")
+logging.warning(f"you have to remove the service-definitions, from the yaml, for following")
+logging.warning(f"services (see CHANGELOG.md and README.md)")
+logging.warning(f"=========================================================================")
+logging.warning(f"status, display_on, display_off, show_icons, indicator_on, indicator_off,")
+logging.warning(f"gauge_off, alarm_color, text_color, clock_color, today_color, gauge_color,")
+logging.warning(f"weekday_color, add_screen, force_screen, del_screen, gauge_value, brightness")
+logging.warning(f"=========================================================================")
+logging.warning(f"")
 
 def rgb565_svg(x,y,r,g,b):
     return f"<rect style=\"fill:rgb({(r << 3) | (r >> 2)},{(g << 2) | (g >> 4)},{(b << 3) | (b >> 2)});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
