@@ -32,7 +32,7 @@ Or in german:
 
 It is a working solution with core functionality coded. Advanced features, like automatic brightness control can be done with esphome actions and automations.
 
-See it in action on [YouTube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (boring, no sound but subtitles).
+See it in action on [YouTube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (no sound but subtitles).
 
 ### Features
 
