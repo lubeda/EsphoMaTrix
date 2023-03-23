@@ -19,6 +19,7 @@ namespace esphome
     this->icon_count = 0;
     this->last_clock_time = 0;
     this->show_icons = false;
+    this->show_display = true;
 
 #ifdef USE_EHMTX_SELECT
     this->select = NULL;
@@ -235,9 +236,7 @@ namespace esphome
     register_service(&EHMTX::force_screen, "force_screen", {"icon_name"});
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
-    register_service(&EHMTX::set_brightness, "brightness", {"value"});
-    
-       
+    register_service(&EHMTX::set_brightness, "brightness", {"value"}); 
 
 #ifdef USE_EHMTX_SELECT
     if (this->select != NULL)
