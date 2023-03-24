@@ -312,7 +312,7 @@ There is a trigger available to do some local magic. The trigger ```on_next_scre
 
 See the examples:
 
-##### Write information to log
+##### Write information to homeassistant log
 
 ```yaml
 ehmtx:
