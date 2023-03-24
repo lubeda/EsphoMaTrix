@@ -510,7 +510,7 @@ namespace esphome
       this->brightness_ = value;
       float br = (float)value / (float)255;
       ESP_LOGI(TAG, "set_brightness %d => %.2f %%", value, 100 * br);
-      this->display->get_light()->set_correction(br, br, br, br);
+      this->display->get_light()->set_correction(br,br,br);     
     }
   }
 

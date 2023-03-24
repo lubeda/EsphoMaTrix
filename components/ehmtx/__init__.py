@@ -585,7 +585,16 @@ async def to_code(config):
                 f.close()
         except:
             print("Error writing HTML file")    
-    
+
+    disp = await cg.get_variable(config[CONF_DISPLAY])
+    cg.add(var.set_display(disp))
+
+    f = await cg.get_variable(config[CONF_FONT_ID])
+    cg.add(var.set_font(f))
+
+    ehmtxtime = await cg.get_variable(config[CONF_TIME])
+    cg.add(var.set_clock(ehmtxtime))
+
     cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
@@ -601,15 +610,6 @@ async def to_code(config):
     cg.add(var.set_show_date(config[CONF_SHOWDATE]))
     cg.add(var.set_show_seconds(config[CONF_SHOW_SECONDS]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
-
-    disp = await cg.get_variable(config[CONF_DISPLAY])
-    cg.add(var.set_display(disp))
-
-    f = await cg.get_variable(config[CONF_FONT_ID])
-    cg.add(var.set_font(f))
-
-    ehmtxtime = await cg.get_variable(config[CONF_TIME])
-    cg.add(var.set_clock(ehmtxtime))
 
     if (config.get(CONF_SELECT)):
         ehmtxselect = await cg.get_variable(config[CONF_SELECT])
