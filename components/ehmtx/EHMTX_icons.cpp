@@ -9,6 +9,7 @@ namespace esphome
     this->name = icon_name;
     this->reverse = revers;
     this->frame_duration = frame_duration;
+    this->fullscreen = width == 32;
     this->counting_up = true;
   }
 

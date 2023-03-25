@@ -75,16 +75,6 @@ api:
             text: !lambda return text;
             icon_name: !lambda return icon_name;
             alarm: false
-    - service: brightness
-      variables:
-        brightness: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_brightness(brightness);
-    - service: status
-      then:
-        lambda: |-
-          id(rgb8x32)->get_status();
     - service: del_screen
       variables:
         icon_name: string
@@ -92,17 +82,6 @@ api:
         - ehmtx.delete.screen:
             id: rgb8x32
             icon_name: !lambda return icon_name;
-    - service: indicator_on
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        - ehmtx.indicator.on:
-            id: rgb8x32
-            red: !lambda return r;
-            green: !lambda return g;
-            blue: !lambda return b;
     - service: force_screen
       variables:
         icon_name: string
@@ -110,45 +89,7 @@ api:
         - ehmtx.force.screen:
             id: rgb8x32
             icon_name: !lambda return icon_name;
-    - service: text_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_text_color(r,g,b);
-    - service: clock_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        - ehmtx.clock.color:
-            id: rgb8x32
-            red: !lambda return r;
-            green: !lambda return g;
-            blue: !lambda return b;
-    - service: alarm_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_alarm_color(r,g,b);
-    - service: indicator_off
-      then:
-        - ehmtx.indicator.off:
-            id: rgb8x32
-    - service: display_on
-      then:
-        - ehmtx.display.on:
-            id: rgb8x32
-    - service: display_off
-      then:
-        - ehmtx.display.off:
-            id: rgb8x32
+    
 
 ota:
   password: !secret ota_password

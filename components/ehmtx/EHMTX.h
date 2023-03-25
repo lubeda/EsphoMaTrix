@@ -8,7 +8,7 @@ const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.4";
+static const char *const EHMTX_VERSION = "Version: 2023.3.5";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
@@ -20,8 +20,7 @@ namespace esphome
   class EHMTXNextScreenTrigger;
   class EHMTXNextClockTrigger;
 
-  class EHMTX : public PollingComponent
-  {
+  class EHMTX : public PollingComponent, public api::CustomAPIDevice   {
   protected:
     float get_setup_priority() const override { return esphome::setup_priority::AFTER_CONNECTION; }
     uint8_t brightness_;
@@ -65,6 +64,7 @@ namespace esphome
     int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
     bool string_has_ending(std::string const &fullString, std::string const &ending);
+    bool show_seconds;
     uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
@@ -91,13 +91,13 @@ namespace esphome
     void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
+    void set_show_seconds(bool b);
     void set_show_date(bool b);
     void set_font_offset(int8_t x, int8_t y);
     void set_week_start(bool b);
-    void set_default_brightness(uint8_t b);
-    void set_brightness(uint8_t b);
+    void set_brightness(int b); // int because of register_service!
     uint8_t get_brightness();
-    void add_screen(std::string icon, std::string text, uint16_t duration, bool alarm);
+    void add_screen(std::string icon, std::string text, int duration, bool alarm);
     void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
@@ -107,10 +107,9 @@ namespace esphome
     void set_indicator_off();
     void set_time_format(std::string s);
     void set_date_format(std::string s);
-    void set_indicator_on();
-    void set_indicator_color(int r, int g, int b);
+    void set_indicator_on(int r, int g, int b);
     void set_gauge_off();
-    void set_gauge_value(uint8_t v);
+    void set_gauge_value(int v); // int because of register_service
     void set_gauge_color(int r, int g, int b);
     void set_text_color(int r, int g, int b);
     void set_clock_color(int r, int g, int b);
@@ -119,6 +118,7 @@ namespace esphome
     void set_alarm_color(int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
+    void draw_gauge();
     void add_on_next_screen_trigger(EHMTXNextScreenTrigger *t) { this->on_next_screen_triggers_.push_back(t); }
     void add_on_next_clock_trigger(EHMTXNextClockTrigger *t) { this->on_next_clock_triggers_.push_back(t); }
     void setup();
@@ -251,8 +251,7 @@ namespace esphome
 
     void play(Ts... x) override
     {
-      this->parent_->set_indicator_on();
-      this->parent_->set_indicator_color(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
+      this->parent_->set_indicator_on(this->red_.value(x...), this->green_.value(x...), this->blue_.value(x...));
     }
 
   protected:
@@ -467,6 +466,7 @@ namespace esphome
     EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type, std::string icon_name, bool revers, uint16_t frame_duration);
     std::string name;
     uint16_t frame_duration;
+    bool fullscreen;
     void next_frame();
     bool reverse;
   };

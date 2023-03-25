@@ -45,60 +45,7 @@ api:
       then:
         lambda: |-
           id(rgb8x32)->add_screen(icon_name, text, 5, false);
-    - service: brightness
-      variables:
-        brightness: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_brightness(brightness);
-    - service: status
-      then:
-        lambda: |-
-          id(rgb8x32)->get_status();
-    - service: del_screen
-      variables:
-        icon_name: string
-      then:
-        lambda: |-
-          id(rgb8x32)->del_screen(icon_name);
-    - service: indicator_on
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_indicator_color(r,g,b);
-          id(rgb8x32)->set_indicator_on();
-    - service: text_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_text_color(r,g,b);
-    - service: alarm_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_alarm_color(r,g,b);
-    - service: indicator_off
-      then:
-        lambda: |-
-          id(rgb8x32)->set_indicator_off();
-    - service: display_on
-      then:
-        - ehmtx.display.on:
-            id: rgb8x32
-    - service: display_off
-      then:
-        - ehmtx.display.off:
-            id: rgb8x32
-
+    
 ota:
   password: !secret ota_password
 

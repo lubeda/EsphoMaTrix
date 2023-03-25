@@ -18,18 +18,25 @@ _LOGGER = logging.getLogger(__name__)
 DEPENDENCIES = ["display", "light", "api"]
 AUTO_LOAD = ["ehmtx"]
 IMAGE_TYPE_RGB565 = 4
-MAXFRAMES = 20
-MAXICONS = 80
+MAXFRAMES = 110
+MAXICONS = 90
 ICONWIDTH = 8
 ICONHEIGHT = 8
-ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT
-ICONSIZE = [ICONWIDTH,ICONHEIGHT]
-SVG_START = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
-
+ICONBUFFERSIZE = ICONWIDTH * ICONHEIGHT * 4
+SVG_ICONSTART = '<svg width="80px" height="80px" viewBox="0 0 80 80">'
+SVG_FULLSCREENSTART = '<svg width="320px" height="80px" viewBox="0 0 320 80">'
 SVG_END = "</svg>"
 
-def rgb888_svg(x,y,r,g,b):
-    return f"<rect style=\"fill:rgb({r},{g},{b});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
+logging.warning(f"")
+logging.warning(f"If you are upgrading EsphoMaTrix from an older version to 2023.3.5,")
+logging.warning(f"you have to remove the service-definitions from the yaml. Remove following")
+logging.warning(f"services (also see CHANGELOG.md and README.md):")
+logging.warning(f"=========================================================================")
+logging.warning(f"status, display_on, display_off, show_icons, indicator_on, indicator_off,")
+logging.warning(f"gauge_off, alarm_color, text_color, clock_color, today_color, gauge_color,")
+logging.warning(f"weekday_color, add_screen, force_screen, del_screen, gauge_value, brightness")
+logging.warning(f"=========================================================================")
+logging.warning(f"")
 
 def rgb565_svg(x,y,r,g,b):
     return f"<rect style=\"fill:rgb({(r << 3) | (r >> 2)},{(g << 2) | (g >> 4)},{(b << 3) | (b >> 2)});\" x=\"{x*10}\" y=\"{y*10}\" width=\"10\" height=\"10\"/>"
@@ -70,6 +77,7 @@ CONF_DATE_FORMAT = "date_format"
 CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ON_NEXT_CLOCK = "on_next_clock"
+CONF_SHOW_SECONDS = "show_seconds"
 CONF_WEEK_ON_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
@@ -94,6 +102,9 @@ EHMTX_SCHEMA = cv.Schema({
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
         CONF_HTML, default=False
+    ): cv.boolean,
+    cv.Optional(
+        CONF_SHOW_SECONDS, default=False
     ): cv.boolean,
     cv.Optional(
         CONF_SHOWDATE, default=True
@@ -455,11 +466,25 @@ CODEOWNERS = ["@lubeda"]
 
 async def to_code(config):
 
-    from PIL import Image
+    from PIL import Image, ImageSequence
+
+    def openImageFile(path):
+        try:
+            return Image.open(path)
+        except Exception as e:
+            raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
+
+    def thumbnails(frames):
+        for frame in frames:
+            thumbnail = frame.copy()
+            thumbnail.thumbnail((32,8), Image.ANTIALIAS)
+            yield thumbnail
+
     var = cg.new_Pvariable(config[CONF_ID])
     html_string = F"<HTML><HEAD><TITLE>{CORE.config_path}</TITLE></HEAD>"
     html_string += '''\
     <STYLE>
+    svg { padding-top: 2x; padding-right: 2px; padding-bottom: 2px; padding-left: 2px; }
     </STYLE><BODY>\
 '''
     for conf in config[CONF_ICONS]:
@@ -467,7 +492,7 @@ async def to_code(config):
         if CONF_FILE in conf:
             path = CORE.relative_config_path(conf[CONF_FILE])
             try:
-                image = Image.open(path)
+                image = openImageFile(path)
             except Exception as e:
                 raise core.EsphomeError(f" ICONS: Could not load image file {path}: {e}")
         elif CONF_LAMEID in conf:
@@ -482,88 +507,100 @@ async def to_code(config):
             image = Image.open(io.BytesIO(r.content))
         
         width, height = image.size
-        
-        if (width != ICONWIDTH) or (height != ICONHEIGHT):
-            image = image.resize(ICONSIZE)
-            width, height = image.size
 
         if hasattr(image, 'n_frames'):
             frames = min(image.n_frames, MAXFRAMES)
         else:
             frames = 1
-            
-        if (conf[CONF_DURATION] == 0):
-            try:
-                duration =  image.info['duration']         
-            except:
-                duration = config[CONF_ANIMINTERVALL]
+
+        if ((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT):
+            logging.warning(f" icon wrong size valid 8x8 or 8x32: {conf[CONF_ID]} skipped!")
         else:
-            duration = conf[CONF_DURATION]
+            if (conf[CONF_DURATION] == 0):
+                try:
+                    duration =  image.info['duration']         
+                except:
+                    duration = config[CONF_ANIMINTERVALL]
+            else:
+                duration = conf[CONF_DURATION]
 
-        html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
+            html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
-        pos = 0 
-        frameIndex = 0
-        html_string += f"<DIV ID={conf[CONF_ID]}>"
-        data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
-        for frameIndex in range(frames):
-            html_string += SVG_START
-            image.seek(frameIndex)
-            frame = image.convert("RGB")
-            pixels = list(frame.getdata())
-            if len(pixels) != ICONBUFFERSIZE:
-                raise core.EsphomeError(
-                    f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
-                )
-            i = 0
-            for pix in pixels:
-                R = pix[0] >> 3
-                G = pix[1] >> 2
-                B = pix[2] >> 3
-                x = (i % ICONWIDTH)
-                y = i//ICONHEIGHT
-                i +=1
-                rgb = (R << 11) | (G << 5) | B
-                html_string += rgb565_svg(x,y,R,G,B)
-                data[pos] = rgb >> 8
-                pos += 1
-                data[pos] = rgb & 255
-                pos += 1
-            html_string += SVG_END
-        html_string += f"</DIV>"
-       
-        rhs = [HexInt(x) for x in data]
+            pos = 0 
+            frameIndex = 0
+            html_string += f"<DIV ID={conf[CONF_ID]}>"
+            data = [0 for _ in range(ICONBUFFERSIZE * 2 * frames)]
+            for frameIndex in range(frames):
+                
+                image.seek(frameIndex)
+                frame = image.convert("RGB")
+                pixels = list(frame.getdata())
+                width, height = image.size
+                if width == 8:  
+                    html_string += SVG_ICONSTART
+                else:
+                    html_string += SVG_FULLSCREENSTART
+                i = 0
+                for pix in pixels:
+                    R = pix[0] >> 3
+                    G = pix[1] >> 2
+                    B = pix[2] >> 3
+                    x = (i % width)
+                    y = i//width
+                    i +=1
+                    rgb = (R << 11) | (G << 5) | B
+                    html_string += rgb565_svg(x,y,R,G,B)
+                    data[pos] = rgb >> 8
+                    pos += 1
+                    data[pos] = rgb & 255
+                    pos += 1
+                html_string += SVG_END
+            html_string += f"</DIV>"
+        
+            rhs = [HexInt(x) for x in data]
 
-        prog_arr = cg.progmem_array(conf[CONF_RAW_DATA_ID], rhs)
+            prog_arr = cg.progmem_array(conf[CONF_RAW_DATA_ID], rhs)
 
-        cg.new_Pvariable(
-            conf[CONF_ID],
-            prog_arr,
-            width,
-            height,
-            frames,
-            espImage.IMAGE_TYPE["RGB565"],
-            str(conf[CONF_ID]),
-            conf[CONF_PINGPONG],
-            duration,
-        )
+            cg.new_Pvariable(
+                conf[CONF_ID],
+                prog_arr,
+                width,
+                height,
+                frames,
+                espImage.IMAGE_TYPE["RGB565"],
+                str(conf[CONF_ID]),
+                conf[CONF_PINGPONG],
+                duration,
+            )
 
-        cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
+            cg.add(var.add_icon(RawExpression(str(conf[CONF_ID]))))
 
     html_string += "</BODY></HTML>"
     
     if config[CONF_HTML]:
         try:
-            with open(CORE.config_path.replace(".yaml","") + ".html", 'w') as f:
+            htmlfn = CORE.config_path.replace(".yaml","") + ".html"
+            with open(htmlfn, 'w') as f:
                 f.truncate()
                 f.write(html_string)
                 f.close()
+                logging.info(f"EsphoMaTrix: wrote html-file with icon preview: {htmlfn}")
+
         except:
-            print("Error writing HTML file")    
-    
+            logging.warning(f"EsphoMaTrix: Error writing HTML file: {htmlfn}")    
+
+    disp = await cg.get_variable(config[CONF_DISPLAY])
+    cg.add(var.set_display(disp))
+
+    f = await cg.get_variable(config[CONF_FONT_ID])
+    cg.add(var.set_font(f))
+
+    ehmtxtime = await cg.get_variable(config[CONF_TIME])
+    cg.add(var.set_clock(ehmtxtime))
+
     cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
-    cg.add(var.set_default_brightness(config[CONF_BRIGHTNESS]))
+    cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
     cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
@@ -574,16 +611,8 @@ async def to_code(config):
     cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
     cg.add(var.set_hold_time(config[CONF_HOLD_TIME]))
     cg.add(var.set_show_date(config[CONF_SHOWDATE]))
+    cg.add(var.set_show_seconds(config[CONF_SHOW_SECONDS]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
-
-    disp = await cg.get_variable(config[CONF_DISPLAY])
-    cg.add(var.set_display(disp))
-
-    f = await cg.get_variable(config[CONF_FONT_ID])
-    cg.add(var.set_font(f))
-
-    ehmtxtime = await cg.get_variable(config[CONF_TIME])
-    cg.add(var.set_clock(ehmtxtime))
 
     if (config.get(CONF_SELECT)):
         ehmtxselect = await cg.get_variable(config[CONF_SELECT])

@@ -139,19 +139,7 @@ api:
             icon_name: !lambda return icon_name;
             duration: !lambda return duration;
             alarm: false
-    
-    - service: brightness
-      variables:
-        brightness: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_brightness(brightness);
-    
-    - service: status
-      then:
-        lambda: |-
-          id(rgb8x32)->get_status();
-    
+       
     - service: a_del_screen
       variables:
         icon_name: string
@@ -160,19 +148,8 @@ api:
             id: rgb8x32
             icon_name: !lambda return icon_name;
     
-    - service: indicator_on 
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        - ehmtx.indicator.on:
-            id: rgb8x32
-            red: !lambda return r;
-            green: !lambda return g;
-            blue: !lambda return b;
-    
-    - service: force_screen
+ 
+   - service: force_screen
       variables:
         icon_name: string
       then:
@@ -207,38 +184,6 @@ api:
         lambda: |-
           id(rgb8x32)->set_alarm_color(r,g,b);
     
-    - service: weekday_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_weekday_color(r,g,b);
-    
-    - service: today_color
-      variables:
-        r: int
-        g: int
-        b: int
-      then:
-        lambda: |-
-          id(rgb8x32)->set_today_color(r,g,b);
-
-    - service: indicator_off
-      then:
-        - ehmtx.indicator.off:
-            id: rgb8x32
-
-    - service: display_on
-      then:
-        - ehmtx.display.on:
-            id: rgb8x32
-            
-    - service: display_off
-      then:
-        - ehmtx.display.off:
-            id: rgb8x32
 
 number:
   - platform: template
