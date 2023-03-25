@@ -3,7 +3,7 @@
 #include "esphome.h"
 
 const uint8_t MAXQUEUE = 24;
-const uint8_t MAXICONS = 80;
+const uint8_t MAXICONS = 90;
 const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
@@ -15,7 +15,6 @@ namespace esphome
 {
   class EHMTX_screen;
   class EHMTX_store;
-  class EhmtxSelect;
   class EHMTX_Icon;
   class EHMTXNextScreenTrigger;
   class EHMTXNextClockTrigger;
@@ -53,11 +52,6 @@ namespace esphome
     void add_icon(EHMTX_Icon *icon);
     bool show_display;
     bool has_active_screen;
-#ifdef USE_EHMTX_SELECT
-    std::vector<std::string> select_options;
-    esphome::EhmtxSelect *select;
-    void set_select(esphome::EhmtxSelect *es);
-#endif
     addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
@@ -65,7 +59,7 @@ namespace esphome
     uint8_t find_icon(std::string name);
     bool string_has_ending(std::string const &fullString, std::string const &ending);
     bool show_seconds;
-    uint16_t duration;         // in minutes how long is a screen valid
+    //uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
     uint16_t anim_intervall;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
@@ -227,14 +221,8 @@ namespace esphome
       auto duration = this->duration_.value(x...);
       auto alarm = this->alarm_.value(x...);
 
-      if (duration)
-      {
-        this->parent_->add_screen(icon, text, duration, alarm);
-      }
-      else
-      {
-        this->parent_->add_screen(icon, text, this->parent_->duration, alarm);
-      }
+      this->parent_->add_screen(icon, text, duration, alarm);
+      
     }
 
   protected:

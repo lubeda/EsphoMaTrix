@@ -398,7 +398,7 @@ Force the selected screen ```icon_name``` to be displayed next. Afterwards the l
 
 ##### Set (alarm/clock/gauge/text/today/weekday) color action
 
-Sets the color of the select element
+Sets the color of the selected element
 
 You have to use use id of your ehmtx component, e.g. `rgb8x32`
 
@@ -817,39 +817,6 @@ switch:
     turn_off_action:
       lambda: |-
         id(rgb8x32)->set_display_off();
-```
-
-#### Force screen
-
-With the select component you can select, from a dropdown, which screen to show next. As with the force service if the chosen screen/icon isn't active nothing will happen. The state of the select componenten doesn't reflect the actual display because it is published only all 30s. You should also consider to not record this state in your history.
-
-```yaml
-ehmtx:
-  id: rgb8x32
-  ...
-  ehmtxselect: ehmtx_screens #id of your select component
-  ...
-  
-select:
-  - platform: ehmtx
-    id: ehmtx_screens
-    name: "ehmtx screens"
-```
-
-With the select-component you can use a script like this to show all icons. The integrated script editor in home assistant doesn't support it, so you have to add it with e.g. the vs-code addon
-
-```yaml
-alias: EHMTX show all icons
-sequence:
-  - repeat:
-      for_each: '{{ states.select.ehmtx8266_screens.attributes.options }}'
-      sequence:
-        service: esphome.ehmtx8266_screen
-        data:
-          icon_name: '{{ repeat.item }}'
-          text: '{{ repeat.item }}'
-mode: single
-icon: mdi:led-strip
 ```
 
 ## Buzzer, sound, buttons and automatic brightness

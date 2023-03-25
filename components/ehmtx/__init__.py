@@ -11,7 +11,6 @@ import esphome.codegen as cg
 from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID,  CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
-from .select import EHMTXSelect
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ SVG_FULLSCREENSTART = '<svg width="320px" height="80px" viewBox="0 0 320 80">'
 SVG_END = "</svg>"
 
 logging.warning(f"")
-logging.warning(f"If you are upgrading EsphoMaTrix from an older version to 2023.3.5,")
+logging.warning(f"If you are upgrading EsphoMaTrix from a version before 2023.3.5,")
 logging.warning(f"you have to remove the service-definitions from the yaml. Remove following")
 logging.warning(f"services (also see CHANGELOG.md and README.md):")
 logging.warning(f"=========================================================================")
@@ -60,6 +59,7 @@ CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_FLAG = "flag"
 CONF_LAMEID = "lameid"
+CONF_AWTRIXID = "awtrixid"
 CONF_ICONS = "icons"
 CONF_SHOWDOW = "dayofweek"
 CONF_SHOWDATE = "show_date"
@@ -74,7 +74,6 @@ CONF_XOFFSET = "xoffset"
 CONF_PINGPONG = "pingpong"
 CONF_TIME_FORMAT = "time_format"
 CONF_DATE_FORMAT = "date_format"
-CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ON_NEXT_CLOCK = "on_next_clock"
 CONF_SHOW_SECONDS = "show_seconds"
@@ -94,9 +93,6 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
         CONF_CLOCK_INTERVAL, default="60"
     ): cv.templatable(cv.positive_int),
-    cv.Optional(
-        CONF_SELECT, 
-    ): cv.use_id(EHMTXSelect),
     cv.Optional(
         CONF_YOFFSET, default="6"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
@@ -196,10 +192,6 @@ async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args)
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
      
-    #if CONF_DURATION in config:
-    #    template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
-    #    cg.add(var.set_duration(template_))
-
     template_ = await cg.templatable(config[CONF_ALARM], args, bool)
     cg.add(var.set_alarm(template_))
     return var
@@ -602,7 +594,6 @@ async def to_code(config):
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
-    #cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
     cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
     cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
@@ -613,10 +604,6 @@ async def to_code(config):
     cg.add(var.set_show_date(config[CONF_SHOWDATE]))
     cg.add(var.set_show_seconds(config[CONF_SHOW_SECONDS]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
-
-    if (config.get(CONF_SELECT)):
-        ehmtxselect = await cg.get_variable(config[CONF_SELECT])
-        cg.add(var.set_select(ehmtxselect))
 
     for conf in config.get(CONF_ON_NEXT_SCREEN, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)

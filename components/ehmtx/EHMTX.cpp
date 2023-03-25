@@ -20,10 +20,6 @@ namespace esphome
     this->last_clock_time = 0;
     this->show_icons = false;
     this->show_display = true;
-
-#ifdef USE_EHMTX_SELECT
-    this->select = NULL;
-#endif
   }
 
   void EHMTX::force_screen(std::string name)
@@ -139,6 +135,7 @@ namespace esphome
     this->show_gauge = false;
     ESP_LOGD(TAG, "gauge off");
   }
+
   void EHMTX::set_gauge_value(int percent)
   {
     this->show_gauge = false;
@@ -238,15 +235,6 @@ namespace esphome
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
     register_service(&EHMTX::set_brightness, "brightness", {"value"}); 
-
-#ifdef USE_EHMTX_SELECT
-    if (this->select != NULL)
-    {
-      ESP_LOGD(TAG, "select_component activated");
-      this->select->traits.set_options(this->select_options);
-      this->select->parent = this;
-    }
-#endif
   }
 
   void EHMTX::update() // called from polling component
@@ -334,11 +322,6 @@ namespace esphome
     this->screen_time = t;
   }
 
-  void EHMTX::set_duration(uint8_t t)
-  {
-    this->duration = t;
-  }
-
   void EHMTX::skip_screen()
   {
     this->store->move_next();
@@ -357,7 +340,6 @@ namespace esphome
              this->clock->now().month, this->clock->now().year,
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
-    ESP_LOGI(TAG, "status default duration: %d", this->duration);
     ESP_LOGI(TAG, "status date format: %s", this->date_fmt.c_str());
     ESP_LOGI(TAG, "status time format: %s", this->time_fmt.c_str());
     ESP_LOGI(TAG, "status text_color: RGB(%d,%d,%d)", this->text_color.r, this->text_color.g, this->text_color.b);
@@ -385,9 +367,6 @@ namespace esphome
     {
       ESP_LOGI(TAG, "status icon: %d name: %s", i, this->icons[i]->name.c_str());
     }
-#ifdef USE_EHMTX_SELECT
-    ESP_LOGI(TAG, "select enabled");
-#endif
   }
 
   void EHMTX::set_font(display::Font *font)
@@ -434,17 +413,15 @@ namespace esphome
   {
     uint8_t icon = this->find_icon(iconname.c_str());
     this->internal_add_screen(icon, text, duration,this->screen_time,alarm);
-    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration, alarm);
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d (def) screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration,this->screen_time, alarm);
   }
 
   void EHMTX::add_screen_t(std::string iconname, std::string text, int duration,int show_time, bool alarm)
   {
     uint8_t icon = this->find_icon(iconname.c_str());
     this->internal_add_screen(icon, text, duration,show_time,alarm);
-    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration, alarm);
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration,screen_time, alarm);
   }
-
-
 
   void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration,uint16_t show_time , bool alarm = false)
   {
@@ -458,7 +435,7 @@ namespace esphome
     int x, y, w, h;
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
-    screen->set_text(text, icon, w, duration,this->screen_time);
+    screen->set_text(text, icon, w, duration, show_time);
   }
 
   void EHMTX::set_show_date(bool b)
@@ -614,22 +591,11 @@ namespace esphome
     }
   }
 
-#ifdef USE_EHMTX_SELECT
-  void EHMTX::set_select(esphome::EhmtxSelect *es)
-  {
-    this->select = es;
-  }
-#endif
-
   void EHMTX::add_icon(EHMTX_Icon *icon)
   {
     this->icons[this->icon_count] = icon;
     ESP_LOGD(TAG, "add_icon no.: %d name: %s frame_duration: %d ms", this->icon_count, icon->name.c_str(), icon->frame_duration);
     this->icon_count++;
-
-#ifdef USE_EHMTX_SELECT
-    this->select_options.push_back(icon->name);
-#endif
   }
 
   void EHMTX::show_all_icons()
