@@ -35,7 +35,7 @@ namespace esphome
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
     std::vector<EHMTXNextClockTrigger *> on_next_clock_triggers_;
-    void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
+    void internal_add_screen(uint8_t icon, std::string text, uint16_t duration,uint16_t show_time, bool alarm);
 
   public:
     EHMTX();
@@ -98,6 +98,7 @@ namespace esphome
     void set_brightness(int b); // int because of register_service!
     uint8_t get_brightness();
     void add_screen(std::string icon, std::string text, int duration, bool alarm);
+    void add_screen_t(std::string icon, std::string text, int duration, int showt_time, bool alarm);
     void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
@@ -174,7 +175,7 @@ namespace esphome
     void update_screen();
     bool del_slot(uint8_t _icon);
     void hold_slot(uint8_t _sec);
-    void set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et);
+    void set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et, uint16_t st);
   };
 
   class EHMTXNextScreenTrigger : public Trigger<std::string, std::string>

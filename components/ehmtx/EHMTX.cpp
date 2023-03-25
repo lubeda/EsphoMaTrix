@@ -233,6 +233,7 @@ namespace esphome
     register_service(&EHMTX::set_gauge_color, "gauge_color", {"r", "g", "b"});
     register_service(&EHMTX::set_weekday_color, "weekday_color", {"r", "g", "b"});
     register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime", "alarm"});
+    register_service(&EHMTX::add_screen_t, "add_screen_t", {"icon_name", "text", "lifetime","showtime", "alarm"});
     register_service(&EHMTX::force_screen, "force_screen", {"icon_name"});
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
@@ -267,7 +268,7 @@ namespace esphome
         {
           int x, y, w, h;
           this->display->get_text_bounds(0, 0, this->icons[i]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
-          this->icon_screen->set_text(this->icons[i]->name, i, w, 1);
+          this->icon_screen->set_text(this->icons[i]->name, i, w, 1,1);
           ESP_LOGD(TAG, "show all icons icon: %d name: %s", i, this->icons[i]->name.c_str());
         }
         else
@@ -432,11 +433,20 @@ namespace esphome
   void EHMTX::add_screen(std::string iconname, std::string text, int duration, bool alarm)
   {
     uint8_t icon = this->find_icon(iconname.c_str());
-    this->internal_add_screen(icon, text, duration, alarm);
+    this->internal_add_screen(icon, text, duration,this->screen_time,alarm);
     ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration, alarm);
   }
 
-  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm = false)
+  void EHMTX::add_screen_t(std::string iconname, std::string text, int duration,int show_time, bool alarm)
+  {
+    uint8_t icon = this->find_icon(iconname.c_str());
+    this->internal_add_screen(icon, text, duration,show_time,alarm);
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration, alarm);
+  }
+
+
+
+  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration,uint16_t show_time , bool alarm = false)
   {
     if (icon >= this->icon_count)
     {
@@ -448,7 +458,7 @@ namespace esphome
     int x, y, w, h;
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
-    screen->set_text(text, icon, w, duration);
+    screen->set_text(text, icon, w, duration,this->screen_time);
   }
 
   void EHMTX::set_show_date(bool b)
@@ -627,7 +637,7 @@ namespace esphome
     int x, y, w, h;
     ESP_LOGD(TAG, "show all icons icon: %s", this->icons[0]->name.c_str());
     this->display->get_text_bounds(0, 0, this->icons[0]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
-    this->icon_screen->set_text(this->icons[0]->name, 0, w, 1);
+    this->icon_screen->set_text(this->icons[0]->name, 0, w, 1,1);
     this->show_icons = true;
   }
 
