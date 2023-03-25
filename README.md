@@ -199,7 +199,6 @@ ehmtx:
   id: rgb8x32 # needed to reference the components in services and actions etc.
   show_clock: 6 
   show_screen: 8
-  duration: 5
   html: true
   display8x32: ehmtxdisplay
   time: EHMTX_clock
@@ -249,8 +248,6 @@ binary_sensor:
 **show_screen** (Optional, seconds): duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
 
 ![timing](./images/timing.png)
-
-**duration** (Optional, minutes): lifetime of a screen in minutes (default=5). If not updates a screen will be removed after ```duration``` minutes
 
 **hold_time** (Optional, seconds): extends the display time of the current screen in seconds (default=20)
 
@@ -549,16 +546,6 @@ _parameters:_
 
 - ```icon_name```: The number of the predefined icons (see installation)
 - ```text```: The text to be displayed
-
-Service **screen_t**
-
-Same as above with a special duration paremeter. E.g. to indicate someone's birthday you can use `24*60` for 1440 minutes.
-
-_parameters:_
-
-- ```icon```: The number of the predefined icons (see installation)
-- ```text```: The text to be displayed
-- ```duration```: The lifetime in minutes
 
 Service **alarm**
 

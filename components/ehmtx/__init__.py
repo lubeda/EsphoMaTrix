@@ -136,9 +136,9 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_SHOWSCREEN, default="8"
     ): cv.templatable(cv.positive_int),
     cv.Optional(CONF_BRIGHTNESS, default=80): cv.templatable(cv.int_range(min=0, max=255)),
-    cv.Optional(
-        CONF_DURATION, default="5"
-    ): cv.templatable(cv.positive_int),
+    #cv.Optional(
+    #    CONF_DURATION, default="5"
+    #): cv.templatable(cv.positive_int),
     cv.Optional(CONF_ON_NEXT_SCREEN): automation.validate_automation(
         {
             cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(NextScreenTrigger),
@@ -196,9 +196,9 @@ async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args)
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
      
-    if CONF_DURATION in config:
-        template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
-        cg.add(var.set_duration(template_))
+    #if CONF_DURATION in config:
+    #    template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
+    #    cg.add(var.set_duration(template_))
 
     template_ = await cg.templatable(config[CONF_ALARM], args, bool)
     cg.add(var.set_alarm(template_))
@@ -602,7 +602,7 @@ async def to_code(config):
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
-    cg.add(var.set_duration(config[CONF_DURATION]))
+    #cg.add(var.set_duration(config[CONF_DURATION]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
     cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
     cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
