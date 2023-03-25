@@ -579,12 +579,15 @@ async def to_code(config):
     
     if config[CONF_HTML]:
         try:
-            with open(CORE.config_path.replace(".yaml","") + ".html", 'w') as f:
+            htmlfn = CORE.config_path.replace(".yaml","") + ".html"
+            with open(htmlfn, 'w') as f:
                 f.truncate()
                 f.write(html_string)
                 f.close()
+                logging.info(f"EsphoMaTrix: wrote html-file with icon preview: {htmlfn}")
+
         except:
-            print("Error writing HTML file")    
+            logging.warning(f"EsphoMaTrix: Error writing HTML file: {htmlfn}")    
 
     disp = await cg.get_variable(config[CONF_DISPLAY])
     cg.add(var.set_display(disp))
