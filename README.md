@@ -78,7 +78,9 @@ external_components:
 
 The **EsphoMaTrix** component requires a 8x32 pixel addressable_light, it is referenced by the id `matrix_component`.
 
-There are some different matrices-types on the market, to adapt them to **EspHoMaTriX** you have to find the proper pixelmapper. If there is garbage on your display try the other pixel_mapper. Here are the most common types for flexible 8x32 matrices:
+See the default [options](https://esphome.io/components/display/index.html)
+
+There are some different matrices-types on the market, to adapt them to **EspHoMaTriX** you have to find the proper pixelmapper. If there is garbage on your display try the other `pixel_mapper`. Here are the most common types for flexible 8x32 matrices:
 
 #### Type 1 
 
@@ -110,6 +112,19 @@ display:
       }
       return (y * 32) + (31 - x);
     .....
+```
+
+You have to configure this `lambda` to display use the **EsphoMaTrix** component 
+
+```yaml
+display:
+  - platform: addressable_light
+    id: ehmtx_display
+    .....
+    auto_clear_enabled: true
+    lambda: |-
+      id(rgb8x32)->tick();
+      id(rgb8x32)->draw();
 ```
 
 ### light component
@@ -262,9 +277,9 @@ ehmtx:
 
 **week_start_monday** (optional, bool): default Monday is first day of week, false => Sunday
 
-**scroll_interval** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
+**scroll_interval** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the [display](https://esphome.io/components/display/addressable_light.html) (default: 16ms)
 
-**frame_interval** (optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
+**frame_interval** (optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the [display](https://esphome.io/components/display/addressable_light.html)
 
 **icons2html** (optional, boolean): If true generate the html (_filename_.html) file to show all included icons.  (default = `false`)
 
