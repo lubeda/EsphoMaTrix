@@ -581,38 +581,6 @@ ehmtx:
       id(rgb8x32)->set_today_color(rand() % 255, rand() % 255, rand() % 255);
 ```
 
-## Integration in Home Assistant
-
-To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own.
-
-### Services
-
-All communication with Home Assistant use the homeasistant-api. The services can be provided by default or also defined additionally in the yaml. To define the additional services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
-
-#### Overview of default services
-  |----|----|
-  |name|parameter|
-  |----|----|
-  |`get_status`|*none*|
-  |`set_display_on`|*none*|
-  |`set_display_off`|*none*|
-  |`show_all_icons`|*none*|
-  |`hold_screen`|*none*|
-  |`set_indicator_on` {"r", "g", "b"}|
-  |`set_indicator_off`|*none*|
-  |`set_gauge_value`| {"percent"}|
-  |`set_gauge_off`|*none*|
-  |`set_alarm_color`| {"r", "g", "b"}|
-  |`set_text_color` | {"r", "g", "b"}|
-  |`set_clock_color`| {"r", "g", "b"}|
-  |`set_today_color`| {"r", "g", "b"}|
-  |`set_gauge_color`| {"r", "g", "b"}|
-  |`set_weekday_color` |{"r", "g", "b"}|
-  |`add_screen`  |{"icon_name", "text", "lifetime","screen_time", "alarm"}|
-  |`force_screen`| {"icon_name"}|
-  |`del_screen`| {"icon_name"}|
-  |`set_brightness`| {"value"}|
-
 *Example*
 
 ```yaml
@@ -791,6 +759,41 @@ _parameters:_
 
 - ```percent``` gauge percentage
 
+## Integration in Home Assistant
+
+To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own.
+
+### Services
+
+All communication with Home Assistant use the homeasistant-api. The services can be provided by default or also defined additionally in the yaml. To define the additional services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
+
+#### Overview of default services
+  
+These services are the same as the local services, so you can adapt the documentation there
+
+  |name|parameter|
+  |----|----|
+  |`get_status`|*none*|
+  |`set_display_on`|*none*|
+  |`set_display_off`|*none*|
+  |`show_all_icons`|*none*|
+  |`hold_screen`|*none*|
+  |`set_indicator_on`| {"r", "g", "b"}|
+  |`set_indicator_off`|*none*|
+  |`set_gauge_value`| {"percent"}|
+  |`set_gauge_off`|*none*|
+  |`set_alarm_color`| {"r", "g", "b"}|
+  |`set_text_color` | {"r", "g", "b"}|
+  |`set_clock_color`| {"r", "g", "b"}|
+  |`set_today_color`| {"r", "g", "b"}|
+  |`set_gauge_color`| {"r", "g", "b"}|
+  |`set_weekday_color` |{"r", "g", "b"}|
+  |`add_screen`  |{"icon_name", "text", "lifetime","screen_time", "alarm"}|
+  |`force_screen`| {"icon_name"}|
+  |`del_screen`| {"icon_name"}|
+  |`set_brightness`| {"value"}|
+
+
 ### Use in Home Assistant automations
 
 The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have an icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
@@ -818,6 +821,36 @@ action:
 mode: queued
 max: 10
 ```
+
+## How to update
+
+Since version **2023.4.0** was a massive cleanup you have to check your yaml an your automations for all breaking changes
+
+### repairs
+
+![sample repair](./images/repair.png "Sample repair dialog. because of changed service definitions")
+
+mostly you have to check your automations if the [service](#overview-of-default-services) definitions have changed
+
+### compile errors
+![compile_error](./images/compile_error.png "Sample compile error. the naming has changed")
+
+|old name|new name|
+|----|----|
+|display8x32|matrix_component|
+|show_clock||
+|show_screen||
+|time|time_component|
+|html|icons2html|
+
+---
+
+![icon_error](./images/icon_error.png "changed icon parameter")
+
+|old name|new name|
+|----|----|
+|duration|frame_duration|
+
 
 #### Display precision after home assistant 2023.3.0
 
