@@ -127,7 +127,7 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_XOFFSET, default="1"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
-        CONF_HOLD_TIME, default="2"
+        CONF_HOLD_TIME, default="20"
     ): cv.templatable(cv.int_range(min=0, max=3600)),
     cv.Optional(CONF_SCROLLINTERVAL, default="80"
                 ): cv.templatable(cv.positive_int),

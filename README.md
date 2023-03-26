@@ -74,7 +74,7 @@ external_components:
       ref: main # optional select a special branch or tag
 ```
 
-### addressable_light component
+### Addressable_light component
 
 The **EsphoMaTrix** component requires a 8x32 pixel addressable_light, it is referenced by the id `matrix_component`.
 
@@ -127,9 +127,9 @@ display:
       id(rgb8x32)->draw();
 ```
 
-### light component
+### Light component
 
-the light component is used by the addressable_light component and referenced by id under `addressable_light_id:`.
+The light component is used by the addressable_light component and referenced by id under `addressable_light_id:`.
 
 To use the light component directly from home assistant add the sample lambdas```on_turn_on``` and ```on_turn_off``` to the light component.
 
@@ -267,7 +267,7 @@ ehmtx:
 
 **matrix_component** (required, ID): ID of the addressable display
 
-**show_dow** (optional, bool): draw the day indicator on the bottom of the clock screen. Disable e.g. if you want larger fonts, defaults to true. 
+**show_dow** (optional, bool): draw the day of week indicator on the bottom of the clock screen. Disable e.g. if you want larger fonts, defaults to true. 
 
 **show_date** (optional, bool): if true, show the date for `screen_time - clock_time` seconds otherwise only shows the clock for `screen_time` seconds, defaults to true. 
 
@@ -277,7 +277,7 @@ ehmtx:
 
 **week_start_monday** (optional, bool): default Monday is first day of week, false => Sunday
 
-**scroll_interval** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the [display](https://esphome.io/components/display/addressable_light.html) (default: 16ms)
+**scroll_interval** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the [display](https://esphome.io/components/display/addressable_light.html) 
 
 **frame_interval** (optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the [display](https://esphome.io/components/display/addressable_light.html)
 
@@ -337,8 +337,10 @@ sensor:
         lambda: |-
           char text[30];
           sprintf(text,"Light: %2.1f lx", id(sensorlx).state);
-           id(rgb8x32)->add_screen("sun", text, 5,11, false); // 5 Minutes,each time at least 11 seconds  no alarm
+          // 5 Minutes,each time at least 11 seconds  no alarm
+           id(rgb8x32)->add_screen("sun", text, 5,11, false); 
 ```
+
 ##### Action
 
 ```yaml
@@ -645,6 +647,19 @@ _parameters:_
 - ```icon_name```: The number of the predefined icons (see installation)
 - ```text```: The text to be displayed
 
+_definition:_
+```yaml
+api:
+  services:
+    - service: screen
+      variables:
+        icon_name: string
+        text: string
+      then:
+        - lambda: |-
+            id(rgb8x32)->add_screen(icon_name,text,5,10,false);
+```
+
 Service **alarm**
 
 Alarm is like a regular screen but it is displayed two minutes longer and has a red text color and a red marker in the upper right corner.
@@ -653,6 +668,20 @@ _parameters:_
 
 - ```icon_name```: The name of the predefined icon id (see installation)
 - ```text```: The text to be displayed
+
+_definition:_
+```yaml
+api:
+  services:
+    - service: alarm
+      variables:
+        icon_name: string
+        text: string
+      then:
+        - lambda: |-
+            id(rgb8x32)->add_screen(icon_name,text,10,30,true);
+            id(rgb8x32)->force_screen(icon_name);
+```
 
 **(D)** Service **del_screen**
 
@@ -693,6 +722,8 @@ _parameters:_
 Turns the display on or off
 
 There's an easier way in using a switch component:
+
+***Sample***
 
 ```yaml
 switch:
@@ -776,7 +807,7 @@ _parameters:_
 
 ## Integration in Home Assistant
 
-To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own.
+To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own (see alarm and screen).
 
 ### Services
 
