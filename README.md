@@ -293,6 +293,7 @@ sensor:
     on_value:
       then:
         - ehtmx.add.screen
+          id: rgb8x32
           icon_name: "sun"
           text: "new data from lux sensor"
           lifetime: 5 # minutes optional
@@ -302,12 +303,12 @@ sensor:
 
 ***Parameters***
 
-- **icon_name** (Required, string): 
-- **text** (Optional, string): 
-- **lifetime** (Optional, ms): 
-- **screen_time** (Optional, ms): 
-- **alarm** (Optional, boolean): 
-
+- **id** (required, ID): ID of the ehmtx component
+- **text** (required, string): the text to display
+- **icon_name** (required, string): the name of the icon to display
+- **lifetime** (optional, int): the lifetime of the screen in minutes (default=5)
+- **screen_time** (optional, int): the display time of a screen per loop in seconds (default=10)
+- **alarm** (optional, bool): if alarm set true (default = false)
 
 #### Set (alarm/clock/gauge/text/today/weekday) color action
 
@@ -358,6 +359,61 @@ esphome:
           id: rgb8x32
           blue: !lambda return 70;
           green: !lambda return 250;
+```
+
+##### Show date
+
+You can dynamically enable or disable the display of the date see parameter `show_date`.
+
+```yaml
+    - ehmtx.show.date:
+        id: rgb8x32
+        flag: !lambda return true;
+```
+
+##### Show day of week
+
+You can dynamically enable or disable the display of the day of week, see parameter `day_of_week`.
+
+```yaml
+    - ehmtx.show.dayofweek:
+        id: rgb8x32
+        flag: !lambda return true;
+```
+
+##### Force screen
+
+Force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the value/text.
+
+```yaml
+    - ehmtx.force.screen:
+        id: rgb8x32
+        icon_name: !lambda return icon_name;
+```
+
+##### Set (alarm/clock/gauge/text/today/weekday) color action
+
+Sets the color of the selected element
+
+You have to use use id of your ehmtx component, e.g. `rgb8x32`
+
+```yaml
+     - ehmtx.***.color:
+        id: rgb8x32
+        red: !lambda return r;
+        green: !lambda return g;
+        blue: !lambda return b;
+```
+
+valid elements:
+
+- `ehmtx.alarm.color:`
+- `ehmtx.clock.color:`
+- `ehmtx.gauge.color:`
+- `ehmtx.text.color:`
+- `ehmtx.today.color:`
+- `ehmtx.weekday.color:`
+- ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
 
 
 ### Local trigger
@@ -452,122 +508,6 @@ binary_sensor:
 
 ### Usage without Home Assistant
 
-### Actions
-
-For local automations you can use actions. This is the normal way of automations. The ```id(rgb8x32)->``` style will also work.
-
-      - ehmtx.clock.color:
-          id: rgb8x32
-          red: !lambda return 50;
-          green: !lambda return 150;
-          blue: !lambda return 230;
-      - ehmtx.weekday.color:
-          id: rgb8x32
-          red: !lambda return 250;
-          green: !lambda return 50;
-          blue: !lambda return 30;
-```
-
-##### Show date
-
-You can dynamically enable or disable the display of the date see parameter `show_date`.
-
-```yaml
-    - ehmtx.show.date:
-        id: rgb8x32
-        flag: !lambda return true;
-```
-
-##### Show day of week
-
-You can dynamically enable or disable the display of the day of week, see parameter `day_of_week`.
-
-```yaml
-    - ehmtx.show.dayofweek:
-        id: rgb8x32
-        flag: !lambda return true;
-```
-
-##### Force screen
-
-Force the selected screen ```icon_name``` to be displayed next. Afterwards the loop is continuing from this screen. e.g. helpfull for alarms. Or after an update of the value/text.
-
-```yaml
-    - ehmtx.force.screen:
-        id: rgb8x32
-        icon_name: !lambda return icon_name;
-```
-
-##### Set (alarm/clock/gauge/text/today/weekday) color action
-
-Sets the color of the selected element
-
-You have to use use id of your ehmtx component, e.g. `rgb8x32`
-
-```yaml
-     - ehmtx.***.color:
-        id: rgb8x32
-        red: !lambda return r;
-        green: !lambda return g;
-        blue: !lambda return b;
-```
-
-valid elements:
-
-- `ehmtx.alarm.color:`
-- `ehmtx.clock.color:`
-- `ehmtx.gauge.color:`
-- `ehmtx.text.color:`
-- `ehmtx.today.color:`
-- `ehmtx.weekday.color:`
-- ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
-
-*Example*
-
-```yaml
-esphome:
-  name: $devicename
-  on_boot:
-    priority: -100
-    then: 
-      - ehmtx.text.color:
-          id: rgb8x32
-          red: !lambda return 200;
-          blue: !lambda return 170;
-      - ehmtx.today.color:
-          id: rgb8x32
-          red: !lambda return 10;
-          green: !lambda return 250;
-      - ehmtx.clock.color:
-          id: rgb8x32
-          red: !lambda return 50;
-          green: !lambda return 150;
-          blue: !lambda return 230;
-      - ehmtx.weekday.color:
-          id: rgb8x32
-          red: !lambda return 250;
-          green: !lambda return 50;
-          blue: !lambda return 30;
-```
-
-##### Add screen to loop
-
-```yaml
-        - ehmtx.add.screen:
-            id: rgb8x32
-            text: !lambda return text;
-            icon_name: !lambda return icon_name;
-            lifetime: 7
-            alarm: false
-```
-
-parameters:
-
-- **id** (required, ID): ID of the ehmtx component
-- **text** (required, string): the text to display
-- **icon_name** (required, string): the name of the icon to display
-- **lifetime** (optional, int): the lifetime of the screen in minutes (default=5)
-- **alarm** (optional, bool): if alarm set true (default = false)
 
 ## Hardware/Wi-Fi
 
@@ -595,6 +535,15 @@ light:
        lambda: |-
          id(rgb8x32)->set_enabled(true);
 ```
+
+to hide the light component from home assistant use:
+```yaml
+light:
+  - platform: neopixelbus
+    id: ehmtx_light
+    internal: true
+    ------
+```    
 
 ### Services
 
@@ -747,7 +696,6 @@ binary_sensor:
       lambda:
         id(rgb8x32)->hold_screen();
 ```
-
 
 **(D)** Service **status**
 
@@ -954,6 +902,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.3.5 added indicator_on/off as default services => remove these from your yaml
 - 2023.3.5 added *_color as default services => remove these from your yaml
 - 2023.3.5 added show_all_icons,gauge_percent/gauge_off as default services => remove these from your yaml
+- 2023.4.0 **cleaner naming** please check all automations and yaml for change naming!!!
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.
