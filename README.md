@@ -883,8 +883,8 @@ mostly you have to check your automations if the [service](#overview-of-default-
 |old name|new name|
 |----|----|
 |display8x32|matrix_component|
-|show_clock||
-|show_screen||
+|show_clock|clock_time|
+|show_screen|screen_time|
 |time|time_component|
 |html|icons2html|
 
@@ -895,6 +895,41 @@ mostly you have to check your automations if the [service](#overview-of-default-
 |old name|new name|
 |----|----|
 |duration|frame_duration|
+
+---
+
+Old functions in yaml
+![old_add_screen](./images/old_add_screen.png "old functions in yaml file")
+
+**old function style**
+
+```yaml
+api: 
+  services:
+    - service: alarm
+      variables:
+        icon_name: string
+        text: string
+      then:
+        - lambda: |-
+            id(rgb8x32)->add_screen(icon_name,text,7,true);
+        - ehmtx.force.screen:
+            icon_name: !lambda return icon_name;
+```
+the old `add_screen` function had 4 parameter, the new one has got 5.
+
+**correct code**
+
+```yaml
+# Enable Home Assistant API
+api: #!include ehmtx_service.yaml
+  services:
+    .....
+      then:
+        - lambda: |-
+            id(rgb8x32)->add_screen(icon_name,text,7,30,true);
+    .....    
+```
 
 
 #### Display precision after home assistant 2023.3.0
