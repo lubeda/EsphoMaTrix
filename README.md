@@ -2,9 +2,11 @@
 
 A simple DIY status display, build with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 
+![sample image](./images/sample.png)
+
 ## Introduction
 
-There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good d.i.y.-alternatives. 
+There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good DIY-alternatives. 
 
 - [LaMetric](https://lametric.com/en-US/) commercial ~ 199€
 - [Ulanzi TC001](https://www.aliexpress.com/item/1005005008682055.html) commercial ~ 50€
@@ -12,7 +14,7 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 - [PixelIt](https://docs.bastelbunker.de/pixelit/) (project is under active development)
 - [Awtrix-Light](https://github.com/Blueforcer/awtrix-light) From the developer of Awtrix, optimized for the Ulanzi TC001 Hardware
 
-The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (in my opinion) that I started an esphome.io variant targeted to an optimized Home Assistant integration. The main reason, for me is the Home Assistant integration!
+The other DIY  solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (in my opinion) that I started an esphome.io variant targeted to an optimized Home Assistant integration. The main reason, for me is the Home Assistant integration!
 
 There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C. As a starting point you can use the [``UlanziTC001.yaml``](https://github.com/lubeda/EsphoMaTrix/blob/main/UlanziTC001.yaml). Yet the LDR and battery sensor are not perfectly supported. For another use of the hardware see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi) or [AWTRIX-LIGHT](https://github.com/Blueforcer/awtrix-light) firmwares.
 
@@ -903,6 +905,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.3.5 added *_color as default services => remove these from your yaml
 - 2023.3.5 added show_all_icons,gauge_percent/gauge_off as default services => remove these from your yaml
 - 2023.4.0 **cleaner naming** please check all automations and yaml for change naming!!!
+- 2023.4.0 removed the select sun component
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.
@@ -918,5 +921,6 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
+- ** everbody that found bugs and reported them!
 
 ## Special thanks to all sponsors
