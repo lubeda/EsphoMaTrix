@@ -45,6 +45,7 @@ namespace esphome
     bool show_gauge;
     bool show_date;
     uint8_t gauge_value;
+    uint8_t scroll_count;
     bool show_icons;
     void force_screen(std::string name);
     EHMTX_Icon *icons[MAXICONS];
@@ -81,7 +82,7 @@ namespace esphome
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
-    void set_show_clock(uint16_t t);
+    void set_clock_time(uint16_t t);
     void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
@@ -97,6 +98,7 @@ namespace esphome
     void set_font(display::Font *font);
     void set_frame_intervall(uint16_t intervall);
     void set_scroll_intervall(uint16_t intervall);
+    void set_scroll_count(uint8_t count);
     void set_duration(uint8_t d);
     void set_indicator_off();
     void set_time_format(std::string s);

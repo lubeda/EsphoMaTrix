@@ -217,8 +217,8 @@ display:
 
 ehmtx:
   id: rgb8x32
-  show_clock: 6
-  show_screen: 6
+  clock_time: 6
+  screen_time: 6
   html: true
   display8x32: ehmtx_display
   time: ehmtx_time

@@ -503,7 +503,7 @@ namespace esphome
     return this->icons[this->store->current()->icon]->name;
   }
 
-  void EHMTX::set_show_clock(uint16_t t)
+  void EHMTX::set_clock_time(uint16_t t)
   {
     this->clock_time = t;
   }
@@ -511,6 +511,11 @@ namespace esphome
   void EHMTX::set_hold_time(uint16_t t)
   {
     this->hold_time = t;
+  }
+
+  void EHMTX::set_scroll_count(uint8_t c)
+  {
+    this->scroll_count = c;
   }
 
   void EHMTX::set_clock_interval(uint16_t t)

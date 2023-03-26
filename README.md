@@ -197,8 +197,8 @@ _Example `ehmtx:` configuration_
 ```yaml
 ehmtx:
   id: rgb8x32 # needed to reference the components in services and actions etc.
-  show_clock: 6 
-  show_screen: 8
+  clock_time: 6 
+  screen_time: 8
   html: true
   display8x32: ehmtxdisplay
   time: EHMTX_clock
@@ -216,7 +216,7 @@ _Configuration variables:_
 
 **id** (Required, ID): Manually specify the ID used for code generation and in service definitions.
 
-**show_clock** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `show_clock` is false and the clock will be display as long as a normal screen! Setting `show_clock` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
+**clock_time** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `clock_time` is false and the clock will be display as long as a normal screen! Setting `clock_time` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
 
 You can set this value during runtime e.g. for a night mode
 
@@ -230,7 +230,7 @@ binary_sensor:
     on_press:
       - logger.log: "Clock on"
       - lambda:
-          id(rgb8x32)->set_show_clock(6);
+          id(rgb8x32)->set_clock_time(6);
     name: "clock on"
   - platform: gpio
     pin: 
@@ -240,7 +240,7 @@ binary_sensor:
     on_press:
       - logger.log: "clock off"
       - lambda:
-          id(rgb8x32)->set_show_clock(0);
+          id(rgb8x32)->set_clock_time(0);
 ```
 
 **clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
@@ -265,7 +265,7 @@ binary_sensor:
 
 **dayofweek** (Optional, bool): draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
 
-**show_date** (Optional, bool): if true, show the date for `show_screen - show_clock` seconds otherwise only shows the clock for `show_screen` seconds, defaults to true. 
+**show_date** (Optional, bool): if true, show the date for `screen_time - clock_time` seconds otherwise only shows the clock for `screen_time` seconds, defaults to true. 
 
 **time** (required, ID): ID of the time component. The display shows `!t!` until the time source is valid.
 

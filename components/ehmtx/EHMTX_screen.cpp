@@ -124,7 +124,7 @@ namespace esphome
     this->text = text;
     this->pixels_ = pixel;
     this->shiftx_ = 0;
-    float dd = ceil((2 * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_intervall) / 1000);
+    float dd = ceil((this->config_->scroll_count * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_intervall) / 1000);
     this->screen_time = (dd > show_time) ? dd : show_time;
     ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d show_time: %d default: %d", text.c_str(), pixel, this->screen_time, show_time, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;

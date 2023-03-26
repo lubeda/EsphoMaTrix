@@ -52,21 +52,23 @@ NextClockTrigger = ehmtx_ns.class_(
     "EHMTXNextClockTrigger", automation.Trigger.template(cg.std_string)
 )
 
-CONF_SHOWCLOCK = "show_clock"
-CONF_CLOCK_INTERVAL = "clock_interval"
+CONF_CLOCKTIME = "clock_time"
+CONF_CLOCKINTERVAL = "clock_interval"
 CONF_SCREENTIME = "screen_time"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_FLAG = "flag"
+CONF_TIMECOMPONENT = "time_component"
 CONF_LAMEID = "lameid"
 CONF_LIFETIME = "lifetime"
 CONF_ICONS = "icons"
-CONF_SHOWDOW = "dayofweek"
+CONF_SHOWDOW = "show_dow"
 CONF_SHOWDATE = "show_date"
 CONF_FRAMEDURATION = "frame_duration"
 CONF_HOLD_TIME = "hold_time"
-CONF_DISPLAY = "display8x32"
-CONF_HTML = "html"
+CONF_SCROLLCOUNT = "scroll_count"
+CONF_MATRIXCOMPONENT = "matrix_component"
+CONF_HTML = "icons2html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
 CONF_FRAMEINTERVALL = "frame_intervall"
 CONF_FONT_ID = "font_id"
@@ -78,21 +80,21 @@ CONF_DATE_FORMAT = "date_format"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ON_NEXT_CLOCK = "on_next_clock"
 CONF_SHOW_SECONDS = "show_seconds"
-CONF_WEEK_ON_MONDAY = "week_start_monday"
+CONF_WEEK_START_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
 CONF_ALARM = "alarm"
 
 EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(EHMTX_),
-    cv.Required(CONF_TIME): cv.use_id(time),
-    cv.Required(CONF_DISPLAY): cv.use_id(display),
+    cv.Required(CONF_TIMECOMPONENT): cv.use_id(time),
+    cv.Required(CONF_MATRIXCOMPONENT): cv.use_id(display),
     cv.Required(CONF_FONT_ID): cv.use_id(font),
     cv.Optional(
-        CONF_SHOWCLOCK, default="5"
+        CONF_CLOCKTIME, default="5"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_CLOCK_INTERVAL, default="60"
+        CONF_CLOCKINTERVAL, default="60"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
         CONF_YOFFSET, default="6"
@@ -107,7 +109,7 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_SHOWDATE, default=True
     ): cv.boolean,
     cv.Optional(
-        CONF_WEEK_ON_MONDAY, default=True
+        CONF_WEEK_START_MONDAY, default=True
     ): cv.boolean,
     cv.Optional(
         CONF_SHOWDOW, default=True
@@ -125,6 +127,8 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_HOLD_TIME, default="2"
     ): cv.templatable(cv.int_range(min=0, max=3600)),
     cv.Optional(CONF_SCROLLINTERVALL, default="80"
+                ): cv.templatable(cv.positive_int),
+    cv.Optional(CONF_SCROLLCOUNT, default="2"
                 ): cv.templatable(cv.positive_int),
     cv.Optional(
         CONF_FRAMEINTERVALL, default="192"
@@ -586,22 +590,23 @@ async def to_code(config):
         except:
             logging.warning(f"EsphoMaTrix: Error writing HTML file: {htmlfn}")    
 
-    disp = await cg.get_variable(config[CONF_DISPLAY])
+    disp = await cg.get_variable(config[CONF_MATRIXCOMPONENT])
     cg.add(var.set_display(disp))
 
     f = await cg.get_variable(config[CONF_FONT_ID])
     cg.add(var.set_font(f))
 
-    ehmtxtime = await cg.get_variable(config[CONF_TIME])
+    ehmtxtime = await cg.get_variable(config[CONF_TIMECOMPONENT])
     cg.add(var.set_clock(ehmtxtime))
 
-    cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
-    cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
+    cg.add(var.set_clock_time(config[CONF_CLOCKTIME]))
+    cg.add(var.set_clock_interval(config[CONF_CLOCKINTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SCREENTIME]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
+    cg.add(var.set_scroll_count(config[CONF_SCROLLCOUNT]))
     cg.add(var.set_frame_intervall(config[CONF_FRAMEINTERVALL]))
-    cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
+    cg.add(var.set_week_start(config[CONF_WEEK_START_MONDAY]))
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))
     cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
