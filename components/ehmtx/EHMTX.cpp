@@ -143,7 +143,7 @@ namespace esphome
     {
       this->show_gauge = true;
       this->gauge_value = percent; // (uint8_t)(100 - percent) * 7 / 100;
-      ESP_LOGD(TAG, "gauge value: %d => %d", percent, this->gauge_value);
+      ESP_LOGD(TAG, "set gauge value: %d", percent);
     }
   }
 
@@ -176,41 +176,16 @@ namespace esphome
 
   void EHMTX::draw_gauge()
   {
+
     if (this->show_gauge)
     {
-      auto height = 8;
-      if (this->gauge_value > 85)
-      {
-        height = 0;
-      }
-      else if (this->gauge_value > 71)
-      {
-        height = 1;
-      }
-      else if (this->gauge_value > 55)
-      {
-        height = 2;
-      }
-      else if (this->gauge_value > 45)
-      {
-        height = 3;
-      }
-      else if (this->gauge_value > 30)
-      {
-        height = 4;
-      }
-      else if (this->gauge_value > 19)
-      {
-        height = 5;
-      }
-      else if (this->gauge_value > 10)
-      {
-        height = 6;
-      }
-
       this->display->line(0, 7, 0, 0, esphome::display::COLOR_OFF);
-      this->display->line(0, 7, 0, height, this->gauge_color);
       this->display->line(1, 7, 1, 0, esphome::display::COLOR_OFF);
+      if (this->gauge_value > 11)
+      {
+        uint8_t height = 7 - (int)(this->gauge_value/12.5);
+        this->display->line(0, 7, 0, height, this->gauge_color);
+      }
     }
   }
 
