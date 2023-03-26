@@ -8,7 +8,7 @@ from esphome.components import display, font, time
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID,  CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
+from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID,  CONF_TIME, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
 
@@ -54,20 +54,21 @@ NextClockTrigger = ehmtx_ns.class_(
 
 CONF_SHOWCLOCK = "show_clock"
 CONF_CLOCK_INTERVAL = "clock_interval"
-CONF_SHOWSCREEN = "show_screen"
+CONF_SCREENTIME = "screen_time"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_FLAG = "flag"
 CONF_LAMEID = "lameid"
-CONF_AWTRIXID = "awtrixid"
+CONF_LIFETIME = "lifetime"
 CONF_ICONS = "icons"
 CONF_SHOWDOW = "dayofweek"
 CONF_SHOWDATE = "show_date"
+CONF_FRAMEDURATION = "frame_duration"
 CONF_HOLD_TIME = "hold_time"
 CONF_DISPLAY = "display8x32"
 CONF_HTML = "html"
 CONF_SCROLLINTERVALL = "scroll_intervall"
-CONF_ANIMINTERVALL = "anim_intervall"
+CONF_FRAMEINTERVALL = "frame_intervall"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
@@ -129,12 +130,9 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_ANIMINTERVALL, default="192"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_SHOWSCREEN, default="8"
+        CONF_SCREENTIME, default="8"
     ): cv.templatable(cv.positive_int),
     cv.Optional(CONF_BRIGHTNESS, default=80): cv.templatable(cv.int_range(min=0, max=255)),
-    #cv.Optional(
-    #    CONF_DURATION, default="5"
-    #): cv.templatable(cv.positive_int),
     cv.Optional(CONF_ON_NEXT_SCREEN): automation.validate_automation(
         {
             cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(NextScreenTrigger),
@@ -154,7 +152,7 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.Exclusive(CONF_URL,"uri"): cv.url,
                 cv.Exclusive(CONF_LAMEID,"uri"): cv.string,
                 cv.Optional(
-                    CONF_DURATION, default="0"
+                    CONF_FRAMEDURATION, default="0"
                 ): cv.templatable(cv.positive_int),
                 cv.Optional(
                     CONF_PINGPONG, default=False
@@ -172,7 +170,7 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.use_id(EHMTX_),
         cv.Required(CONF_ICON): cv.templatable(cv.string),
         cv.Required(CONF_TEXT): cv.templatable(cv.string),
-        cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_LIFETIME): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
 )
@@ -508,13 +506,13 @@ async def to_code(config):
         if ((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT):
             logging.warning(f" icon wrong size valid 8x8 or 8x32: {conf[CONF_ID]} skipped!")
         else:
-            if (conf[CONF_DURATION] == 0):
+            if (conf[CONF_FRAMEDURATION] == 0):
                 try:
                     duration =  image.info['duration']         
                 except:
                     duration = config[CONF_ANIMINTERVALL]
             else:
-                duration = conf[CONF_DURATION]
+                duration = conf[CONF_FRAMEDURATION]
 
             html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
@@ -593,9 +591,9 @@ async def to_code(config):
     cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
     cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
-    cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
+    cg.add(var.set_screen_time(config[CONF_SCREENTIME]))
     cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
-    cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
+    cg.add(var.set_frame_intervall(config[CONF_FRAMEINTERVALL]))
     cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))

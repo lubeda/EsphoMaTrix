@@ -129,7 +129,6 @@ ehmtx:
   show_screen: 6
   display8x32: ehmtx_display
   time: ehmtx_time
-  duration: 7
   font_id: ehmtx_font
   on_next_screen:
     lambda: |-

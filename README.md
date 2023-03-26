@@ -275,7 +275,7 @@ binary_sensor:
 
 **scroll_intervall** (Optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
-**anim_intervall** (Optional, ms): the interval in ms to display the next anim frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
+**frame_intervall** (Optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
 
 **html** (Optional, boolean): If true generate the html (_filename_.yaml.html) file to show all included icons.  (default = `false`)
 
@@ -455,7 +455,7 @@ esphome:
             id: rgb8x32
             text: !lambda return text;
             icon_name: !lambda return icon_name;
-            duration: 7
+            lifetime: 7
             alarm: false
 ```
 
@@ -464,7 +464,7 @@ parameters:
 - **id** (required, ID): ID of the ehmtx component
 - **text** (required, string): the text to display
 - **icon_name** (required, string): the name of the icon to display
-- **duration** (optional, int): the lifetime of the screen in minutes (default=5)
+- **lifetime** (optional, int): the lifetime of the screen in minutes (default=5)
 - **alarm** (optional, bool): if alarm set true (default = false)
 
 ## Hardware/Wi-Fi
@@ -540,7 +540,7 @@ Service **screen**
 
 Queues a screen with an icon/animation and a text. There can only be one text per icon id. If you need to show e.g. an indoor and an outdoor temperature you have to use different icon id's!
 
-You can update the text on the fly. If the screen is displayed and you change the text for the icon, it will start a new lifetime (see ```duration```) with the new text.
+You can update the text on the fly. If the screen is displayed and you change the text for the icon, it will start a new lifetime (see ```lifetime```) with the new text.
 
 _parameters:_
 

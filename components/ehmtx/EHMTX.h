@@ -34,7 +34,7 @@ namespace esphome
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
     std::vector<EHMTXNextClockTrigger *> on_next_clock_triggers_;
-    void internal_add_screen(uint8_t icon, std::string text, uint16_t duration,uint16_t show_time, bool alarm);
+    void internal_add_screen(uint8_t icon, std::string text, uint16_t lifetime,uint16_t show_time, bool alarm);
 
   public:
     EHMTX();
@@ -61,7 +61,7 @@ namespace esphome
     bool show_seconds;
     //uint16_t duration;         // in minutes how long is a screen valid
     uint16_t scroll_intervall; // ms to between scrollsteps
-    uint16_t anim_intervall;   // ms to next_frame()
+    uint16_t frame_intervall;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
     uint16_t hold_time;       // seconds display of screen_time to extend 
     uint16_t clock_interval;       // seconds display of screen_time - clock_time = date_time
@@ -91,12 +91,11 @@ namespace esphome
     void set_week_start(bool b);
     void set_brightness(int b); // int because of register_service!
     uint8_t get_brightness();
-    void add_screen(std::string icon, std::string text, int duration, bool alarm);
-    void add_screen_t(std::string icon, std::string text, int duration, int showt_time, bool alarm);
+    void add_screen(std::string icon, std::string text, int duration, int showt_time, bool alarm);
     void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
-    void set_anim_intervall(uint16_t intervall);
+    void set_frame_intervall(uint16_t intervall);
     void set_scroll_intervall(uint16_t intervall);
     void set_duration(uint8_t d);
     void set_indicator_off();
@@ -144,14 +143,13 @@ namespace esphome
 
   class EHMTX_screen
   {
-
   protected:
     uint8_t shiftx_;
     uint8_t pixels_;
     EHMTX *config_;
 
   public:
-    uint16_t display_duration;
+    uint16_t screen_time;
     bool alarm;
     time_t endtime;
     uint8_t icon;
@@ -169,7 +167,7 @@ namespace esphome
     void update_screen();
     bool del_slot(uint8_t _icon);
     void hold_slot(uint8_t _sec);
-    void set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et, uint16_t st);
+    void set_text(std::string text, uint8_t icon, uint16_t pixel, uint16_t et, uint16_t st);
   };
 
   class EHMTXNextScreenTrigger : public Trigger<std::string, std::string>
@@ -211,18 +209,19 @@ namespace esphome
     AddScreenAction(EHMTX *parent) : parent_(parent) {}
     TEMPLATABLE_VALUE(std::string, icon)
     TEMPLATABLE_VALUE(std::string, text)
-    TEMPLATABLE_VALUE(uint8_t, duration)
+    TEMPLATABLE_VALUE(uint8_t, lifetime)
+    TEMPLATABLE_VALUE(uint16_t, screen_time)
     TEMPLATABLE_VALUE(bool, alarm)
 
     void play(Ts... x) override
     {
       auto icon = this->icon_.value(x...);
       auto text = this->text_.value(x...);
-      auto duration = this->duration_.value(x...);
+      auto lifetime = this->lifetime_.value(x...);
+      auto screen_time = this->screen_time_.value(x...);
       auto alarm = this->alarm_.value(x...);
 
-      this->parent_->add_screen(icon, text, duration, alarm);
-      
+      this->parent_->add_screen(icon, text, lifetime, screen_time, alarm);
     }
 
   protected:
