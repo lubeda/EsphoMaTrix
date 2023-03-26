@@ -61,8 +61,8 @@ namespace esphome
     bool string_has_ending(std::string const &fullString, std::string const &ending);
     bool show_seconds;
     //uint16_t duration;         // in minutes how long is a screen valid
-    uint16_t scroll_intervall; // ms to between scrollsteps
-    uint16_t frame_intervall;   // ms to next_frame()
+    uint16_t scroll_interval; // ms to between scrollsteps
+    uint16_t frame_interval;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
     uint16_t hold_time;       // seconds display of screen_time to extend 
     uint16_t clock_interval;       // seconds display of screen_time - clock_time = date_time
@@ -96,8 +96,8 @@ namespace esphome
     void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
-    void set_frame_intervall(uint16_t intervall);
-    void set_scroll_intervall(uint16_t intervall);
+    void set_frame_interval(uint16_t interval);
+    void set_scroll_interval(uint16_t interval);
     void set_scroll_count(uint8_t count);
     void set_duration(uint8_t d);
     void set_indicator_off();

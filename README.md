@@ -112,13 +112,43 @@ display:
     .....
 ```
 
+### light component
+
+the light component is used by the addressable_light component and referenced by id under `addressable_light_id:`.
+
+To use the light component directly from home assistant add the sample lambdas```on_turn_on``` and ```on_turn_off``` to the light component.
+
+***Sample***
+
+```yaml
+light:
+  - platform: neopixelbus
+    id: ehmtx_light
+    ....
+    on_turn_on:
+      lambda: |-
+         id(rgb8x32)->set_enabled(false);
+    on_turn_off:
+       lambda: |-
+         id(rgb8x32)->set_enabled(true);
+```
+
+To hide the light component from home assistant use:
+
+```yaml
+light:
+  - platform: neopixelbus
+    id: ehmtx_light
+    internal: true
+    ...
+```    
+
 ### Time component
 
 Since it is a clock you need a time component e.g. [homeassistant](https://esphome.io/components/time/homeassistant.html). It is referenced by its id under `time_component` The display shows `!t!` until the time source is valid.
 
 ### Font
 Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/#fonts).
-
 
 ```yaml
 font:
@@ -165,7 +195,7 @@ GIFs are limited to 110 frames to limit the used amount of flash space.
 
 All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The maximum amount of icons is limited to 90 in the code and also by the flash space and the RAM of your board.
 
-See also [Parameters](.2023.4.0#icons)
+See also [icon parameter](#icons)
 
 ## Configuration
 
@@ -193,8 +223,8 @@ ehmtx:
   xoffset: 1 
   yoffset: 2
   scroll_count: 2 # scroll long text at least two times
-  scroll_intervall: 80 # milliseconds
-  frame_intervall: 192 # milliseconds
+  scroll_interval: 80 # milliseconds
+  frame_interval: 192 # milliseconds
 ```
 ***Parameters***
 
@@ -232,18 +262,19 @@ ehmtx:
 
 **week_start_monday** (optional, bool): default Monday is first day of week, false => Sunday
 
-**scroll_intervall** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
+**scroll_interval** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
-**frame_intervall** (optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
+**frame_interval** (optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
 
 **icons2html** (optional, boolean): If true generate the html (_filename_.html) file to show all included icons.  (default = `false`)
 
-Example result:
+***Example output:***
 ![icon preview](./images/icons_preview.png)
 
 ### icons
 
 ***Parameters***
+See [icon details](#icons-and-animations)
 
 - **duration** (optional, ms): in case of a gif file the component tries to read the default interval for each frame. The default/fallback interval is 192 ms. In case you need to override the default value set the duration per icon.
 - **pingpong** (optional, boolean): in case of a gif file you can reverse the frames instead of starting from the first.
@@ -270,6 +301,9 @@ esphome:
       - lambda: !lambda |-
           id(rgb8x32)->show_all_icons();
 ```
+
+---
+
 #### Add screen to your display queue
 
 You can add screens locally and display data directly from any local sensor. See this sample:
@@ -317,6 +351,8 @@ sensor:
 - **screen_time** (optional, int): the display time of a screen per loop in seconds (default=10)
 - **alarm** (optional, bool): if alarm set true (default = false)
 
+---
+
 #### Set (alarm/clock/gauge/text/today/weekday) color action
 
 Sets the color of the selected element
@@ -350,23 +386,7 @@ valid elements:
 - `ehmtx.weekday.color:`
 - ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
 
-*Example*
-
-```yaml
-esphome:
-  name: $devicename
-  on_boot:
-    priority: -100
-    then: 
-      - ehmtx.text.color:
-          id: rgb8x32
-          red: !lambda return 200;
-          blue: !lambda return 170;
-      - ehmtx.today.color:
-          id: rgb8x32
-          blue: !lambda return 70;
-          green: !lambda return 250;
-```
+---
 
 ##### Show date
 
@@ -398,6 +418,8 @@ Force the selected screen ```icon_name``` to be displayed next. Afterwards the l
         icon_name: !lambda return icon_name;
 ```
 
+---
+
 ##### Set (alarm/clock/gauge/text/today/weekday) color action
 
 Sets the color of the selected element
@@ -422,8 +444,81 @@ valid elements:
 - `ehmtx.weekday.color:`
 - ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
 
+---
+
+##### Change configuration during runtime
+
+_Configuration variables/functions:_
+
+Experienced programmers can use this public methods:
+
+```c
+    void draw_day_of_week();
+    void show_all_icons();
+    void get_status();
+    void skip_screen();
+    void hold_screen();
+    void set_screen_time(uint16_t t);
+    void set_clock_time(uint16_t t);
+    void set_hold_time(uint16_t t);
+    void set_clock_interval(uint16_t t);
+    void set_show_day_of_week(bool b);
+    void set_show_seconds(bool b);
+    void set_show_date(bool b);
+    void set_brightness(int b); // int because of register_service!
+    uint8_t get_brightness();
+    void add_screen(std::string icon_name, std::string text, int lifetime, int show_time, bool alarm);
+    void del_screen(std::string icon_name);
+    void set_frame_interval(uint16_t interval);
+    void set_scroll_interval(uint16_t interval);
+    void set_scroll_count(uint8_t count);
+    void set_duration(uint8_t d);
+    void set_indicator_off();
+    void set_indicator_on(int r, int g, int b);
+    void set_gauge_off();
+    void set_gauge_value(int v); // valid: 0 - 100 int because of register_service
+    void set_gauge_color(int r, int g, int b);
+    void set_text_color(int r, int g, int b);
+    void set_clock_color(int r, int g, int b);
+    void set_today_color(int r, int g, int b);
+    void set_weekday_color(int r, int g, int b);
+    void set_alarm_color(int r, int g, int b);
+    void draw_clock();
+    void draw_gauge();
+    void set_display_on();
+    void set_display_off();
+```
+
+***Sample***
+
+You can set values during runtime e.g. for a night mode
+
+```
+# sample for ulanzi tc001
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $left_button_pin
+      inverted: true
+    on_press:
+      - logger.log: "Clock on"
+      - lambda:
+          id(rgb8x32)->set_clock_time(6);
+    name: "clock on"
+  - platform: gpio
+    pin: 
+      number: $right_button_pin
+      inverted: true
+    name: "Clock off"
+    on_press:
+      - logger.log: "clock off"
+      - lambda:
+          id(rgb8x32)->set_clock_time(0);
+```
 
 ### Local trigger
+
+To use the display without homeassistant automations you may use the [advanced functionality](#change-configuration-during-runtime) with triggers. The triggers can be fired by sensors, time or by the ehmtx component.
 
 #### on_next_screen
 There is a trigger available to do some local magic. The trigger ```on_next_screen``` is triggered every time a new screen is displayed (it doesn't trigger on the clock/date display!!). In lambda's you can use two local string variables:
@@ -486,75 +581,37 @@ ehmtx:
       id(rgb8x32)->set_today_color(rand() % 255, rand() % 255, rand() % 255);
 ```
 
-_Configuration variables:_
-
-You can set this value during runtime e.g. for a night mode
-
-```
-# sample for ulanzi tc001
-binary_sensor:
-  - platform: gpio
-    pin:
-      number: $left_button_pin
-      inverted: true
-    on_press:
-      - logger.log: "Clock on"
-      - lambda:
-          id(rgb8x32)->set_clock_time(6);
-    name: "clock on"
-  - platform: gpio
-    pin: 
-      number: $right_button_pin
-      inverted: true
-    name: "Clock off"
-    on_press:
-      - logger.log: "clock off"
-      - lambda:
-          id(rgb8x32)->set_clock_time(0);
-```
-
-### Usage without Home Assistant
-
-
-## Hardware/Wi-Fi
-
-Adapt all other data in the yaml to your needs, I use GPIO04/GPIO16 (esp8266/ESP32) as port for the display.
-
 ## Integration in Home Assistant
 
 To control your display it has to be integrated in Home Assistant. Then it provides a number of services, all prefixed with the configured `devicename` e.g. "ehmtx". See the default services marked as **(D)** [below](https://github.com/lubeda/EsphoMaTrix#services), but you can add your own.
 
-### Use the light component
-
-To use the light component add the sample lambdas```on_turn_on``` and ```on_turn_off``` to the light component.
-
-*Example*
-
-```yaml
-light:
-  - platform: neopixelbus
-    id: ehmtx_light
-    ....
-    on_turn_on:
-      lambda: |-
-         id(rgb8x32)->set_enabled(false);
-    on_turn_off:
-       lambda: |-
-         id(rgb8x32)->set_enabled(true);
-```
-
-to hide the light component from home assistant use:
-```yaml
-light:
-  - platform: neopixelbus
-    id: ehmtx_light
-    internal: true
-    ------
-```    
-
 ### Services
 
 All communication with Home Assistant use the homeasistant-api. The services can be provided by default or also defined additionally in the yaml. To define the additional services you need the id of the ehmtx-component e.g. ```id(rgb8x32)```.
+
+#### Overview of default services
+  |----|----|
+  |name|parameter|
+  |----|----|
+  |`get_status`|*none*|
+  |`set_display_on`|*none*|
+  |`set_display_off`|*none*|
+  |`show_all_icons`|*none*|
+  |`hold_screen`|*none*|
+  |`set_indicator_on` {"r", "g", "b"}|
+  |`set_indicator_off`|*none*|
+  |`set_gauge_value`| {"percent"}|
+  |`set_gauge_off`|*none*|
+  |`set_alarm_color`| {"r", "g", "b"}|
+  |`set_text_color` | {"r", "g", "b"}|
+  |`set_clock_color`| {"r", "g", "b"}|
+  |`set_today_color`| {"r", "g", "b"}|
+  |`set_gauge_color`| {"r", "g", "b"}|
+  |`set_weekday_color` |{"r", "g", "b"}|
+  |`add_screen`  |{"icon_name", "text", "lifetime","screen_time", "alarm"}|
+  |`force_screen`| {"icon_name"}|
+  |`del_screen`| {"icon_name"}|
+  |`set_brightness`| {"value"}|
 
 *Example*
 

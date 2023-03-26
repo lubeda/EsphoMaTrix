@@ -69,8 +69,8 @@ CONF_HOLD_TIME = "hold_time"
 CONF_SCROLLCOUNT = "scroll_count"
 CONF_MATRIXCOMPONENT = "matrix_component"
 CONF_HTML = "icons2html"
-CONF_SCROLLINTERVALL = "scroll_intervall"
-CONF_FRAMEINTERVALL = "frame_intervall"
+CONF_SCROLLINTERVAL = "scroll_interval"
+CONF_FRAMEINTERVAL = "frame_interval"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
@@ -129,12 +129,12 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(
         CONF_HOLD_TIME, default="2"
     ): cv.templatable(cv.int_range(min=0, max=3600)),
-    cv.Optional(CONF_SCROLLINTERVALL, default="80"
+    cv.Optional(CONF_SCROLLINTERVAL, default="80"
                 ): cv.templatable(cv.positive_int),
     cv.Optional(CONF_SCROLLCOUNT, default="2"
                 ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_FRAMEINTERVALL, default="192"
+        CONF_FRAMEINTERVAL, default="192"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
         CONF_SCREENTIME, default="8"
@@ -524,7 +524,7 @@ async def to_code(config):
                 try:
                     duration =  image.info['duration']         
                 except:
-                    duration = config[CONF_FRAMEINTERVALL]
+                    duration = config[CONF_FRAMEINTERVAL]
             else:
                 duration = conf[CONF_FRAMEDURATION]
 
@@ -606,9 +606,9 @@ async def to_code(config):
     cg.add(var.set_clock_interval(config[CONF_CLOCKINTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
     cg.add(var.set_screen_time(config[CONF_SCREENTIME]))
-    cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
+    cg.add(var.set_scroll_interval(config[CONF_SCROLLINTERVAL]))
     cg.add(var.set_scroll_count(config[CONF_SCROLLCOUNT]))
-    cg.add(var.set_frame_intervall(config[CONF_FRAMEINTERVALL]))
+    cg.add(var.set_frame_interval(config[CONF_FRAMEINTERVAL]))
     cg.add(var.set_week_start(config[CONF_WEEK_START_MONDAY]))
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))

@@ -126,8 +126,8 @@ ehmtx:
   xoffset: 1
   yoffset: 2
   scroll_count: 2
-  scroll_intervall: 80
-  frame_intervall: 192
+  scroll_interval: 80
+  frame_interval: 192
 
   on_next_screen: # trigger on screen change 
     lambda: |-

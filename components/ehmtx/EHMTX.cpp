@@ -373,14 +373,14 @@ namespace esphome
     this->font = font;
   }
 
-  void EHMTX::set_frame_intervall(uint16_t fi)
+  void EHMTX::set_frame_interval(uint16_t fi)
   {
-    this->frame_intervall = fi;
+    this->frame_interval = fi;
   }
 
-  void EHMTX::set_scroll_intervall(uint16_t si)
+  void EHMTX::set_scroll_interval(uint16_t si)
   {
-    this->scroll_intervall = si;
+    this->scroll_interval = si;
   }
 
   void EHMTX::del_screen(std::string icon_name)
@@ -568,7 +568,7 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Date format: %s", this->date_fmt.c_str());
     ESP_LOGCONFIG(TAG, "Time format: %s", this->time_fmt.c_str());
-    ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d frame: %d", this->scroll_intervall, this->frame_intervall);
+    ESP_LOGCONFIG(TAG, "Interval (ms) scroll: %d frame: %d", this->scroll_interval, this->frame_interval);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
     if (this->show_day_of_week)
     {
