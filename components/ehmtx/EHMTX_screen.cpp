@@ -119,14 +119,14 @@ namespace esphome
     ESP_LOGD(TAG, "hold for %d secs", _sec);
   }
 
-  void EHMTX_screen::set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et,uint16_t show_time)
+  void EHMTX_screen::set_text(std::string text, uint8_t icon, uint16_t pixel, uint16_t et,uint16_t show_time)
   {
     this->text = text;
     this->pixels_ = pixel;
     this->shiftx_ = 0;
     float dd = ceil((2 * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_intervall) / 1000);
-    this->display_duration = (dd > show_time) ? dd : show_time;
-    ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d show_time: %d default: %d", text.c_str(), pixel, this->display_duration, show_time, this->config_->screen_time);
+    this->screen_time = (dd > show_time) ? dd : show_time;
+    ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d show_time: %d default: %d", text.c_str(), pixel, this->screen_time, show_time, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     this->icon = icon;
   }

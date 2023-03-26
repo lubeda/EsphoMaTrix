@@ -230,7 +230,6 @@ namespace esphome
     register_service(&EHMTX::set_gauge_color, "gauge_color", {"r", "g", "b"});
     register_service(&EHMTX::set_weekday_color, "weekday_color", {"r", "g", "b"});
     register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime", "alarm"});
-    register_service(&EHMTX::add_screen_t, "add_screen_t", {"icon_name", "text", "lifetime","showtime", "alarm"});
     register_service(&EHMTX::force_screen, "force_screen", {"icon_name"});
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
@@ -300,8 +299,8 @@ namespace esphome
         {
           if (this->has_active_screen)
           {
-            ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str(), this->store->current()->display_duration);
-            this->next_action_time = ts + this->store->current()->display_duration;
+            ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str(), this->store->current()->screen_time);
+            this->next_action_time = ts + this->store->current()->screen_time;
             for (auto *t : on_next_screen_triggers_)
             {
               t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
@@ -374,9 +373,9 @@ namespace esphome
     this->font = font;
   }
 
-  void EHMTX::set_anim_intervall(uint16_t ai)
+  void EHMTX::set_frame_intervall(uint16_t fi)
   {
-    this->anim_intervall = ai;
+    this->frame_intervall = fi;
   }
 
   void EHMTX::set_scroll_intervall(uint16_t si)
@@ -409,21 +408,14 @@ namespace esphome
     }
   }
 
-  void EHMTX::add_screen(std::string iconname, std::string text, int duration, bool alarm)
+  void EHMTX::add_screen(std::string iconname, std::string text, int lifetime,int show_time, bool alarm)
   {
     uint8_t icon = this->find_icon(iconname.c_str());
-    this->internal_add_screen(icon, text, duration,this->screen_time,alarm);
-    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d (def) screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration,this->screen_time, alarm);
+    this->internal_add_screen(icon, text, lifetime,show_time,alarm);
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s lifetime: %d screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), lifetime,screen_time, alarm);
   }
 
-  void EHMTX::add_screen_t(std::string iconname, std::string text, int duration,int show_time, bool alarm)
-  {
-    uint8_t icon = this->find_icon(iconname.c_str());
-    this->internal_add_screen(icon, text, duration,show_time,alarm);
-    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration,screen_time, alarm);
-  }
-
-  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration,uint16_t show_time , bool alarm = false)
+  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t lifetime,uint16_t show_time , bool alarm = false)
   {
     if (icon >= this->icon_count)
     {
@@ -435,7 +427,7 @@ namespace esphome
     int x, y, w, h;
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
-    screen->set_text(text, icon, w, duration, show_time);
+    screen->set_text(text, icon, w, lifetime, show_time);
   }
 
   void EHMTX::set_show_date(bool b)
@@ -571,7 +563,7 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Date format: %s", this->date_fmt.c_str());
     ESP_LOGCONFIG(TAG, "Time format: %s", this->time_fmt.c_str());
-    ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
+    ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d frame: %d", this->scroll_intervall, this->frame_intervall);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
     if (this->show_day_of_week)
     {

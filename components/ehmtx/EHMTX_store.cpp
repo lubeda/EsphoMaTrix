@@ -146,7 +146,7 @@ namespace esphome
             {
                 EHMTX_screen *screen = this->slots[i];
                 int td = screen->endtime - ts;
-                ESP_LOGI(TAG, "status slot %d icon %d text: %s alarm: %d dd: %d sec end: %d sec", i, screen->icon, screen->text.c_str(), screen->alarm, screen->display_duration, td);
+                ESP_LOGI(TAG, "status slot %d icon %d text: %s alarm: %d dd: %d sec end: %d sec", i, screen->icon, screen->text.c_str(), screen->alarm, screen->screen_time, td);
             }
         }
     }
