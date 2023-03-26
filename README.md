@@ -839,7 +839,6 @@ These services are the same as the local services, so you can adapt the document
   |`del_screen`| {"icon_name"}|
   |`set_brightness`| {"value"}|
 
-
 ### Use in Home Assistant automations
 
 The easiest way to use ehmtx as a status display is to use the icon names as trigger id. In my example i have an icon named "wind" when the sensor.wind_speed has a new state this automation sends the new data to the screen with the icon named "wind" and so on.
@@ -870,7 +869,7 @@ max: 10
 
 ## How to update
 
-Since version **2023.4.0** was a massive cleanup you have to check your yaml an your automations for all breaking changes
+Since version **2023.4.0** was a massive cleanup, you may have to check your yaml and your automations for all breaking changes.
 
 ### repairs
 
