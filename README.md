@@ -47,7 +47,7 @@ The file [ulanziTC001.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ulan
 
 ## Installation
 
-### esphome custom component
+### **EsphoMaTrix** custom component
 
 **EsphoMaTrix** is a custom component, you have to include it in your yaml configuration. To always use the newest features you should use the repo, to use a stable version you copy a working version to your esphome installation.
 
@@ -71,6 +71,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/lubeda/EsphoMaTrix
+      ref: main # optional select a special branch or tag
 ```
 
 ### addressable_light component
@@ -113,7 +114,7 @@ display:
 
 ### Time component
 
-Since it is a clock you need a time component e.g. [homeassistant](https://esphome.io/components/time/homeassistant.html). It is referenced by its ID under `time_component` The display shows `!t!` until the time source is valid.
+Since it is a clock you need a time component e.g. [homeassistant](https://esphome.io/components/time/homeassistant.html). It is referenced by its id under `time_component` The display shows `!t!` until the time source is valid.
 
 ### Font
 Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/#fonts).
@@ -130,11 +131,13 @@ font:
 
 ### Icons and Animations
 
-Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons have to be 8x8 or 8x32 pixels. If necessary scale them with gimp, check "as animation" for gifs.
+Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons have to be 8x8 or 8x32 pixels in size. If necessary scale them with gimp, check "as animation" for gifs.
 
 You can also specify an URL to directly download the image file. The URLs will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 
-There are maximum 80 icons possible.
+There are maximum 90 icons possible.
+
+***Sample***
 
 ```yaml
 emhtx:
@@ -154,13 +157,15 @@ emhtx:
       url: https://github.com/home-assistant/assets/raw/master/logo/logo-small.png      
 ```
 
-The id of the icons is used later to configure the screens to display. So you should name them wisely.
+The id of the icons is used later to configure the screens to display. So you should name them wisely. If you like to group icons you should prefix them e.g. with "weather_" (see Service **del_screen**)
 
 The first defined icon will be used as a fallback icon in case of an error, e.g. if you use a non-existing icon id.
 
-GIFs are limited to 110 frames to limit the flash space. 
+GIFs are limited to 110 frames to limit the used amount of flash space. 
 
-All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 90 in the code and also by the flash space and the RAM of your board.
+All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The maximum amount of icons is limited to 90 in the code and also by the flash space and the RAM of your board.
+
+See also [Parameters](.2023.4.0#icons)
 
 ## Configuration
 
@@ -188,38 +193,38 @@ ehmtx:
   xoffset: 1 
   yoffset: 2
   scroll_count: 2 # scroll long text at least two times
-  scroll_intervall: 80 # milli seconds
-  frame_intervall: 192 # milli seconds
+  scroll_intervall: 80 # milliseconds
+  frame_intervall: 192 # milliseconds
 ```
 ***Parameters***
 
-**id** (Required, ID): Manually specify the ID used for code generation and in service definitions.
+**id** (required, ID): Manually specify the ID used for code generation and in service definitions.
 
-**clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
+**clock_interval** (optional, seconds): show the clock at least each x seconds, (default=60)
 
-**clock_time** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `clock_time` is false and the clock will be display as long as a normal screen! Setting `clock_time` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
+**clock_time** (optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `clock_time` > 0 the clock will be display as long as a normal screen! Setting `clock_time` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
 
 ![timing](./images/timing.png)
 
-**screen_time** (Optional, seconds): duration to display a screen or a clock/date sequence, a long text will be scrolled at least `scroll_count` times 
+**screen_time** (optional, seconds): duration to display a screen or a clock/date sequence, a long text will be scrolled at least `scroll_count` times (default: 10 seconds)
 
-**hold_time** (Optional, seconds): extends the display time of the current screen in seconds (default=20)
+**hold_time** (optional, seconds): extends the display time of the current screen in seconds (default=20)
 
-**date_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
+**date_format** (optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
 
-**show_seconds** (Optional, boolean): toggle an indicator for seconds while the clock is displayed (default: false)) 
+**show_seconds** (optional, boolean): toggle an indicator for seconds while the clock is displayed (default: false)) 
 
-**time_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%M"` (use `"%I:%M%p"` for the US)
+**time_format** (optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%M"` (use `"%I:%M%p"` for the US)
 
-**yoffset** (Optional, pixel): yoffset the text is aligned BASELINE_LEFT, the baseline defaults to `6` 
+**yoffset** (optional, pixel): yoffset the text is aligned BASELINE_LEFT, the baseline defaults to `6` 
 
-**xoffset** (Optional, pixel): xoffset the text is aligned BASELINE_LEFT, the left defaults to `1`
+**xoffset** (optional, pixel): xoffset the text is aligned BASELINE_LEFT, the left defaults to `1`
 
 **matrix_component** (required, ID): ID of the addressable display
 
-**show_dow** (Optional, bool): draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
+**show_dow** (optional, bool): draw the day indicator on the bottom of the clock screen. Disable e.g. if you want larger fonts, defaults to true. 
 
-**show_date** (Optional, bool): if true, show the date for `screen_time - clock_time` seconds otherwise only shows the clock for `screen_time` seconds, defaults to true. 
+**show_date** (optional, bool): if true, show the date for `screen_time - clock_time` seconds otherwise only shows the clock for `screen_time` seconds, defaults to true. 
 
 **time_component** (required, ID): ID of the time component. The display shows `!t!` until the time source is valid.
 
@@ -227,11 +232,11 @@ ehmtx:
 
 **week_start_monday** (optional, bool): default Monday is first day of week, false => Sunday
 
-**scroll_intervall** (Optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
+**scroll_intervall** (optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
 
-**frame_intervall** (Optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
+**frame_intervall** (optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
 
-**icons2html** (Optional, boolean): If true generate the html (_filename_.html) file to show all included icons.  (default = `false`)
+**icons2html** (optional, boolean): If true generate the html (_filename_.html) file to show all included icons.  (default = `false`)
 
 Example result:
 ![icon preview](./images/icons_preview.png)
@@ -240,8 +245,8 @@ Example result:
 
 ***Parameters***
 
-- **duration** (Optional, ms): in case of a gif file the component tries to read the default interval for each frame. The default/fallback interval is 192 ms. In case you need to override the default value set the duration per icon.
-- **pingpong** (Optional, boolean): in case of a gif file you can reverse the frames instead of starting from the first.
+- **duration** (optional, ms): in case of a gif file the component tries to read the default interval for each frame. The default/fallback interval is 192 ms. In case you need to override the default value set the duration per icon.
+- **pingpong** (optional, boolean): in case of a gif file you can reverse the frames instead of starting from the first.
 - **file** (Exlusive, filename): a local filename
 - **url** (Exclusive, url): an URL to download the icon
 - **lameid** (Exclusive, number): the ID from the lametric icon database
@@ -613,7 +618,7 @@ _parameters:_
 
 Removes a screen from the display by icon name. If this screen is actually display while sending this command the screen will be displayed until its "show_screen"-time has ended.
 
-Optionally you can suffix a * to the icon name to perform a wildcard delete which will delete all screens beginning with the icon_name specified.
+optionally you can suffix a * to the icon name to perform a wildcard delete which will delete all screens beginning with the icon_name specified.
 
 For example if you have multiple icons named weather_sunny, weather_rain & weather_cloudy, you can issue a del_screen weather_* to remove whichever screen is currently in a slot and replace it with a new weather screen.
 
