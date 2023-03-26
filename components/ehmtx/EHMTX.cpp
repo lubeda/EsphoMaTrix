@@ -50,6 +50,24 @@ namespace esphome
     ESP_LOGD(TAG, "indicator r: %d g: %d b: %d", r, g, b);
   }
 
+  void EHMTX::set_indicator_off()
+  {
+    this->show_indicator = false;
+    ESP_LOGD(TAG, "indicator off");
+  }
+
+  void EHMTX::set_display_off()
+  {
+    this->show_display = false;
+    ESP_LOGD(TAG, "display off");
+  }
+
+  void EHMTX::set_display_on()
+  {
+    this->show_display = true;
+    ESP_LOGD(TAG, "display on");
+  }
+
   void EHMTX::set_today_color(int r, int g, int b)
   {
     this->today_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
@@ -110,24 +128,6 @@ namespace esphome
     }
     ESP_LOGD(TAG, "icon: %s not found", name.c_str());
     return MAXICONS;
-  }
-
-  void EHMTX::set_indicator_off()
-  {
-    this->show_indicator = false;
-    ESP_LOGD(TAG, "indicator off");
-  }
-
-  void EHMTX::set_display_off()
-  {
-    this->show_display = false;
-    ESP_LOGD(TAG, "display off");
-  }
-
-  void EHMTX::set_display_on()
-  {
-    this->show_display = true;
-    ESP_LOGD(TAG, "display on");
   }
 
   void EHMTX::set_gauge_off()
@@ -220,6 +220,7 @@ namespace esphome
     register_service(&EHMTX::set_display_on, "display_on");
     register_service(&EHMTX::set_display_off, "display_off");
     register_service(&EHMTX::show_all_icons, "show_icons");
+    register_service(&EHMTX::hold_screen, "hold_screen");
     register_service(&EHMTX::set_indicator_on, "indicator_on", {"r", "g", "b"});
     register_service(&EHMTX::set_indicator_off, "indicator_off");
     register_service(&EHMTX::set_gauge_off, "gauge_off");
@@ -229,7 +230,7 @@ namespace esphome
     register_service(&EHMTX::set_today_color, "today_color", {"r", "g", "b"});
     register_service(&EHMTX::set_gauge_color, "gauge_color", {"r", "g", "b"});
     register_service(&EHMTX::set_weekday_color, "weekday_color", {"r", "g", "b"});
-    register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime", "alarm"});
+    register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime","screen_time", "alarm"});
     register_service(&EHMTX::force_screen, "force_screen", {"icon_name"});
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
@@ -308,7 +309,6 @@ namespace esphome
           }
           else
           {
-            // Try again immediately, we don't have a screen so want to display it immediately when the first one is sent
             this->next_action_time = ts;
           }
         }
@@ -412,7 +412,7 @@ namespace esphome
   {
     uint8_t icon = this->find_icon(iconname.c_str());
     this->internal_add_screen(icon, text, lifetime,show_time,alarm);
-    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s lifetime: %d screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), lifetime,screen_time, alarm);
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s lifetime: %d screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), lifetime,show_time, alarm);
   }
 
   void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t lifetime,uint16_t show_time , bool alarm = false)

@@ -127,7 +127,7 @@ EHMTX_SCHEMA = cv.Schema({
     cv.Optional(CONF_SCROLLINTERVALL, default="80"
                 ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_ANIMINTERVALL, default="192"
+        CONF_FRAMEINTERVALL, default="192"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
         CONF_SCREENTIME, default="8"
@@ -170,7 +170,8 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.use_id(EHMTX_),
         cv.Required(CONF_ICON): cv.templatable(cv.string),
         cv.Required(CONF_TEXT): cv.templatable(cv.string),
-        cv.Optional(CONF_LIFETIME): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_LIFETIME, default = 5): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_SCREENTIME, default = 10): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
 )
@@ -189,6 +190,12 @@ async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args)
 
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
+
+    template_ = await cg.templatable(config[CONF_LIFETIME], args, cv.positive_int)
+    cg.add(var.set_lifetime(template_))
+
+    template_ = await cg.templatable(config[CONF_SCREENTIME], args, cv.positive_int)
+    cg.add(var.set_screen_time(template_))
      
     template_ = await cg.templatable(config[CONF_ALARM], args, bool)
     cg.add(var.set_alarm(template_))
@@ -510,7 +517,7 @@ async def to_code(config):
                 try:
                     duration =  image.info['duration']         
                 except:
-                    duration = config[CONF_ANIMINTERVALL]
+                    duration = config[CONF_FRAMEINTERVALL]
             else:
                 duration = conf[CONF_FRAMEDURATION]
 
