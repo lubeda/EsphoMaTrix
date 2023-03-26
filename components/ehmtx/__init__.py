@@ -115,6 +115,9 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_SHOWDOW, default=True
     ): cv.boolean,
     cv.Optional(
+        CONF_SHOWDATE, default=True
+    ): cv.boolean,
+    cv.Optional(
         CONF_TIME_FORMAT, default="%H:%M"
     ): cv.string,
     cv.Optional(

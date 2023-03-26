@@ -10,8 +10,9 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 - [Ulanzi TC001](https://www.aliexpress.com/item/1005005008682055.html) commercial ~ 50€
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/) (project has been discontinued after more than 4 years now in August 2022)
 - [PixelIt](https://docs.bastelbunker.de/pixelit/) (project is under active development)
+- [Awtrix-Light](https://github.com/Blueforcer/awtrix-light) From the developer of Awtrix, optimized for the Ulanzi TC001 Hardware
 
-The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (in my opinion) that I started an esphome.io variant  targeted to an optimized Home Assistant integration. The main reason, for me is the Home Assistant integration!
+The other d.i.y. solutions have their pros and cons. I tried both and used AwTrix for a long time. But the cons are so big (in my opinion) that I started an esphome.io variant targeted to an optimized Home Assistant integration. The main reason, for me is the Home Assistant integration!
 
 There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C. As a starting point you can use the [``UlanziTC001.yaml``](https://github.com/lubeda/EsphoMaTrix/blob/main/UlanziTC001.yaml). Yet the LDR and battery sensor are not perfectly supported. For another use of the hardware see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi) or [AWTRIX-LIGHT](https://github.com/Blueforcer/awtrix-light) firmwares.
 
@@ -36,16 +37,45 @@ See it in action on [YouTube](https://www.youtube.com/watch?v=ZyaFj7ArIdY) (no s
 
 ### Features
 
-Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 16 other screens provided by Home Assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed in its lifetime it will disappear.
+Based a on a 8x32 RGB flexible matrix it displays a clock, the date and up to 24 other 'screens' provided by Home Assistant. Each screen (value/text) can be associated with a 8x8 bit RGB icon or gif animation (see installation). The values/text can be updated or deleted from the display queue. Each screen has a lifetime, if not refreshed in its lifetime it will disappear. When a screen is active it is displayed so that the text can scroll two times (`scroll_count`) or even longer for `screen_time` seconds.
 
-You can use the [ehmtx32.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ehmtx32.yaml) as sample for an ESP32. As mentioned you have to edit to your needs. So check font, icons, board and the GPIO pins for your display.
+You can use the [fullfeature.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/fullfeature.yaml) as sample for an ESP8266. As mentioned you have to edit to your needs. So check font, icons, board and the GPIO pins for your display.
 
-The file [ehmtx32.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ehmtx32.yaml) uses the functions ehmtx provides, the sample file [ehmtx8266.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ehmtx8266.yaml) uses actions where possible. You have to adapt the yaml to your hardware, since there are other RGB LED Displays possible.
+The file [ulanziTC001.yaml](https://github.com/lubeda/EsphoMaTrix/blob/main/ulanziTC001.yaml) uses the functions ehmtx provides, optimized for the Ulanzi Hardware.
 
 ## Installation
 
-### Matrix Types
-There are some different matrices-tapes on the market, to adapt them to **EspHoMaTriX** you have to find the proper pixelmapper. Here are the most common types for flexible 8x32 matrices:
+### esphome custom component
+
+**EsphoMaTrix** is a custom component, you have to include it in your yaml configuration. To always use the newest features you should use the repo, to use a stable version you copy a working version to your esphome installation.
+
+#### local use
+
+If you download the components-folder from the repo and install it in your esphome you have a stable installation. But if there are new features you won't see them. If needed customize the yaml to your folder structure.
+
+```yaml
+external_components:
+   - source:
+       type: local
+       path: components # e.g. /config/esphome/components
+```
+
+#### use from repo direct
+
+Use the github repo as component. Esphome refreshes the external components "only" once a day, perhaps you have to refresh it manually.
+
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/lubeda/EsphoMaTrix
+```
+
+### addressable_light component
+
+The **EsphoMaTrix** component requires a 8x32 pixel addressable_light, it is referenced by the id `matrix_component`.
+
+There are some different matrices-types on the market, to adapt them to **EspHoMaTriX** you have to find the proper pixelmapper. If there is garbage on your display try the other pixel_mapper. Here are the most common types for flexible 8x32 matrices:
 
 #### Type 1 
 
@@ -79,6 +109,10 @@ display:
     .....
 ```
 
+### Time component
+
+Since it is a clock you need a time component e.g. [homeassistant](https://esphome.io/components/time/homeassistant.html). It is referenced by its ID under `time_component` The display shows `!t!` until the time source is valid.
+
 ### Font
 Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/#fonts).
 
@@ -94,7 +128,7 @@ font:
 
 ### Icons and Animations
 
-Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons have to be 8x8 or 8x32 piksels.
+Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons have to be 8x8 or 8x32 pixels. If necessary scale them with gimp, check "as animation" for gifs.
 
 You can also specify an URL to directly download the image file. The URLs will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 
@@ -120,11 +154,87 @@ emhtx:
 
 The id of the icons is used later to configure the screens to display. So you should name them wisely.
 
-First defined icon will be used as a fallback icon in case of an error, e.g. if you use a non-existing icon id.
+The first defined icon will be used as a fallback icon in case of an error, e.g. if you use a non-existing icon id.
 
-GIFs are limited to 16 frames to limit the flash space. The first icon in your list is the fallback.
+GIFs are limited to 110 frames to limit the flash space. 
 
-All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 80 in the code and also by the flash space and the RAM of your board.
+All other solutions provide ready made icons, especially Lametric has a big database of [icons](https://developer.lametric.com/icons). Please check the copyright of the icons you use. The amount of icons is limited to 90 in the code and also by the flash space and the RAM of your board.
+
+## Configuration
+
+### ehmtx component
+
+This component is highly customizable.
+
+***Sample***
+
+```
+ehmtx:
+  id: rgb8x32
+  time_component: ehmtx_time
+  matrix_component: ehmtx_display
+  clock_time: 5    # seconds
+  screen_time: 8   # seconds
+  font_id: ehmtx_font
+  show_dow: true   # day of week
+  show_date: true  # also show the date
+  icons2html: false # generate html with con overview
+  brightness: 80 # percent
+  time_format: "%H:%M"
+  date_format: "%d.%m."
+  week_start_monday: true # false equals sunday
+  xoffset: 1 
+  yoffset: 2
+  scroll_count: 2 # scroll long text at least two times
+  scroll_intervall: 80 # milli seconds
+  frame_intervall: 192 # milli seconds
+```
+***Parameters***
+
+**id** (Required, ID): Manually specify the ID used for code generation and in service definitions.
+
+**clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
+
+**clock_time** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `clock_time` is false and the clock will be display as long as a normal screen! Setting `clock_time` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
+
+![timing](./images/timing.png)
+
+**screen_time** (Optional, seconds): duration to display a screen or a clock/date sequence, a long text will be scrolled at least `scroll_count` times 
+
+**hold_time** (Optional, seconds): extends the display time of the current screen in seconds (default=20)
+
+**date_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
+
+**show_seconds** (Optional, boolean): toggle an indicator for seconds while the clock is displayed (default: false)) 
+
+**time_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%M"` (use `"%I:%M%p"` for the US)
+
+**yoffset** (Optional, pixel): yoffset the text is aligned BASELINE_LEFT, the baseline defaults to `6` 
+
+**xoffset** (Optional, pixel): xoffset the text is aligned BASELINE_LEFT, the left defaults to `1`
+
+**matrix_component** (required, ID): ID of the addressable display
+
+**show_dow** (Optional, bool): draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
+
+**show_date** (Optional, bool): if true, show the date for `screen_time - clock_time` seconds otherwise only shows the clock for `screen_time` seconds, defaults to true. 
+
+**time_component** (required, ID): ID of the time component. The display shows `!t!` until the time source is valid.
+
+**font** (required, ID): ID of the font component
+
+**week_start_monday** (optional, bool): default Monday is first day of week, false => Sunday
+
+**scroll_intervall** (Optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
+
+**frame_intervall** (Optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
+
+**icons2html** (Optional, boolean): If true generate the html (_filename_.html) file to show all included icons.  (default = `false`)
+
+Example result:
+![icon preview](./images/icons_preview.png)
+
+### icons
 
 ***Parameters***
 
@@ -132,24 +242,12 @@ All other solutions provide ready made icons, especially Lametric has a big data
 - **pingpong** (Optional, boolean): in case of a gif file you can reverse the frames instead of starting from the first.
 - **file** (Exlusive, filename): a local filename
 - **url** (Exclusive, url): an URL to download the icon
+- **lameid** (Exclusive, number): the ID from the lametric icon database
 
-#### Icon preview helper
+## Control your display
 
-You can create a file with all icons and names as reference. The file is named like the yaml with the extension ".html" and places in esphome config directory.
-
-```yaml
-emhtx:
-  html: true
-```
-
-Example result:
-
-```html
-<HTML><STYLE> img { height: 40px; width: 40px; background: black;}</STYLE><BODY>
-error: <img src="_icons/error fatal.gif" alt="error">&nbsp;
-leia: <img src="_icons/princess leia.gif" alt="leia">&nbsp;
-</BODY></HTML>
-```
+A lot of features are accessible with actions you can use in your yaml
+### Local actions/lambdas
 
 #### Show all icons on your matrix
 
@@ -165,123 +263,13 @@ esphome:
       - lambda: !lambda |-
           id(rgb8x32)->show_all_icons();
 ```
-
-### esphome custom component
-
-#### local use
-
-If you download the components-folder from the repo and install it in your esphome you have a stable installation. But if there are new features you won't see them. If needed customize the yaml to your folder structure.
-
-```yaml
-external_components:
-   - source:
-       type: local
-       path: components # e.g. /config/esphome/components
-```
-
-#### use from repo direct
-
-Use the github repo as component. Esphome refreshes the external components "only" once a day, perhaps you have to refresh it manually.
-
-```yaml
-external_components:
-  - source:
-      type: git
-      url: https://github.com/lubeda/EsphoMaTrix
-```
-
-## YAML configuration
-
-_Example `ehmtx:` configuration_
-
-```yaml
-ehmtx:
-  id: rgb8x32 # needed to reference the components in services and actions etc.
-  clock_time: 6 
-  screen_time: 8
-  html: true
-  display8x32: ehmtxdisplay
-  time: EHMTX_clock
-  font_id: EHMTX_font
-  icons: 
-    - file: sample.png  # use your icons/animations here
-      id: boot 
-    - file: celsius.png
-      id: temp 
-    - file: garage door.gif
-      id: garage
-```
-
-_Configuration variables:_
-
-**id** (Required, ID): Manually specify the ID used for code generation and in service definitions.
-
-**clock_time** (Optional, seconds): duration to display the clock after this time the date is display until next "show_screen". If `show_date` is false `clock_time` is false and the clock will be display as long as a normal screen! Setting `clock_time` to 0 will not show the clock or date, if there are no screens the display will be blank until the next screen is sent.
-
-You can set this value during runtime e.g. for a night mode
-
-```
-# sample for ulanzi tc001
-binary_sensor:
-  - platform: gpio
-    pin:
-      number: $left_button_pin
-      inverted: true
-    on_press:
-      - logger.log: "Clock on"
-      - lambda:
-          id(rgb8x32)->set_clock_time(6);
-    name: "clock on"
-  - platform: gpio
-    pin: 
-      number: $right_button_pin
-      inverted: true
-    name: "Clock off"
-    on_press:
-      - logger.log: "clock off"
-      - lambda:
-          id(rgb8x32)->set_clock_time(0);
-```
-
-**clock_interval** (Optional, seconds): show the clock at least each x seconds, (default=60)
-
-**show_screen** (Optional, seconds): duration to display a screen or a clock/date sequence, a long text will be scrolled at least two times 
-
-![timing](./images/timing.png)
-
-**hold_time** (Optional, seconds): extends the display time of the current screen in seconds (default=20)
-
-**date_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%d.%m."` (use `"%m.%d."` for the US)
-
-**show_seconds** (Optional, boolean): toggle an indicator for seconds while the clock is displayed (default: false)) 
-
-**time_format** (Optional, string): formats the date display with [strftime syntax](https://esphome.io/components/time.html?highlight=strftime), defaults `"%H:%M"` (use `"%I:%M%p"` for the US)
-
-**yoffset** (Optional, pixel): yoffset the text is aligned BASELINE_LEFT, the baseline defaults to `6` 
-
-**xoffset** (Optional, pixel): xoffset the text is aligned BASELINE_LEFT, the left defaults to `1`
-
-**display8x32** (required, ID): ID of the addressable display
-
-**dayofweek** (Optional, bool): draw the day indicator on the bottom of the screen. Disable e.g. if you want larger fonts, defaults to true. 
-
-**show_date** (Optional, bool): if true, show the date for `screen_time - clock_time` seconds otherwise only shows the clock for `screen_time` seconds, defaults to true. 
-
-**time** (required, ID): ID of the time component. The display shows `!t!` until the time source is valid.
-
-**font** (required, ID): ID of the font component
-
-**week_start_monday** (optional, bool): default Monday is first day of week, false => Sunday
-
-**scroll_intervall** (Optional, ms): the interval in ms to scroll the text (default=80), should be a multiple of the ```update_interval``` from the display (default: 16ms)
-
-**frame_intervall** (Optional, ms): the interval in ms to display the next animation/icon frame (default = 192), should be a multiple of the ```update_interval``` from the display (default = 16)
-
-**html** (Optional, boolean): If true generate the html (_filename_.yaml.html) file to show all included icons.  (default = `false`)
-
-### Usage without Home Assistant
+#### Add screen to your display queue
 
 You can add screens locally and display data directly from any local sensor. See this sample:
+
+##### Lambda
+
+Take care that the ```char text[30];``` has enough space to store the formated text. 
 
 ```yaml
 sensor:
@@ -295,8 +283,82 @@ sensor:
           sprintf(text,"Light: %2.1f lx", id(sensorlx).state);
            id(rgb8x32)->add_screen("sun", text, 5,11, false); // 5 Minutes,each time at least 11 seconds  no alarm
 ```
+##### Action
 
-Take care that the ```char text[30];``` has enough space to store the formated text. 
+```yaml
+sensor:
+  - platform: bh1750
+    id: sensorlx
+    ...
+    on_value:
+      then:
+        - ehtmx.add.screen
+          icon_name: "sun"
+          text: "new data from lux sensor"
+          lifetime: 5 # minutes optional
+          screen_time: 35 # seconds optional
+          alarm: true # optional
+```
+
+***Parameters***
+
+- **icon_name** (Required, string): 
+- **text** (Optional, string): 
+- **lifetime** (Optional, ms): 
+- **screen_time** (Optional, ms): 
+- **alarm** (Optional, boolean): 
+
+
+#### Set (alarm/clock/gauge/text/today/weekday) color action
+
+Sets the color of the selected element
+
+##### Lambda
+
+```
+  lamda: 
+    id(rgb8x32)->set_text_color(200,45,12);
+```
+
+##### Action
+
+You have to use use id of your ehmtx component, e.g. `rgb8x32`
+
+```yaml
+     - ehmtx.***.color:
+        id: rgb8x32
+        red: !lambda return r;
+        green: !lambda return g;
+        blue: !lambda return b;
+```
+
+valid elements:
+
+- `ehmtx.alarm.color:`
+- `ehmtx.clock.color:`
+- `ehmtx.gauge.color:`
+- `ehmtx.text.color:`
+- `ehmtx.today.color:`
+- `ehmtx.weekday.color:`
+- ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
+
+*Example*
+
+```yaml
+esphome:
+  name: $devicename
+  on_boot:
+    priority: -100
+    then: 
+      - ehmtx.text.color:
+          id: rgb8x32
+          red: !lambda return 200;
+          blue: !lambda return 170;
+      - ehmtx.today.color:
+          id: rgb8x32
+          blue: !lambda return 70;
+          green: !lambda return 250;
+
 
 ### Local trigger
 
@@ -361,10 +423,50 @@ ehmtx:
       id(rgb8x32)->set_today_color(rand() % 255, rand() % 255, rand() % 255);
 ```
 
+_Configuration variables:_
+
+You can set this value during runtime e.g. for a night mode
+
+```
+# sample for ulanzi tc001
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: $left_button_pin
+      inverted: true
+    on_press:
+      - logger.log: "Clock on"
+      - lambda:
+          id(rgb8x32)->set_clock_time(6);
+    name: "clock on"
+  - platform: gpio
+    pin: 
+      number: $right_button_pin
+      inverted: true
+    name: "Clock off"
+    on_press:
+      - logger.log: "clock off"
+      - lambda:
+          id(rgb8x32)->set_clock_time(0);
+```
+
+### Usage without Home Assistant
 
 ### Actions
 
 For local automations you can use actions. This is the normal way of automations. The ```id(rgb8x32)->``` style will also work.
+
+      - ehmtx.clock.color:
+          id: rgb8x32
+          red: !lambda return 50;
+          green: !lambda return 150;
+          blue: !lambda return 230;
+      - ehmtx.weekday.color:
+          id: rgb8x32
+          red: !lambda return 250;
+          green: !lambda return 50;
+          blue: !lambda return 30;
+```
 
 ##### Show date
 

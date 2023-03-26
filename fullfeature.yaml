@@ -159,4 +159,6 @@ ehmtx:
       id: d080
     - id: fullscreen
       file: sample8x32.gif
+    - id: samplegif
+      file: sample8x8.gif
   
