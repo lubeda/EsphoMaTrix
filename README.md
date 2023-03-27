@@ -930,6 +930,10 @@ api: #!include ehmtx_service.yaml
             id(rgb8x32)->add_screen(icon_name,text,7,30,true);
     .....    
 ```
+### old options
+![duration and select](./images/duration_select.png "Duration and ehmtxselect were removed in this version")
+
+Remove these entries.
 
 
 #### Display precision after home assistant 2023.3.0
