@@ -35,6 +35,15 @@ namespace esphome
         return this->slots[0];
     }
 
+    void EHMTX_store::set_text_color(uint8_t icon_id, Color c)
+    {
+        for (uint8_t i = 0; i < MAXQUEUE; i++)
+        {
+            this->slots[i]->set_text_color(icon_id,c);
+        }
+       
+    }
+
     void EHMTX_store::delete_screen(uint8_t icon)
     {
         for (uint8_t i = 0; i < MAXQUEUE; i++)

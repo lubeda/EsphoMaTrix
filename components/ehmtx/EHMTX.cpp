@@ -33,6 +33,16 @@ namespace esphome
     }
   }
 
+  void EHMTX::set_screen_color(std::string name,int r,int g,int b)
+  {
+    uint8_t icon_id = this->find_icon(name);
+    if (icon_id < MAXICONS)
+    {
+      ESP_LOGD(TAG, "set screen color: icon %d r: %d g: %d b: %d",icon_id,r,g,b);
+      this->store->set_text_color(icon_id,Color(r,g,b));
+    }
+  }
+
   void EHMTX::set_time_format(std::string s)
   {
     this->time_fmt = s;
@@ -205,6 +215,7 @@ namespace esphome
     register_service(&EHMTX::set_today_color, "today_color", {"r", "g", "b"});
     register_service(&EHMTX::set_gauge_color, "gauge_color", {"r", "g", "b"});
     register_service(&EHMTX::set_weekday_color, "weekday_color", {"r", "g", "b"});
+    register_service(&EHMTX::set_screen_color, "set_screen_color", {"icon_name","r", "g", "b"});
     register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime","screen_time", "alarm"});
     register_service(&EHMTX::force_screen, "force_screen", {"icon_name"});
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
@@ -403,6 +414,7 @@ namespace esphome
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
     screen->set_text(text, icon, w, lifetime, show_time);
+    screen->text_color= this->text_color;
   }
 
   void EHMTX::set_show_date(bool b)

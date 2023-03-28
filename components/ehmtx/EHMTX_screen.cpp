@@ -81,7 +81,7 @@ namespace esphome
       }
       else
       {
-        this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->text_color, esphome::display::TextAlign::BASELINE_LEFT,
+        this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->text_color, esphome::display::TextAlign::BASELINE_LEFT,
                                       this->text.c_str());
       }
     }
@@ -129,5 +129,12 @@ namespace esphome
     ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d show_time: %d default: %d", text.c_str(), pixel, this->screen_time, show_time, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     this->icon = icon;
+  }
+
+  void EHMTX_screen::set_text_color(uint8_t icon_id, Color text_color)
+  {
+    if (this->icon== icon_id ){
+      this->text_color = text_color;
+    }
   }
 }

@@ -112,6 +112,7 @@ namespace esphome
     void set_today_color(int r, int g, int b);
     void set_weekday_color(int r, int g, int b);
     void set_alarm_color(int r, int g, int b);
+    void set_screen_color(std::string icon_name,int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
     void draw_gauge();
@@ -140,6 +141,7 @@ namespace esphome
     bool move_next();
     void hold_current(uint _sec);
     EHMTX_screen *current();
+    void set_text_color(uint8_t icon_id, Color c);
     void log_status();
   };
 
@@ -155,6 +157,7 @@ namespace esphome
     bool alarm;
     time_t endtime;
     uint8_t icon;
+    Color text_color;
     std::string text;
 
     EHMTX_screen(EHMTX *config);
@@ -170,6 +173,7 @@ namespace esphome
     bool del_slot(uint8_t _icon);
     void hold_slot(uint8_t _sec);
     void set_text(std::string text, uint8_t icon, uint16_t pixel, uint16_t et, uint16_t st);
+    void set_text_color(uint8_t icon_id,Color text_color);
   };
 
   class EHMTXNextScreenTrigger : public Trigger<std::string, std::string>
