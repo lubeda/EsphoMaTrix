@@ -208,6 +208,28 @@ namespace esphome
     EHMTX *parent_;
   };
 
+template <typename... Ts>
+  class SetScreenColorAction : public Action<Ts...>
+  {
+  public:
+    SetScreenColorAction(EHMTX *parent) : parent_(parent) {}
+    
+    TEMPLATABLE_VALUE(std::string, icon)
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+    
+    void play(Ts... x) override
+    {
+      auto icon = this->icon_.value(x...);
+      
+      this->parent_->set_screen_color(icon,this->red_.value(x...) ,this->blue_.value(x...),this->green_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
   template <typename... Ts>
   class AddScreenAction : public Action<Ts...>
   {
