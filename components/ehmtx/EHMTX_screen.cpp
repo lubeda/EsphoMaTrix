@@ -7,6 +7,8 @@ namespace esphome
   {
     this->config_ = config;
     this->endtime = 0;
+    this->centerx_ = 0;
+    this->shiftx_ = 0;
     this->alarm = false;
   }
 
@@ -76,12 +78,12 @@ namespace esphome
     {
       if (this->alarm)
       {
-        this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color, esphome::display::TextAlign::BASELINE_LEFT,
+        this->config_->display->print(this->centerx_ + TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->config_->alarm_color, esphome::display::TextAlign::BASELINE_LEFT,
                                       this->text.c_str());
       }
       else
       {
-        this->config_->display->print(TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->text_color, esphome::display::TextAlign::BASELINE_LEFT,
+        this->config_->display->print(this->centerx_ + TEXTSCROLLSTART - this->shiftx_ + extraoffset + this->config_->xoffset, this->config_->yoffset, this->config_->font, this->text_color, esphome::display::TextAlign::BASELINE_LEFT,
                                       this->text.c_str());
       }
     }
@@ -123,9 +125,14 @@ namespace esphome
   {
     this->text = text;
     this->pixels_ = pixel;
+    
+    if (pixel < 23) {
+      this->centerx_ = ceil((22-pixel)/2);
+    }
+    
     this->shiftx_ = 0;
-    float dd = ceil((this->config_->scroll_count * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_interval) / 1000);
-    this->screen_time = (dd > show_time) ? dd : show_time;
+    float display_duration = ceil((this->config_->scroll_count * (TEXTSTARTOFFSET + pixel) * this->config_->scroll_interval) / 1000);
+    this->screen_time = (display_duration > show_time) ? display_duration : show_time;
     ESP_LOGD(TAG, "display length text: %s pixels %d calculated: %d show_time: %d default: %d", text.c_str(), pixel, this->screen_time, show_time, this->config_->screen_time);
     this->endtime = this->config_->clock->now().timestamp + et * 60;
     this->icon = icon;

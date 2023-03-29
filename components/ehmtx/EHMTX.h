@@ -150,6 +150,7 @@ namespace esphome
   protected:
     uint8_t shiftx_;
     uint8_t pixels_;
+    uint8_t centerx_;
     EHMTX *config_;
 
   public:
