@@ -1091,7 +1091,7 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.3.5 added *_color as default services => remove these from your yaml
 - 2023.3.5 added show_all_icons,gauge_percent/gauge_off as default services => remove these from your yaml
 - 2023.4.0 **cleaner naming** please check all automations and yaml for change naming!!!
-- 2023.4.0 removed the select sun component
+- 2023.4.0 removed the select component
 
 ## Usage
 The integration works with the Home Assistant api so, after boot of the device, it takes a few seconds until the service calls start working.
