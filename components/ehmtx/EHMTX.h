@@ -148,8 +148,8 @@ namespace esphome
   class EHMTX_screen
   {
   protected:
-    uint8_t shiftx_;
-    uint8_t pixels_;
+    uint16_t shiftx_;
+    uint16_t pixels_;
     uint8_t centerx_;
     EHMTX *config_;
 
