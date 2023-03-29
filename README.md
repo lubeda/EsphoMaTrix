@@ -1017,7 +1017,7 @@ action:
 mode: single
 ```
 
-Prerequisites: This works since 2023.3.1 thanx to @andrew-codechimp fpr the new del_screen
+Prerequisites: This works since 2023.3.1 thanx to @andrew-codechimp for the new del_screen
 
 ### Integrate in Home Assistant UI
 
@@ -1107,6 +1107,6 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
-- ** everbody that found bugs and reported them!
+- ** everbody that found bugs/issues and reported them!
 
 ## Special thanks to all sponsors
