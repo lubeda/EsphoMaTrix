@@ -27,14 +27,8 @@ SVG_FULLSCREENSTART = '<svg width="320px" height="80px" viewBox="0 0 320 80">'
 SVG_END = "</svg>"
 
 logging.warning(f"")
-logging.warning(f"If you are upgrading EsphoMaTrix from a version before 2023.3.5,")
-logging.warning(f"you have to remove the service-definitions from the yaml. Remove following")
-logging.warning(f"services (also see CHANGELOG.md and README.md):")
-logging.warning(f"=========================================================================")
-logging.warning(f"status, display_on, display_off, show_icons, indicator_on, indicator_off,")
-logging.warning(f"gauge_off, alarm_color, text_color, clock_color, today_color, gauge_color,")
-logging.warning(f"weekday_color, add_screen, force_screen, del_screen, gauge_value, brightness")
-logging.warning(f"=========================================================================")
+logging.warning(f"If you are upgrading EsphoMaTrix from a version before 2023.4.0,")
+logging.warning(f"you should read the section https://github.com/lubeda/EsphoMaTrix/#how-to-update for tipps.")
 logging.warning(f"")
 
 def rgb565_svg(x,y,r,g,b):
