@@ -4,6 +4,7 @@
 - new: set_screen_color service to set color for a screen (service & action)
 - breaking: all settings and parameters are named more consistant
 - changed: center small text instead of left aligned
+- removed: select component
 
 ## 2023.3.5
 - new: show_seconds indicator top left corner

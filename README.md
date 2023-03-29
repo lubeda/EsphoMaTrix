@@ -588,6 +588,9 @@ ehmtx:
           text: !lambda "return y.c_str();"
 ```
 
+***Result***
+
+![events](./images/events.png)
 #### on_next_clock
 The trigger ```on_next_clock``` is triggered every time a new clock display circle starts.
 See the examples:
