@@ -170,7 +170,7 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(EHMTX_),
         cv.Required(CONF_ICON): cv.templatable(cv.string),
-        cv.Required(CONF_TEXT): cv.templatable(cv.string),
+        cv.Optional(CONF_TEXT, default = ""): cv.templatable(cv.string),
         cv.Optional(CONF_LIFETIME, default = 5): cv.templatable(cv.positive_int),
         cv.Optional(CONF_SCREENTIME, default = 10): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
