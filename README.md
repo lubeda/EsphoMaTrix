@@ -26,6 +26,9 @@ Another german tutorial video focused at the Ulanzi [Smarte Pixel Clock über Ho
 
 See this [nice article](https://blakadder.com/esphome-pixel-clock/) about EsphoMaTrix on a Ulanzi TC001 from [blakadder](https://github.com/blakadder).
 
+Short video on Instagram [@blak_adder](https://www.instagram.com/reel/CpYVByRIaSI)
+https://www.instagram.com/reel/CpYVByRIaSI
+
 See this english discussions:
 [Share your projects](https://community.home-assistant.io/t/esphomatrix-a-simple-clock-status-display/425325)
 [ESPHOME](https://community.home-assistant.io/t/a-simple-diy-status-display-with-an-8x32-rgb-led/379051)
