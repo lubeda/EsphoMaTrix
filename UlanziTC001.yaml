@@ -69,7 +69,7 @@ api:
         text: string
       then:
         lambda: |-
-          id(rgb8x32)->add_screen(icon_name,text,7,true);
+          id(rgb8x32)->add_screen(icon_name,text,7,30,true); 
           id(rgb8x32)->force_screen(icon_name);
     - service: screen
       variables:
@@ -217,12 +217,11 @@ display:
 
 ehmtx:
   id: rgb8x32
-  show_clock: 6
-  show_screen: 6
+  clock_time: 6
+  screen_time: 6
   html: true
   display8x32: ehmtx_display
   time: ehmtx_time
-  duration: 7
   font_id: ehmtx_font
   icons: 
     - id: ha

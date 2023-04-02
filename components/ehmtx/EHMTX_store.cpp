@@ -35,6 +35,15 @@ namespace esphome
         return this->slots[0];
     }
 
+    void EHMTX_store::set_text_color(uint8_t icon_id, Color c)
+    {
+        for (uint8_t i = 0; i < MAXQUEUE; i++)
+        {
+            this->slots[i]->set_text_color(icon_id,c);
+        }
+       
+    }
+
     void EHMTX_store::delete_screen(uint8_t icon)
     {
         for (uint8_t i = 0; i < MAXQUEUE; i++)
@@ -146,7 +155,7 @@ namespace esphome
             {
                 EHMTX_screen *screen = this->slots[i];
                 int td = screen->endtime - ts;
-                ESP_LOGI(TAG, "status slot %d icon %d text: %s alarm: %d dd: %d sec end: %d sec", i, screen->icon, screen->text.c_str(), screen->alarm, screen->display_duration, td);
+                ESP_LOGI(TAG, "status slot %d icon %d text: %s alarm: %d dd: %d sec end: %d sec", i, screen->icon, screen->text.c_str(), screen->alarm, screen->screen_time, td);
             }
         }
     }

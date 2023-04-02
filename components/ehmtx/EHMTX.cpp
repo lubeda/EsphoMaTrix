@@ -20,10 +20,6 @@ namespace esphome
     this->last_clock_time = 0;
     this->show_icons = false;
     this->show_display = true;
-
-#ifdef USE_EHMTX_SELECT
-    this->select = NULL;
-#endif
   }
 
   void EHMTX::force_screen(std::string name)
@@ -34,6 +30,16 @@ namespace esphome
       this->store->force_next_screen(icon_id);
       this->next_action_time = this->clock->now().timestamp + this->screen_time;
       ESP_LOGD(TAG, "force next screen: %s for %d sec", name.c_str(),this->screen_time);
+    }
+  }
+
+  void EHMTX::set_screen_color(std::string name,int r,int g,int b)
+  {
+    uint8_t icon_id = this->find_icon(name);
+    if (icon_id < MAXICONS)
+    {
+      ESP_LOGD(TAG, "set screen color: icon %d r: %d g: %d b: %d",icon_id,r,g,b);
+      this->store->set_text_color(icon_id,Color(r,g,b));
     }
   }
 
@@ -52,6 +58,24 @@ namespace esphome
     this->indicator_color = Color((uint8_t)r & 248, (uint8_t)g & 252, (uint8_t)b & 248);
     this->show_indicator = true;
     ESP_LOGD(TAG, "indicator r: %d g: %d b: %d", r, g, b);
+  }
+
+  void EHMTX::set_indicator_off()
+  {
+    this->show_indicator = false;
+    ESP_LOGD(TAG, "indicator off");
+  }
+
+  void EHMTX::set_display_off()
+  {
+    this->show_display = false;
+    ESP_LOGD(TAG, "display off");
+  }
+
+  void EHMTX::set_display_on()
+  {
+    this->show_display = true;
+    ESP_LOGD(TAG, "display on");
   }
 
   void EHMTX::set_today_color(int r, int g, int b)
@@ -116,29 +140,12 @@ namespace esphome
     return MAXICONS;
   }
 
-  void EHMTX::set_indicator_off()
-  {
-    this->show_indicator = false;
-    ESP_LOGD(TAG, "indicator off");
-  }
-
-  void EHMTX::set_display_off()
-  {
-    this->show_display = false;
-    ESP_LOGD(TAG, "display off");
-  }
-
-  void EHMTX::set_display_on()
-  {
-    this->show_display = true;
-    ESP_LOGD(TAG, "display on");
-  }
-
   void EHMTX::set_gauge_off()
   {
     this->show_gauge = false;
     ESP_LOGD(TAG, "gauge off");
   }
+
   void EHMTX::set_gauge_value(int percent)
   {
     this->show_gauge = false;
@@ -146,7 +153,7 @@ namespace esphome
     {
       this->show_gauge = true;
       this->gauge_value = percent; // (uint8_t)(100 - percent) * 7 / 100;
-      ESP_LOGD(TAG, "gauge value: %d => %d", percent, this->gauge_value);
+      ESP_LOGD(TAG, "set gauge value: %d", percent);
     }
   }
 
@@ -179,41 +186,16 @@ namespace esphome
 
   void EHMTX::draw_gauge()
   {
+
     if (this->show_gauge)
     {
-      auto height = 8;
-      if (this->gauge_value > 85)
-      {
-        height = 0;
-      }
-      else if (this->gauge_value > 71)
-      {
-        height = 1;
-      }
-      else if (this->gauge_value > 55)
-      {
-        height = 2;
-      }
-      else if (this->gauge_value > 45)
-      {
-        height = 3;
-      }
-      else if (this->gauge_value > 30)
-      {
-        height = 4;
-      }
-      else if (this->gauge_value > 19)
-      {
-        height = 5;
-      }
-      else if (this->gauge_value > 10)
-      {
-        height = 6;
-      }
-
       this->display->line(0, 7, 0, 0, esphome::display::COLOR_OFF);
-      this->display->line(0, 7, 0, height, this->gauge_color);
       this->display->line(1, 7, 1, 0, esphome::display::COLOR_OFF);
+      if (this->gauge_value > 11)
+      {
+        uint8_t height = 7 - (int)(this->gauge_value/12.5);
+        this->display->line(0, 7, 0, height, this->gauge_color);
+      }
     }
   }
 
@@ -223,6 +205,7 @@ namespace esphome
     register_service(&EHMTX::set_display_on, "display_on");
     register_service(&EHMTX::set_display_off, "display_off");
     register_service(&EHMTX::show_all_icons, "show_icons");
+    register_service(&EHMTX::hold_screen, "hold_screen");
     register_service(&EHMTX::set_indicator_on, "indicator_on", {"r", "g", "b"});
     register_service(&EHMTX::set_indicator_off, "indicator_off");
     register_service(&EHMTX::set_gauge_off, "gauge_off");
@@ -232,20 +215,12 @@ namespace esphome
     register_service(&EHMTX::set_today_color, "today_color", {"r", "g", "b"});
     register_service(&EHMTX::set_gauge_color, "gauge_color", {"r", "g", "b"});
     register_service(&EHMTX::set_weekday_color, "weekday_color", {"r", "g", "b"});
-    register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime", "alarm"});
+    register_service(&EHMTX::set_screen_color, "set_screen_color", {"icon_name","r", "g", "b"});
+    register_service(&EHMTX::add_screen, "add_screen", {"icon_name", "text", "lifetime","screen_time", "alarm"});
     register_service(&EHMTX::force_screen, "force_screen", {"icon_name"});
     register_service(&EHMTX::del_screen, "del_screen", {"icon_name"});
     register_service(&EHMTX::set_gauge_value, "gauge_value", {"percent"});
     register_service(&EHMTX::set_brightness, "brightness", {"value"}); 
-
-#ifdef USE_EHMTX_SELECT
-    if (this->select != NULL)
-    {
-      ESP_LOGD(TAG, "select_component activated");
-      this->select->traits.set_options(this->select_options);
-      this->select->parent = this;
-    }
-#endif
   }
 
   void EHMTX::update() // called from polling component
@@ -267,7 +242,7 @@ namespace esphome
         {
           int x, y, w, h;
           this->display->get_text_bounds(0, 0, this->icons[i]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
-          this->icon_screen->set_text(this->icons[i]->name, i, w, 1);
+          this->icon_screen->set_text(this->icons[i]->name, i, w, 1,1);
           ESP_LOGD(TAG, "show all icons icon: %d name: %s", i, this->icons[i]->name.c_str());
         }
         else
@@ -311,8 +286,8 @@ namespace esphome
         {
           if (this->has_active_screen)
           {
-            ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str(), this->store->current()->display_duration);
-            this->next_action_time = ts + this->store->current()->display_duration;
+            ESP_LOGD(TAG, "next action: show screen \"%s\" for %d sec", this->icons[this->store->current()->icon]->name.c_str(), this->store->current()->screen_time);
+            this->next_action_time = ts + this->store->current()->screen_time;
             for (auto *t : on_next_screen_triggers_)
             {
               t->process(this->icons[this->store->current()->icon]->name, this->store->current()->text);
@@ -320,7 +295,6 @@ namespace esphome
           }
           else
           {
-            // Try again immediately, we don't have a screen so want to display it immediately when the first one is sent
             this->next_action_time = ts;
           }
         }
@@ -331,11 +305,6 @@ namespace esphome
   void EHMTX::set_screen_time(uint16_t t)
   {
     this->screen_time = t;
-  }
-
-  void EHMTX::set_duration(uint8_t t)
-  {
-    this->duration = t;
   }
 
   void EHMTX::skip_screen()
@@ -356,7 +325,6 @@ namespace esphome
              this->clock->now().month, this->clock->now().year,
              this->clock->now().hour, this->clock->now().minute);
     ESP_LOGI(TAG, "status brightness: %d (0..255)", this->brightness_);
-    ESP_LOGI(TAG, "status default duration: %d", this->duration);
     ESP_LOGI(TAG, "status date format: %s", this->date_fmt.c_str());
     ESP_LOGI(TAG, "status time format: %s", this->time_fmt.c_str());
     ESP_LOGI(TAG, "status text_color: RGB(%d,%d,%d)", this->text_color.r, this->text_color.g, this->text_color.b);
@@ -384,9 +352,6 @@ namespace esphome
     {
       ESP_LOGI(TAG, "status icon: %d name: %s", i, this->icons[i]->name.c_str());
     }
-#ifdef USE_EHMTX_SELECT
-    ESP_LOGI(TAG, "select enabled");
-#endif
   }
 
   void EHMTX::set_font(display::Font *font)
@@ -394,14 +359,14 @@ namespace esphome
     this->font = font;
   }
 
-  void EHMTX::set_anim_intervall(uint16_t ai)
+  void EHMTX::set_frame_interval(uint16_t fi)
   {
-    this->anim_intervall = ai;
+    this->frame_interval = fi;
   }
 
-  void EHMTX::set_scroll_intervall(uint16_t si)
+  void EHMTX::set_scroll_interval(uint16_t si)
   {
-    this->scroll_intervall = si;
+    this->scroll_interval = si;
   }
 
   void EHMTX::del_screen(std::string icon_name)
@@ -429,14 +394,14 @@ namespace esphome
     }
   }
 
-  void EHMTX::add_screen(std::string iconname, std::string text, int duration, bool alarm)
+  void EHMTX::add_screen(std::string iconname, std::string text, int lifetime,int show_time, bool alarm)
   {
     uint8_t icon = this->find_icon(iconname.c_str());
-    this->internal_add_screen(icon, text, duration, alarm);
-    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s duration: %d alarm: %d", icon, iconname.c_str(), text.c_str(), duration, alarm);
+    this->internal_add_screen(icon, text, lifetime,show_time,alarm);
+    ESP_LOGD(TAG, "add_screen icon: %d iconname: %s text: %s lifetime: %d screen_time: %d alarm: %d", icon, iconname.c_str(), text.c_str(), lifetime,show_time, alarm);
   }
 
-  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm = false)
+  void EHMTX::internal_add_screen(uint8_t icon, std::string text, uint16_t lifetime,uint16_t show_time , bool alarm = false)
   {
     if (icon >= this->icon_count)
     {
@@ -448,7 +413,8 @@ namespace esphome
     int x, y, w, h;
     this->display->get_text_bounds(0, 0, text.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
     screen->alarm = alarm;
-    screen->set_text(text, icon, w, duration);
+    screen->set_text(text, icon, w, lifetime, show_time);
+    screen->text_color= this->text_color;
   }
 
   void EHMTX::set_show_date(bool b)
@@ -524,7 +490,7 @@ namespace esphome
     return this->icons[this->store->current()->icon]->name;
   }
 
-  void EHMTX::set_show_clock(uint16_t t)
+  void EHMTX::set_clock_time(uint16_t t)
   {
     this->clock_time = t;
   }
@@ -532,6 +498,11 @@ namespace esphome
   void EHMTX::set_hold_time(uint16_t t)
   {
     this->hold_time = t;
+  }
+
+  void EHMTX::set_scroll_count(uint8_t c)
+  {
+    this->scroll_count = c;
   }
 
   void EHMTX::set_clock_interval(uint16_t t)
@@ -584,7 +555,7 @@ namespace esphome
     ESP_LOGCONFIG(TAG, "Max screens: %d", MAXQUEUE);
     ESP_LOGCONFIG(TAG, "Date format: %s", this->date_fmt.c_str());
     ESP_LOGCONFIG(TAG, "Time format: %s", this->time_fmt.c_str());
-    ESP_LOGCONFIG(TAG, "Intervall (ms) scroll: %d anim: %d", this->scroll_intervall, this->anim_intervall);
+    ESP_LOGCONFIG(TAG, "Interval (ms) scroll: %d frame: %d", this->scroll_interval, this->frame_interval);
     ESP_LOGCONFIG(TAG, "Displaytime (s) clock: %d screen: %d", this->clock_time, this->screen_time);
     if (this->show_day_of_week)
     {
@@ -604,22 +575,11 @@ namespace esphome
     }
   }
 
-#ifdef USE_EHMTX_SELECT
-  void EHMTX::set_select(esphome::EhmtxSelect *es)
-  {
-    this->select = es;
-  }
-#endif
-
   void EHMTX::add_icon(EHMTX_Icon *icon)
   {
     this->icons[this->icon_count] = icon;
     ESP_LOGD(TAG, "add_icon no.: %d name: %s frame_duration: %d ms", this->icon_count, icon->name.c_str(), icon->frame_duration);
     this->icon_count++;
-
-#ifdef USE_EHMTX_SELECT
-    this->select_options.push_back(icon->name);
-#endif
   }
 
   void EHMTX::show_all_icons()
@@ -627,7 +587,7 @@ namespace esphome
     int x, y, w, h;
     ESP_LOGD(TAG, "show all icons icon: %s", this->icons[0]->name.c_str());
     this->display->get_text_bounds(0, 0, this->icons[0]->name.c_str(), this->font, display::TextAlign::LEFT, &x, &y, &w, &h);
-    this->icon_screen->set_text(this->icons[0]->name, 0, w, 1);
+    this->icon_screen->set_text(this->icons[0]->name, 0, w, 1,1);
     this->show_icons = true;
   }
 

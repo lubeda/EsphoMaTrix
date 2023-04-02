@@ -8,10 +8,9 @@ from esphome.components import display, font, time
 import esphome.components.image as espImage
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID,  CONF_TIME, CONF_DURATION, CONF_TRIGGER_ID
+from esphome.const import CONF_BLUE, CONF_GREEN, CONF_RED, CONF_FILE, CONF_ID, CONF_BRIGHTNESS, CONF_RAW_DATA_ID,  CONF_TIME, CONF_TRIGGER_ID
 from esphome.core import CORE, HexInt
 from esphome.cpp_generator import RawExpression
-from .select import EHMTXSelect
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,14 +27,8 @@ SVG_FULLSCREENSTART = '<svg width="320px" height="80px" viewBox="0 0 320 80">'
 SVG_END = "</svg>"
 
 logging.warning(f"")
-logging.warning(f"If you are upgrading EsphoMaTrix from an older version to 2023.3.5,")
-logging.warning(f"you have to remove the service-definitions from the yaml. Remove following")
-logging.warning(f"services (also see CHANGELOG.md and README.md):")
-logging.warning(f"=========================================================================")
-logging.warning(f"status, display_on, display_off, show_icons, indicator_on, indicator_off,")
-logging.warning(f"gauge_off, alarm_color, text_color, clock_color, today_color, gauge_color,")
-logging.warning(f"weekday_color, add_screen, force_screen, del_screen, gauge_value, brightness")
-logging.warning(f"=========================================================================")
+logging.warning(f"If you are upgrading EsphoMaTrix from a version before 2023.4.0,")
+logging.warning(f"you should read the section https://github.com/lubeda/EsphoMaTrix/#how-to-update for tipps.")
 logging.warning(f"")
 
 def rgb565_svg(x,y,r,g,b):
@@ -53,50 +46,50 @@ NextClockTrigger = ehmtx_ns.class_(
     "EHMTXNextClockTrigger", automation.Trigger.template(cg.std_string)
 )
 
-CONF_SHOWCLOCK = "show_clock"
-CONF_CLOCK_INTERVAL = "clock_interval"
-CONF_SHOWSCREEN = "show_screen"
+CONF_CLOCKTIME = "clock_time"
+CONF_CLOCKINTERVAL = "clock_interval"
+CONF_SCREENTIME = "screen_time"
 CONF_EHMTX = "ehmtx"
 CONF_URL = "url"
 CONF_FLAG = "flag"
+CONF_TIMECOMPONENT = "time_component"
 CONF_LAMEID = "lameid"
+CONF_LIFETIME = "lifetime"
 CONF_ICONS = "icons"
-CONF_SHOWDOW = "dayofweek"
+CONF_SHOWDOW = "show_dow"
 CONF_SHOWDATE = "show_date"
+CONF_FRAMEDURATION = "frame_duration"
 CONF_HOLD_TIME = "hold_time"
-CONF_DISPLAY = "display8x32"
-CONF_HTML = "html"
-CONF_SCROLLINTERVALL = "scroll_intervall"
-CONF_ANIMINTERVALL = "anim_intervall"
+CONF_SCROLLCOUNT = "scroll_count"
+CONF_MATRIXCOMPONENT = "matrix_component"
+CONF_HTML = "icons2html"
+CONF_SCROLLINTERVAL = "scroll_interval"
+CONF_FRAMEINTERVAL = "frame_interval"
 CONF_FONT_ID = "font_id"
 CONF_YOFFSET = "yoffset"
 CONF_XOFFSET = "xoffset"
 CONF_PINGPONG = "pingpong"
 CONF_TIME_FORMAT = "time_format"
 CONF_DATE_FORMAT = "date_format"
-CONF_SELECT = "ehmtxselect"
 CONF_ON_NEXT_SCREEN = "on_next_screen"
 CONF_ON_NEXT_CLOCK = "on_next_clock"
 CONF_SHOW_SECONDS = "show_seconds"
-CONF_WEEK_ON_MONDAY = "week_start_monday"
+CONF_WEEK_START_MONDAY = "week_start_monday"
 CONF_ICON = "icon_name"
 CONF_TEXT = "text"
 CONF_ALARM = "alarm"
 
 EHMTX_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(EHMTX_),
-    cv.Required(CONF_TIME): cv.use_id(time),
-    cv.Required(CONF_DISPLAY): cv.use_id(display),
+    cv.Required(CONF_TIMECOMPONENT): cv.use_id(time),
+    cv.Required(CONF_MATRIXCOMPONENT): cv.use_id(display),
     cv.Required(CONF_FONT_ID): cv.use_id(font),
     cv.Optional(
-        CONF_SHOWCLOCK, default="5"
+        CONF_CLOCKTIME, default="5"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_CLOCK_INTERVAL, default="60"
+        CONF_CLOCKINTERVAL, default="60"
     ): cv.templatable(cv.positive_int),
-    cv.Optional(
-        CONF_SELECT, 
-    ): cv.use_id(EHMTXSelect),
     cv.Optional(
         CONF_YOFFSET, default="6"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
@@ -110,10 +103,13 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_SHOWDATE, default=True
     ): cv.boolean,
     cv.Optional(
-        CONF_WEEK_ON_MONDAY, default=True
+        CONF_WEEK_START_MONDAY, default=True
     ): cv.boolean,
     cv.Optional(
         CONF_SHOWDOW, default=True
+    ): cv.boolean,
+    cv.Optional(
+        CONF_SHOWDATE, default=True
     ): cv.boolean,
     cv.Optional(
         CONF_TIME_FORMAT, default="%H:%M"
@@ -125,20 +121,19 @@ EHMTX_SCHEMA = cv.Schema({
         CONF_XOFFSET, default="1"
     ): cv.templatable(cv.int_range(min=-32, max=32)),
     cv.Optional(
-        CONF_HOLD_TIME, default="2"
+        CONF_HOLD_TIME, default="20"
     ): cv.templatable(cv.int_range(min=0, max=3600)),
-    cv.Optional(CONF_SCROLLINTERVALL, default="80"
+    cv.Optional(CONF_SCROLLINTERVAL, default="80"
+                ): cv.templatable(cv.positive_int),
+    cv.Optional(CONF_SCROLLCOUNT, default="2"
                 ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_ANIMINTERVALL, default="192"
+        CONF_FRAMEINTERVAL, default="192"
     ): cv.templatable(cv.positive_int),
     cv.Optional(
-        CONF_SHOWSCREEN, default="8"
+        CONF_SCREENTIME, default="8"
     ): cv.templatable(cv.positive_int),
     cv.Optional(CONF_BRIGHTNESS, default=80): cv.templatable(cv.int_range(min=0, max=255)),
-    cv.Optional(
-        CONF_DURATION, default="5"
-    ): cv.templatable(cv.positive_int),
     cv.Optional(CONF_ON_NEXT_SCREEN): automation.validate_automation(
         {
             cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(NextScreenTrigger),
@@ -158,7 +153,7 @@ EHMTX_SCHEMA = cv.Schema({
                 cv.Exclusive(CONF_URL,"uri"): cv.url,
                 cv.Exclusive(CONF_LAMEID,"uri"): cv.string,
                 cv.Optional(
-                    CONF_DURATION, default="0"
+                    CONF_FRAMEDURATION, default="0"
                 ): cv.templatable(cv.positive_int),
                 cv.Optional(
                     CONF_PINGPONG, default=False
@@ -176,7 +171,8 @@ ADD_SCREEN_ACTION_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.use_id(EHMTX_),
         cv.Required(CONF_ICON): cv.templatable(cv.string),
         cv.Required(CONF_TEXT): cv.templatable(cv.string),
-        cv.Optional(CONF_DURATION): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_LIFETIME, default = 5): cv.templatable(cv.positive_int),
+        cv.Optional(CONF_SCREENTIME, default = 10): cv.templatable(cv.positive_int),
         cv.Optional(CONF_ALARM, default=False): cv.templatable(cv.boolean),
     }
 )
@@ -195,11 +191,13 @@ async def ehmtx_add_screen_action_to_code(config, action_id, template_arg, args)
 
     template_ = await cg.templatable(config[CONF_TEXT], args, cg.std_string)
     cg.add(var.set_text(template_))
-     
-    if CONF_DURATION in config:
-        template_ = await cg.templatable(config[CONF_DURATION], args, cg.uint8)
-        cg.add(var.set_duration(template_))
 
+    template_ = await cg.templatable(config[CONF_LIFETIME], args, cv.positive_int)
+    cg.add(var.set_lifetime(template_))
+
+    template_ = await cg.templatable(config[CONF_SCREENTIME], args, cv.positive_int)
+    cg.add(var.set_screen_time(template_))
+     
     template_ = await cg.templatable(config[CONF_ALARM], args, bool)
     cg.add(var.set_alarm(template_))
     return var
@@ -221,6 +219,37 @@ async def ehmtx_set_brightness_action_to_code(config, action_id, template_arg, a
     var = cg.new_Pvariable(action_id, template_arg, paren)
     template_ = await cg.templatable(config[CONF_BRIGHTNESS], args, cg.int_)
     cg.add(var.set_brightness(template_))
+
+    return var
+
+SET_SCREEN_COLOR_ACTION_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.use_id(EHMTX_), 
+        cv.Required(CONF_ICON): cv.templatable(cv.string),
+        cv.Optional(CONF_RED,default=80): cv.templatable(cv.uint8_t,),
+        cv.Optional(CONF_BLUE,default=80): cv.templatable(cv.uint8_t,),
+        cv.Optional(CONF_GREEN,default=80): cv.templatable(cv.uint8_t,),
+    }
+)
+
+SetScreenColorAction = ehmtx_ns.class_("SetScreenColorAction", automation.Action)
+
+@automation.register_action(
+    "ehmtx.screen.color", SetScreenColorAction, SET_SCREEN_COLOR_ACTION_SCHEMA
+)
+async def ehmtx_set_screen_color_action_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+
+    template_ = await cg.templatable(config[CONF_ICON], args, cg.std_string)
+    cg.add(var.set_icon(template_))
+    template_ = await cg.templatable(config[CONF_RED], args, cg.int_)
+    cg.add(var.set_red(template_))
+    template_ = await cg.templatable(config[CONF_GREEN], args, cg.int_)
+    cg.add(var.set_green(template_))
+    template_ = await cg.templatable(config[CONF_BLUE], args, cg.int_)
+    cg.add(var.set_blue(template_))
 
     return var
 
@@ -516,13 +545,13 @@ async def to_code(config):
         if ((width != 4*ICONWIDTH) or (width != ICONWIDTH)) and (height != ICONHEIGHT):
             logging.warning(f" icon wrong size valid 8x8 or 8x32: {conf[CONF_ID]} skipped!")
         else:
-            if (conf[CONF_DURATION] == 0):
+            if (conf[CONF_FRAMEDURATION] == 0):
                 try:
                     duration =  image.info['duration']         
                 except:
-                    duration = config[CONF_ANIMINTERVALL]
+                    duration = config[CONF_FRAMEINTERVAL]
             else:
-                duration = conf[CONF_DURATION]
+                duration = conf[CONF_FRAMEDURATION]
 
             html_string += F"<BR><B>{conf[CONF_ID]}</B>&nbsp;-&nbsp;({duration} ms):<BR>"
 
@@ -589,23 +618,23 @@ async def to_code(config):
         except:
             logging.warning(f"EsphoMaTrix: Error writing HTML file: {htmlfn}")    
 
-    disp = await cg.get_variable(config[CONF_DISPLAY])
+    disp = await cg.get_variable(config[CONF_MATRIXCOMPONENT])
     cg.add(var.set_display(disp))
 
     f = await cg.get_variable(config[CONF_FONT_ID])
     cg.add(var.set_font(f))
 
-    ehmtxtime = await cg.get_variable(config[CONF_TIME])
+    ehmtxtime = await cg.get_variable(config[CONF_TIMECOMPONENT])
     cg.add(var.set_clock(ehmtxtime))
 
-    cg.add(var.set_show_clock(config[CONF_SHOWCLOCK]))
-    cg.add(var.set_clock_interval(config[CONF_CLOCK_INTERVAL]))
+    cg.add(var.set_clock_time(config[CONF_CLOCKTIME]))
+    cg.add(var.set_clock_interval(config[CONF_CLOCKINTERVAL]))
     cg.add(var.set_brightness(config[CONF_BRIGHTNESS]))
-    cg.add(var.set_screen_time(config[CONF_SHOWSCREEN]))
-    cg.add(var.set_duration(config[CONF_DURATION]))
-    cg.add(var.set_scroll_intervall(config[CONF_SCROLLINTERVALL]))
-    cg.add(var.set_anim_intervall(config[CONF_ANIMINTERVALL]))
-    cg.add(var.set_week_start(config[CONF_WEEK_ON_MONDAY]))
+    cg.add(var.set_screen_time(config[CONF_SCREENTIME]))
+    cg.add(var.set_scroll_interval(config[CONF_SCROLLINTERVAL]))
+    cg.add(var.set_scroll_count(config[CONF_SCROLLCOUNT]))
+    cg.add(var.set_frame_interval(config[CONF_FRAMEINTERVAL]))
+    cg.add(var.set_week_start(config[CONF_WEEK_START_MONDAY]))
     cg.add(var.set_time_format(config[CONF_TIME_FORMAT]))
     cg.add(var.set_date_format(config[CONF_DATE_FORMAT]))
     cg.add(var.set_show_day_of_week(config[CONF_SHOWDOW]))
@@ -613,10 +642,6 @@ async def to_code(config):
     cg.add(var.set_show_date(config[CONF_SHOWDATE]))
     cg.add(var.set_show_seconds(config[CONF_SHOW_SECONDS]))
     cg.add(var.set_font_offset(config[CONF_XOFFSET], config[CONF_YOFFSET]))
-
-    if (config.get(CONF_SELECT)):
-        ehmtxselect = await cg.get_variable(config[CONF_SELECT])
-        cg.add(var.set_select(ehmtxselect))
 
     for conf in config.get(CONF_ON_NEXT_SCREEN, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)

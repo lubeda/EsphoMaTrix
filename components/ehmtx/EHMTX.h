@@ -3,19 +3,18 @@
 #include "esphome.h"
 
 const uint8_t MAXQUEUE = 24;
-const uint8_t MAXICONS = 80;
+const uint8_t MAXICONS = 90;
 const uint8_t TEXTSCROLLSTART = 8;
 const uint8_t TEXTSTARTOFFSET = (32 - 8);
 
 const uint16_t TICKINTERVAL = 1000; // each 1000ms
-static const char *const EHMTX_VERSION = "Version: 2023.3.5";
+static const char *const EHMTX_VERSION = "Version: 2023.4.0";
 static const char *const TAG = "EHMTX";
 
 namespace esphome
 {
   class EHMTX_screen;
   class EHMTX_store;
-  class EhmtxSelect;
   class EHMTX_Icon;
   class EHMTXNextScreenTrigger;
   class EHMTXNextClockTrigger;
@@ -35,7 +34,7 @@ namespace esphome
     EHMTX_store *store;
     std::vector<EHMTXNextScreenTrigger *> on_next_screen_triggers_;
     std::vector<EHMTXNextClockTrigger *> on_next_clock_triggers_;
-    void internal_add_screen(uint8_t icon, std::string text, uint16_t duration, bool alarm);
+    void internal_add_screen(uint8_t icon, std::string text, uint16_t lifetime,uint16_t show_time, bool alarm);
 
   public:
     EHMTX();
@@ -46,6 +45,7 @@ namespace esphome
     bool show_gauge;
     bool show_date;
     uint8_t gauge_value;
+    uint8_t scroll_count;
     bool show_icons;
     void force_screen(std::string name);
     EHMTX_Icon *icons[MAXICONS];
@@ -53,11 +53,6 @@ namespace esphome
     void add_icon(EHMTX_Icon *icon);
     bool show_display;
     bool has_active_screen;
-#ifdef USE_EHMTX_SELECT
-    std::vector<std::string> select_options;
-    esphome::EhmtxSelect *select;
-    void set_select(esphome::EhmtxSelect *es);
-#endif
     addressable_light::AddressableLightDisplay *display;
     time::RealTimeClock *clock;
     display::Font *font;
@@ -65,9 +60,9 @@ namespace esphome
     uint8_t find_icon(std::string name);
     bool string_has_ending(std::string const &fullString, std::string const &ending);
     bool show_seconds;
-    uint16_t duration;         // in minutes how long is a screen valid
-    uint16_t scroll_intervall; // ms to between scrollsteps
-    uint16_t anim_intervall;   // ms to next_frame()
+    //uint16_t duration;         // in minutes how long is a screen valid
+    uint16_t scroll_interval; // ms to between scrollsteps
+    uint16_t frame_interval;   // ms to next_frame()
     uint16_t clock_time;       // seconds display of screen_time - clock_time = date_time
     uint16_t hold_time;       // seconds display of screen_time to extend 
     uint16_t clock_interval;       // seconds display of screen_time - clock_time = date_time
@@ -87,7 +82,7 @@ namespace esphome
     std::string get_current();
     void set_display(addressable_light::AddressableLightDisplay *disp);
     void set_screen_time(uint16_t t);
-    void set_show_clock(uint16_t t);
+    void set_clock_time(uint16_t t);
     void set_hold_time(uint16_t t);
     void set_clock_interval(uint16_t t);
     void set_show_day_of_week(bool b);
@@ -97,12 +92,13 @@ namespace esphome
     void set_week_start(bool b);
     void set_brightness(int b); // int because of register_service!
     uint8_t get_brightness();
-    void add_screen(std::string icon, std::string text, int duration, bool alarm);
+    void add_screen(std::string icon, std::string text, int duration, int showt_time, bool alarm);
     void del_screen(std::string iname);
     void set_clock(time::RealTimeClock *clock);
     void set_font(display::Font *font);
-    void set_anim_intervall(uint16_t intervall);
-    void set_scroll_intervall(uint16_t intervall);
+    void set_frame_interval(uint16_t interval);
+    void set_scroll_interval(uint16_t interval);
+    void set_scroll_count(uint8_t count);
     void set_duration(uint8_t d);
     void set_indicator_off();
     void set_time_format(std::string s);
@@ -116,6 +112,7 @@ namespace esphome
     void set_today_color(int r, int g, int b);
     void set_weekday_color(int r, int g, int b);
     void set_alarm_color(int r, int g, int b);
+    void set_screen_color(std::string icon_name,int r, int g, int b);
     void set_icon_count(uint8_t ic);
     void draw_clock();
     void draw_gauge();
@@ -144,22 +141,24 @@ namespace esphome
     bool move_next();
     void hold_current(uint _sec);
     EHMTX_screen *current();
+    void set_text_color(uint8_t icon_id, Color c);
     void log_status();
   };
 
   class EHMTX_screen
   {
-
   protected:
-    uint8_t shiftx_;
-    uint8_t pixels_;
+    uint16_t shiftx_;
+    uint16_t pixels_;
+    uint8_t centerx_;
     EHMTX *config_;
 
   public:
-    uint16_t display_duration;
+    uint16_t screen_time;
     bool alarm;
     time_t endtime;
     uint8_t icon;
+    Color text_color;
     std::string text;
 
     EHMTX_screen(EHMTX *config);
@@ -174,7 +173,8 @@ namespace esphome
     void update_screen();
     bool del_slot(uint8_t _icon);
     void hold_slot(uint8_t _sec);
-    void set_text(std::string text, uint8_t icon, uint8_t pixel, uint16_t et);
+    void set_text(std::string text, uint8_t icon, uint16_t pixel, uint16_t et, uint16_t st);
+    void set_text_color(uint8_t icon_id,Color text_color);
   };
 
   class EHMTXNextScreenTrigger : public Trigger<std::string, std::string>
@@ -209,6 +209,28 @@ namespace esphome
     EHMTX *parent_;
   };
 
+template <typename... Ts>
+  class SetScreenColorAction : public Action<Ts...>
+  {
+  public:
+    SetScreenColorAction(EHMTX *parent) : parent_(parent) {}
+    
+    TEMPLATABLE_VALUE(std::string, icon)
+    TEMPLATABLE_VALUE(uint8_t, red)
+    TEMPLATABLE_VALUE(uint8_t, green)
+    TEMPLATABLE_VALUE(uint8_t, blue)
+    
+    void play(Ts... x) override
+    {
+      auto icon = this->icon_.value(x...);
+      
+      this->parent_->set_screen_color(icon,this->red_.value(x...) ,this->blue_.value(x...),this->green_.value(x...));
+    }
+
+  protected:
+    EHMTX *parent_;
+  };
+
   template <typename... Ts>
   class AddScreenAction : public Action<Ts...>
   {
@@ -216,24 +238,19 @@ namespace esphome
     AddScreenAction(EHMTX *parent) : parent_(parent) {}
     TEMPLATABLE_VALUE(std::string, icon)
     TEMPLATABLE_VALUE(std::string, text)
-    TEMPLATABLE_VALUE(uint8_t, duration)
+    TEMPLATABLE_VALUE(uint8_t, lifetime)
+    TEMPLATABLE_VALUE(uint16_t, screen_time)
     TEMPLATABLE_VALUE(bool, alarm)
 
     void play(Ts... x) override
     {
       auto icon = this->icon_.value(x...);
       auto text = this->text_.value(x...);
-      auto duration = this->duration_.value(x...);
+      auto lifetime = this->lifetime_.value(x...);
+      auto screen_time = this->screen_time_.value(x...);
       auto alarm = this->alarm_.value(x...);
 
-      if (duration)
-      {
-        this->parent_->add_screen(icon, text, duration, alarm);
-      }
-      else
-      {
-        this->parent_->add_screen(icon, text, this->parent_->duration, alarm);
-      }
+      this->parent_->add_screen(icon, text, lifetime, screen_time, alarm);
     }
 
   protected:
