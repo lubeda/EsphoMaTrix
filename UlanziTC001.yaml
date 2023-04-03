@@ -219,9 +219,9 @@ ehmtx:
   id: rgb8x32
   clock_time: 6
   screen_time: 6
-  html: true
-  display8x32: ehmtx_display
-  time: ehmtx_time
+  icons2html: true
+  matrix_component: ehmtx_display
+  time_component: ehmtx_time
   font_id: ehmtx_font
   icons: 
     - id: ha
