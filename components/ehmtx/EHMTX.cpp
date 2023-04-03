@@ -33,11 +33,27 @@ namespace esphome
     }
   }
 
-  void EHMTX::set_screen_color(std::string name,int r,int g,int b)
+  void EHMTX::set_screen_color(std::string icon_name,int r,int g,int b)
   {
-    uint8_t icon_id = this->find_icon(name);
-    if (icon_id < MAXICONS)
+    if (this->string_has_ending(icon_name, "*"))
     {
+      // remove the *
+      std::string comparename = icon_name.substr(0, icon_name.length() - 1);
+
+      // iterate through the icons, comparing start only
+      for (uint8_t icon_id = 0; icon_id < this->icon_count; icon_id++)
+      {
+        std::string iconname = this->icons[icon_id]->name.c_str();
+        if (iconname.rfind(comparename, 0) == 0)
+        {
+          ESP_LOGD(TAG, "set screen color: icon %d r: %d g: %d b: %d",icon_id,r,g,b);
+          this->store->set_text_color(icon_id,Color(r,g,b));
+        }
+      }
+    }
+    else
+    {
+      uint8_t icon_id = this->find_icon(icon_name.c_str());
       ESP_LOGD(TAG, "set screen color: icon %d r: %d g: %d b: %d",icon_id,r,g,b);
       this->store->set_text_color(icon_id,Color(r,g,b));
     }
@@ -378,19 +394,19 @@ namespace esphome
       std::string comparename = icon_name.substr(0, icon_name.length() - 1);
 
       // iterate through the icons, comparing start only
-      for (uint8_t i = 0; i < this->icon_count; i++)
+      for (uint8_t icon_id = 0; icon_id < this->icon_count; icon_id++)
       {
-        std::string iconname = this->icons[i]->name.c_str();
+        std::string iconname = this->icons[icon_id]->name.c_str();
         if (iconname.rfind(comparename, 0) == 0)
         {
-          this->store->delete_screen(i);
+          this->store->delete_screen(icon_id);
         }
       }
     }
     else
     {
-      uint8_t icon = this->find_icon(icon_name.c_str());
-      this->store->delete_screen(icon);
+      uint8_t icon_id = this->find_icon(icon_name.c_str());
+      this->store->delete_screen(icon_id);
     }
   }
 
