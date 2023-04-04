@@ -381,14 +381,14 @@ sensor:
 
 Sets the color of the selected element
 
-##### Lambda
+##### Lambda set text color
 
-```
+```yaml
   lamda: 
     id(rgb8x32)->set_text_color(200,45,12);
 ```
 
-##### Action
+##### Action for set text color
 
 You have to use use id of your ehmtx component, e.g. `rgb8x32`
 
@@ -408,22 +408,22 @@ valid elements:
 - `ehmtx.text.color:`
 - `ehmtx.today.color:`
 - `ehmtx.weekday.color:`
-- ```red, green, blue```: the color components (`0..255`) _(default = `80`)_
+- ```red, green, blue```: the color components (`0..255`) *(default = `80`)*
 
 ---
 
 #### Set screen color action
 
-Sets the color of am active screen in the queue
+Sets the color of the **active** screen in the queue, so it's best to use it directly after add_screen.
 
-##### Lambda
+##### Lambda for set_screen
 
-```
+```yaml
   lamda: 
     id(rgb8x32)->set_screen_color("sun",200,45,12);
 ```
 
-##### Action
+##### Action for set_screen
 
 You have to use use id of your ehmtx component, e.g. `rgb8x32`
 
