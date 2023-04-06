@@ -170,7 +170,7 @@ Since it is a clock you need a time component e.g. [homeassistant](https://espho
 ### Font
 Download a small "pixel" TTF-font, i use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts wich work well on the display e.g. [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/#fonts).
 
-DarkPoet is providing special fonts for 8x32 matrices in his [repo](https://github.com/darkpoet78/MatrixClockFonts)
+DarkPoet78 is providing special fonts for 8x32 matrices in his [repo](https://github.com/darkpoet78/MatrixClockFonts)
 
 ```yaml
 font:
@@ -1110,12 +1110,14 @@ The integration works with the Home Assistant api so, after boot of the device, 
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 
 ## Thanks
+
 - **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md,fixed sample)
 - **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*" & show_clock with 0)
 - **[jd1](https://github.com/jd1)** for his contributions
 - **[aptonline](https://github.com/aptonline)** for his work on the ulanzi hardware
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
+- **[darkpoet78](https://github.com/darkpoet78/MatrixClockFonts)** for his work on optimized fonts
 - ** everbody that found bugs/issues and reported them!
 
 ## Special thanks to all sponsors
