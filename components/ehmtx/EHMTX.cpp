@@ -400,6 +400,7 @@ namespace esphome
         if (iconname.rfind(comparename, 0) == 0)
         {
           this->store->delete_screen(icon_id);
+          this->next_action_time = this->clock->now().timestamp;
         }
       }
     }
@@ -407,6 +408,7 @@ namespace esphome
     {
       uint8_t icon_id = this->find_icon(icon_name.c_str());
       this->store->delete_screen(icon_id);
+      this->next_action_time = this->clock->now().timestamp;
     }
   }
 

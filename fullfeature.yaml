@@ -58,7 +58,6 @@ logger:
  level: $loglevel
   
 api:
-  services:
     
 ota:
   password: !secret ota_password
@@ -124,7 +123,7 @@ ehmtx:
   date_format: "%d.%m."
   week_start_monday: true
   xoffset: 1
-  yoffset: 2
+  yoffset: 6
   scroll_count: 2
   scroll_interval: 80
   frame_interval: 192
