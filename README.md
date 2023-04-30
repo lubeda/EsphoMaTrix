@@ -1118,6 +1118,7 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 - **[wsbtak](https://github.com/wsbtak)** for the work on the ulanzi hardware
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
 - **[darkpoet78](https://github.com/darkpoet78/MatrixClockFonts)** for his work on optimized fonts
+- **[dennisse](https://github.com/dennisse) Autobrightness for the Ulanzi
 - ** everbody that found bugs/issues and reported them!
 
 ## Special thanks to all sponsors
