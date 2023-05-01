@@ -4,6 +4,8 @@ A simple DIY status display, build with a flexible 8x32 RGB LED panel implemente
 
 ![sample image](./images/sample.png)
 
+**Check out the new beta version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
+
 ## Introduction
 
 There are some "RGB-matrix" status displays/clocks out there, the commercial one from Lametric and some very good DIY-alternatives. 
