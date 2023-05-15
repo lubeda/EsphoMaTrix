@@ -1,7 +1,9 @@
 # EspHoMaTriX (ehmtx)
 A simple DIY status display, built with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 ![sample image](./images/sample.png)
+
 **Take a look at the new beta version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
+
 ## Introduction
 There are some "RGB-matrix" status displays/clocks out there, the commercial one from LaMetric and some excellent DIY-alternatives.
 - [LaMetric](https://lametric.com/en-US/) commercial ~ €199
