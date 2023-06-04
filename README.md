@@ -1,8 +1,16 @@
 # EspHoMaTriX (ehmtx)
+
+## Important information
+
+If you like my work, please donate me a star on GitHub and consider [sponsoring](https://www.paypal.com/donate/?hosted_button_id=FZDKSLQ46HJTU) me!!
+
+## Introduction
+
 A simple DIY status display, built with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 ![sample image](./images/sample.png)
-**Take a look at the new beta version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
-## Introduction
+
+**Take a look at the new version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
+
 There are some "RGB-matrix" status displays/clocks out there, the commercial one from LaMetric and some excellent DIY-alternatives.
 - [LaMetric](https://lametric.com/en-US/) commercial ~ €199
 - [Ulanzi TC001](https://www.aliexpress.com/item/1005005008682055.html) commercial ~ €50
@@ -11,6 +19,7 @@ There are some "RGB-matrix" status displays/clocks out there, the commercial one
 - [Awtrix-Light](https://github.com/Blueforcer/awtrix-light) From the developer of Awtrix, optimized for the Ulanzi TC001 Hardware
 The other DIY  solutions have their pros and cons. I tried some and used AwTrix for a long time. But the cons are so big (in my opinion) that I started an esphome.io variant targeted to an optimized Home Assistant integration. The main reason, for me, is the Home Assistant integration!
 There is a little hype around the Ulanzi TC001 pixel clock. This hardware can be used with **EspHoMaTriX** (with some limitations). You can connect the device and flash it via USB-C. As a starting point, you can use the [``UlanziTC001.yaml``](https://github.com/lubeda/EsphoMaTrix/blob/main/UlanziTC001.yaml). Yet, the LDR and battery sensor are not perfectly supported. For another use of the hardware, see [PixelIT_Ulanzi](https://github.com/aptonline/PixelIt_Ulanzi) or [AWTRIX-LIGHT](https://github.com/Blueforcer/awtrix-light) firmware.
+
 ### ehmtx in the media
 See this German tutorial video with information on setting up your display [RGB-LED Status Display für Home Assistant mit ESPHome | ESPHoMaTrix](https://www.youtube.com/watch?v=DTd9vAhet9A).
 Another german tutorial video focused at the Ulanzi [Smarte Pixel Clock über Home Assistant steuern - Entitäten / Icons und mehr in der Ulanzi](https://www.youtube.com/watch?v=LgaT0mNbl34)
@@ -93,7 +102,9 @@ display:
 ### Light component
 The light component is used by the addressable_light component and referenced by ID under `addressable_light_id:`.
 To use the light component directly from home assistant, add the sample lambdas```on_turn_on``` and ```on_turn_off``` to the light component.
+
 ***Sample***
+
 ```yaml
 light:
   - platform: neopixelbus
@@ -107,18 +118,25 @@ light:
          id(rgb8x32)->set_enabled(true);
 ```
 To hide the light component from home assistant use: ` internal: true`
+
 ```yaml
+
 light:
   - platform: neopixelbus
     id: ehmtx_light
     internal: true
     ...
 ```
+
 ### Time component
+
 Since it is a clock, you need a time component, e.g., [homeassistant](https://esphome.io/components/time/homeassistant.html). It is referenced by its ID under `time_component:` The display shows `!t!` until the time source is synchronized and valid.
+
 ### Font
+
 Download a small “pixel” TTF-font, I use ["monobit.ttf"](https://www.google.com/search?q=monobit.ttf). You can modify this font with [FontForge](https://fontforge.org/) and added **€** on base of a **E** and so on. Due to copyright, I can't provide my modified version :-(. Not all fonts are suitable for this minimalistic display. There are public domain fonts which works well on the display, e.g., [DMDSmall](https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=5993), details on alternative fonts are [here](https://blakadder.com/esphome-pixel-clock/#fonts).
 DarkPoet78 is providing special fonts for 8x32 matrices in his [repo](https://github.com/darkpoet78/MatrixClockFonts)
+
 ```yaml
 font:
   - file: monobit.ttf
@@ -127,11 +145,14 @@ font:
     glyphs:  |
       !"%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz€@
 ```
+
 ### Icons and Animations
 Download and install all needed icons (.jpg/.png) and animations (.gif) under the `ehmtx:` key. All icons have to be 8x8 or 8x32 pixels in size. If necessary, scale them with gimp, check “as animation” for gifs.
 You can also specify a URL to directly download the image file. The URLs will only be downloaded once at compile time, so there is no additional traffic on the hosting website.
 There are maximum 90 icons possible.
+
 ***Sample***
+
 ```yaml
 emhtx:
   icons:
@@ -179,7 +200,9 @@ ehmtx:
   scroll_interval: 80 # milliseconds
   frame_interval: 192 # milliseconds
 ```
+
 ***Parameters***
+
 **id** (required, ID): Manually specify the ID used for code generation and in service definitions.
 **clock_interval** (optional, seconds): show the clock at least each x seconds, (default=60)
 **clock_time** (optional, seconds): duration to display the clock after this time, the date is displayed until next "show_screen". If `show_date` is false and `clock_time` > 0 the clock will be display as long as a normal screen! Setting `clock_time` to 0 will not show the clock or date. If there are no screens ind the queue, the display will be blank until the next screen is sent.
@@ -210,11 +233,16 @@ See [icon details](#icons-and-animations)
 - **file** (Exlusive, filename): a local filename
 - **url** (Exclusive, url): a URL to download the icon
 - **lameid** (Exclusive, number): the ID from the LaMetric icon database
+
 ## Control your display
 Plenty of the features are accessible with actions, you can use in your YAML
+
 ### Local actions/lambdas
+
 #### Show all icons on your matrix
+
 This code shows all icons once on boot up, depending on the amount of your icons it can take a while to see them all.
+
 ```yaml
 esphome:
   ....
@@ -226,10 +254,13 @@ esphome:
           id(rgb8x32)->show_all_icons();
 ```
 ---
+
 #### Add screen to your display queue
 You can add screens locally and display data directly from any local sensor. See this sample:
+
 ##### Lambda
 Take care that the ```char text[30];``` has enough space to store the formatted text.
+
 ```yaml
 sensor:
   - platform: bh1750
@@ -243,7 +274,9 @@ sensor:
           // 5 Minutes,each time at least 11 seconds,no alarm
            id(rgb8x32)->add_screen("sun", text, 5,11, false);
 ```
+
 ##### Action
+
 ```yaml
 sensor:
   - platform: bh1750
@@ -259,23 +292,30 @@ sensor:
           screen_time: 35 # seconds optional
           alarm: true # optional
 ```
+
 ***Parameters***
+
 - **id** (required, ID): ID of the ehmtx component
 - **text** (required, string): the text to display
 - **icon_name** (required, string): the name of the icon to display
 - **lifetime** (optional, int): the lifetime of the screen in minutes (default=5)
 - **screen_time** (optional, int): the display time of a screen per loop in seconds (default=10)
 - **alarm** (optional, bool): if alarm set true (default = false)
+
 ---
+
 #### Set (alarm/clock/gauge/text/today/weekday) color action
 Sets the color of the selected element
+
 ##### Lambda set text color
+
 ```yaml
   lamda:
     id(rgb8x32)->set_text_color(200,45,12);
 ```
 ##### Action for set text color
 You have to use the ID of your ehmtx component, e.g., `rgb8x32`
+
 ```yaml
      - ehmtx.***.color:
         id: rgb8x32
@@ -283,7 +323,9 @@ You have to use the ID of your ehmtx component, e.g., `rgb8x32`
         green: !lambda return g;
         blue: !lambda return b;
 ```
-valid elements:
+
+**valid elements:**
+
 - `ehmtx.alarm.color:`
 - `ehmtx.clock.color:`
 - `ehmtx.gauge.color:`
