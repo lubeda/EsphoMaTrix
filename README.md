@@ -961,12 +961,13 @@ sensor:
                id(rgb8x32)->set_brightness(250);
             }
 ```
- 
+
 ## Notifier Custom Component
+
 There is an optional [notifier custom component](https://github.com/lubeda/EHMTX_custom_component) you can install with [HACS](https://hacs.xyz/). It is comparable to the **_screen** service, but more streamlined.
- 
+
 ## Breaking changes
- 
+
 - 2022.6.1 removed image types only `rgb565` is valid!
 - 2023.2.0 removed awtrix icon `awtrixid` support
 - 2023.3.5 removed automatic scaling of images and animations
@@ -976,10 +977,13 @@ There is an optional [notifier custom component](https://github.com/lubeda/EHMTX
 - 2023.3.5 added show_all_icons,gauge_percent/gauge_off as default services => remove these from your yaml
 - 2023.4.0 **cleaner naming**, please check all automations and yaml for change naming!!!
 - 2023.4.0 removed the select component
+
 ## Usage
 The integration works with the Home Assistant API so, after boot of the device, it takes a few seconds until the service calls start working.
+
 ## Disclaimer
 THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
+
 ## Thanks
 - **[blakadder](https://github.com/blakadder)** for his contribution (cleanup README.md,fixed sample)
 - **[andrew-codechimp](https://github.com/andrew-codechimp)** for his contribution (display on/off & del_screen "*" & show_clock with 0)
@@ -989,5 +993,6 @@ THE SOFTWARE IS PROVIDED "AS IS", use at your own risk!
 - **[ofirsnb](https://github.com/ofirsnb)** for his contributions
 - **[darkpoet78](https://github.com/darkpoet78/MatrixClockFonts)** for his work on optimized fonts
 - **[dennisse](https://github.com/dennisse)** Autobrightness for the Ulanzi
-- ** everbody ** that found bugs/issues and reported them!
+- **everbody** that found bugs/issues and reported them!
+
 ## Special thanks to all sponsors
