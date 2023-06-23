@@ -1,6 +1,7 @@
 #ifndef EHMTX_H
 #define EHMTX_H
 #include "esphome.h"
+#include "esphome/components/time/real_time_clock.h"
 
 const uint8_t MAXQUEUE = 24;
 const uint8_t MAXICONS = 90;
@@ -54,7 +55,7 @@ namespace esphome
     bool show_display;
     bool has_active_screen;
     addressable_light::AddressableLightDisplay *display;
-    time::RealTimeClock *clock;
+    esphome::time::RealTimeClock *clock;
     display::Font *font;
     int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
@@ -94,7 +95,7 @@ namespace esphome
     uint8_t get_brightness();
     void add_screen(std::string icon, std::string text, int duration, int showt_time, bool alarm);
     void del_screen(std::string iname);
-    void set_clock(time::RealTimeClock *clock);
+    void set_clock(esphome::time::RealTimeClock *clock);
     void set_font(display::Font *font);
     void set_frame_interval(uint16_t interval);
     void set_scroll_interval(uint16_t interval);
@@ -135,7 +136,7 @@ namespace esphome
   public:
     EHMTX_store(EHMTX *config);
     void force_next_screen(uint8_t icon_id);
-    time::RealTimeClock *clock;
+    esphome::time::RealTimeClock *clock;
     EHMTX_screen *find_free_screen(uint8_t icon);
     void delete_screen(uint8_t icon);
     bool move_next();
