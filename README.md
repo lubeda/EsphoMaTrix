@@ -1,10 +1,5 @@
 # EspHoMaTriX (ehmtx)
 
-## Very important information!!
-
-Since esphome 2023.6.0 there are some problems in compiling !!!!
-
-
 ## Important information
 
 If you like my work, please donate me a star on GitHub and consider [sponsoring](https://www.paypal.com/donate/?hosted_button_id=FZDKSLQ46HJTU) me!!
