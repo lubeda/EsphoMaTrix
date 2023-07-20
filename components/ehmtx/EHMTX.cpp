@@ -370,7 +370,7 @@ namespace esphome
     }
   }
 
-  void EHMTX::set_font(display::Font *font)
+  void EHMTX::set_font(display::BaseFont *font)
   {
     this->font = font;
   }

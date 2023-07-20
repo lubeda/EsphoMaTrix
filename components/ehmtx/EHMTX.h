@@ -1,7 +1,9 @@
 #ifndef EHMTX_H
 #define EHMTX_H
+
 #include "esphome.h"
 #include "esphome/components/time/real_time_clock.h"
+#include "esphome/components/animation/animation.h"
 
 const uint8_t MAXQUEUE = 24;
 const uint8_t MAXICONS = 90;
@@ -56,7 +58,7 @@ namespace esphome
     bool has_active_screen;
     addressable_light::AddressableLightDisplay *display;
     esphome::time::RealTimeClock *clock;
-    display::Font *font;
+    display::BaseFont *font;
     int8_t yoffset, xoffset;
     uint8_t find_icon(std::string name);
     bool string_has_ending(std::string const &fullString, std::string const &ending);
@@ -96,7 +98,7 @@ namespace esphome
     void add_screen(std::string icon, std::string text, int duration, int showt_time, bool alarm);
     void del_screen(std::string iname);
     void set_clock(esphome::time::RealTimeClock *clock);
-    void set_font(display::Font *font);
+    void set_font(display::BaseFont *font);
     void set_frame_interval(uint16_t interval);
     void set_scroll_interval(uint16_t interval);
     void set_scroll_count(uint8_t count);
@@ -475,19 +477,20 @@ template <typename... Ts>
     EHMTX *parent_;
   };
 
-  class EHMTX_Icon : public display::Animation
+  class EHMTX_Icon : public animation::Animation
   {
   protected:
     bool counting_up;
 
   public:
-    EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, display::ImageType type, std::string icon_name, bool revers, uint16_t frame_duration);
+    EHMTX_Icon(const uint8_t *data_start, int width, int height, uint32_t animation_frame_count, image::ImageType type, std::string icon_name, bool revers, uint16_t frame_duration);
     std::string name;
     uint16_t frame_duration;
     bool fullscreen;
     void next_frame();
     bool reverse;
   };
+
 }
 
 #endif

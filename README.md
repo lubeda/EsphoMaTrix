@@ -1,5 +1,15 @@
 # EspHoMaTriX (ehmtx)
 
+## Breaking changes in esphome 2023.7.0
+
+Since the update ehmtx only  compiles if you add some code to your yaml. See here: [https://github.com/lubeda/EspHoMaTriXv2/issues/62#issuecomment-1643052894](https://github.com/lubeda/EspHoMaTriXv2/issues/62#issuecomment-1643052894)
+
+## Important news
+
+**Take a look at the new version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
+
+This version isn't under active development anymore!!!!
+
 ## Important information
 
 If you like my work, please donate me a star on GitHub and consider [sponsoring](https://www.paypal.com/donate/?hosted_button_id=FZDKSLQ46HJTU) me!!
@@ -9,9 +19,8 @@ If you like my work, please donate me a star on GitHub and consider [sponsoring]
 A simple DIY status display, built with a flexible 8x32 RGB LED panel implemented with [esphome.io](https://esphome.io)
 ![sample image](./images/sample.png)
 
-**Take a look at the new version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
-
 There are some “RGB-matrix” status displays/clocks out there, the commercial one from LaMetric and some excellent DIY-alternatives.
+
 - [LaMetric](https://lametric.com/en-US/) commercial ~ €199
 - [Ulanzi TC001](https://www.aliexpress.com/item/1005005008682055.html) commercial ~ €50
 - [Awtrix](https://awtrixdocs.blueforcer.de/#/) (project has been discontinued after more than 4 years now in August 2022)

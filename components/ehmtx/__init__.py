@@ -29,6 +29,7 @@ SVG_END = "</svg>"
 logging.warning(f"")
 logging.warning(f"If you are upgrading EsphoMaTrix from a version before 2023.4.0,")
 logging.warning(f"you should read the section https://github.com/lubeda/EsphoMaTrix/#how-to-update for tipps.")
+logging.warning(f"This version of EsphoMaTrix works only on esphome > 2023.7.0")
 logging.warning(f"")
 
 def rgb565_svg(x,y,r,g,b):
