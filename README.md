@@ -269,6 +269,7 @@ image:
 
 and copy furthermore the black.gif Picture to your esphome Folder (most under **/config/esphome/**)
 You will find this picture in the image Folder in this git.
+
 ---
 
 ## Control your display
