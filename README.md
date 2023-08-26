@@ -243,8 +243,9 @@ See [icon details](#icons-and-animations)
 - **url** (Exclusive, url): a URL to download the icon
 - **lameid** (Exclusive, number): the ID from the LaMetric icon database
 
-### compile errors `animation.h` is missing
+### Compile errors `animation.h` is missing
 ```cpp
+Error:
 In file included from src/esphome.h:25,
                  from src/esphome/components/ehmtx/EHMTX.cpp:1:
 src/esphome/components/ehmtx/EHMTX.h:6:10: fatal error: esphome/components/animation/animation.h: No such file or directory
@@ -255,7 +256,7 @@ compilation terminated.
 ```
 
 #### Solution
-Add in your given YAML this Code:
+Add in your given YAML this Code at the end:
 ```yaml
 animation:
   - id: animation_black
@@ -268,7 +269,7 @@ image:
 
 and copy furthermore the black.gif Picture to your esphome Folder (most under **/config/esphome/**)
 You will find this picture in the image Folder in this git.
-
+---
 
 ## Control your display
 Plenty of the features are accessible with actions, you can use in your YAML
