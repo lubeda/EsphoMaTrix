@@ -1,14 +1,16 @@
+
+
 # EspHoMaTriX (ehmtx)
-
-## Breaking changes in esphome 2023.7.0
-
-Since the update ehmtx only  compiles if you add some code to your yaml. See here: [https://github.com/lubeda/EspHoMaTriXv2/issues/62#issuecomment-1643052894](https://github.com/lubeda/EspHoMaTriXv2/issues/62#issuecomment-1643052894)
 
 ## Important news
 
 **Take a look at the new version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
 
 This version isn't under active development anymore!!!!
+
+### Breaking changes in esphome 2023.7.0
+
+Since the update ehmtx only  compiles if you add some code to your yaml. See here: [https://github.com/lubeda/EspHoMaTriXv2/issues/62#issuecomment-1643052894](https://github.com/lubeda/EspHoMaTriXv2/issues/62#issuecomment-1643052894)
 
 ## Important information
 
