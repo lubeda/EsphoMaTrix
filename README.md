@@ -1,12 +1,13 @@
 
 
-# EspHoMaTriX (ehmtx)
-
-## Important news
+# Important news
 
 **Take a look at the new version of the improved [EspHoMaTriXv2](https://github.com/lubeda/EspHoMaTriXv2/)!!!**
 
-This version isn't under active development anymore!!!!
+This version is read-only!!!!
+
+# EspHoMaTriX (ehmtx)
+
 
 ### Breaking changes in esphome 2023.7.0
 
